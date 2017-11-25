@@ -130,6 +130,9 @@ bindsym $mod+z mode "resize"
 # Start i3bar to display a workspace bar (plus the system information i3status
 # finds out, if available)
 bar {
+	colors {
+		background #3c3836
+	}
 	position top
         status_command i3status
 	separator_symbol "-"
@@ -140,3 +143,9 @@ hide_edge_borders both
 bindsym XF86AudioRaiseVolume exec amixer set Master 5%+
 bindsym XF86AudioLowerVolume exec amixer set Master 5%-
 bindsym XF86AudioMute exec amixer set Master toggle
+
+# class                 border  backgr. text    indicator child_border
+client.focused          #665c54 #504945 #d5c4a1 #fb4934   #665c54
+client.focused_inactive #504945 #504945 #d5c4a1 #fb4934   #504945 
+client.unfocused        #282828 #282828 #ebdbb2 #cc241d   #282828
+client.background       #ffffff
