@@ -14,8 +14,12 @@
 
 (define develop-tools '("emacs"))
 
+(define fonts '("gucharmap"
+		"font-fantasque-sans"))
+
 (packages->manifest
  (map (compose list specification->package+output)
       (append system-packages
               monitor-tools
-              develop-tools)))
+              develop-tools
+	      fonts)))
