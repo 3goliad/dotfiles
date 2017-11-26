@@ -5,21 +5,29 @@
              (guix profiles)
              (gnu packages))
 
-(define system-packages '("glibc-utf8-locales"
-                          "nss-certs"
-                          "guile"
-                          "guix"))
+(define system '("glibc-utf8-locales"
+                 "nss-certs"
+                 "guile"
+                 "guix"))
 
-(define monitor-tools '("htop"))
+(define monitor '("htop"))
 
-(define develop-tools '("emacs"))
+(define develop '("emacs"))
 
 (define fonts '("gucharmap"
-		"font-fantasque-sans"))
+                "font-fantasque-sans"))
+
+(define media '("mpv"
+                "rtorrent"
+                "evince"))
+
+(define gui '("dmenu"))
 
 (packages->manifest
  (map (compose list specification->package+output)
-      (append system-packages
-              monitor-tools
-              develop-tools
-	      fonts)))
+      (append system
+              monitor
+              develop
+              fonts
+              media
+              gui)))
