@@ -4,14 +4,19 @@
              (guix grafts)
              (guix profiles)
              (gnu packages)
-             (fonts))
+             (fonts)
+             (tools))
 
 (define system '("glibc-utf8-locales"
                  "nss-certs"
                  "guile"
                  "guix"
                  "unzip"
-                 "tomb"))
+                 "tomb"
+                 "jq"
+                 "minikube"
+		 "docker-machine-driver-kvm2"
+                 "kubectl"))
 
 (define monitor '("htop"))
 
