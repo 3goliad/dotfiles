@@ -58,6 +58,10 @@ daily_commits() {
     --format=%s
 }
 
+minikube_docker() {
+    minikube docker-env | awk '/^export / {sub(/export /,""); printf "%s ",$0} END {printf "docker"}'
+}
+
 # Aliases
 alias ls='ls --color=always'
 
@@ -72,3 +76,5 @@ alias dbundlerun='docker exec -it passenger bundle exec'
 alias drake='dbundlerun rake'
 alias drails='dbundlerun rails'
 alias dsummon='docker_rspec_fetch_screenshot'
+
+alias md='eval "$(minikube_docker)"'
