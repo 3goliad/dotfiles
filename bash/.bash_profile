@@ -1,6 +1,7 @@
 export PATH=$HOME/.guix-profile/bin:$PATH
 export PATH=$HOME/.guix-profile/sbin:$PATH
 export PATH=$HOME/.local/bin:$PATH
+export PATH=$HOME/.cargo/bin:$PATH
 
 export GUIX_LOCPATH=$HOME/.guix-profile/lib/locale${GUIX_LOCPATH:+:}$GUIX_LOCPATH
 
