@@ -1,0 +1,4 @@
+#! /bin/bash
+
+sudo tomb close sepulchre
+sudo umount ~/m/disk
