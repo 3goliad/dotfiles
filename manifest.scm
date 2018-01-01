@@ -4,8 +4,8 @@
              (guix grafts)
              (guix profiles)
              (gnu packages)
-             (jam fonts)
-             (jam tools))
+             (local-packages fonts)
+             (local-packages tools))
 
 (define system '("glibc-utf8-locales"
                  "nss-certs"
