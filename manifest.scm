@@ -4,8 +4,8 @@
              (guix grafts)
              (guix profiles)
              (gnu packages)
-             (fonts)
-             (tools))
+             (jam fonts)
+             (jam tools))
 
 (define system '("glibc-utf8-locales"
                  "nss-certs"
@@ -15,15 +15,14 @@
                  "tomb"
                  "jq"
                  "minikube"
-		 "docker-machine-driver-kvm2"
+                 "docker-machine-driver-kvm2"
                  "kubectl"))
 
 (define monitor '("htop"))
 
 (define develop '("emacs"))
 
-(define fonts '("gucharmap"
-                "font-fantasque-sans"
+(define fonts '("font-fantasque-sans"
                 "font-overpass"
                 "font-liberation"))
 
