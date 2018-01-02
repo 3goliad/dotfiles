@@ -1,10 +1,14 @@
 (define-module (local-packages fonts)
   #:use-module (guix utils)
   #:use-module (guix packages)
+  #:use-module (guix derivations)
   #:use-module (guix download)
   #:use-module (guix build-system font)
+  #:use-module (guix build-system trivial)
   #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (gnu packages)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages node)
   #:use-module (gnu packages compression))
 
 (define-public font-overpass
@@ -52,3 +56,47 @@ Red Hat has generously made the Overpass family freely available to the public
 under the SIL Open Font License and The GNU Lesser General Public
 License (LGPL).")
     (license (list license:silofl1.1 license:lgpl2.1))))
+
+(define-public font-iosevka
+  (package
+    (name "font-iosevka")
+    (version "1.13.3")
+    (source (origin
+              (method url-fetch/tarbomb)
+              (uri (string-append "https://github.com/be5invis"
+                                  "/Iosevka/archive/v"
+                                  version ".tar.gz"))
+              (sha256
+               (base32 "17jy7s87kcqw5ds6g7sbylr1nhgh49fd84a2bjm8hskx0yxaylbi"))))
+    (build-system trivial-build-system)
+    (arguments
+     '(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (write "help me \n")
+         (let ((source (assoc-ref %build-inputs "source"))
+               (font-dir (string-append %output "/share/fonts/TTF")))
+           (if
+            (and
+             (zero? (system* "npm" "install"))
+             (zero? (system* "make" "custom-config" "design=design"))
+             (zero? (system* "make" "custom")))
+            (begin
+              (for-each (lambda (font-file)
+                          (install-file font-file font-dir))
+                        (find-files "dist" "\\.ttf$"))
+              (install-file
+               "LICENSE.md"
+               (string-append %output
+                              "/share/licenses/Iosevka")))
+            #f)))))
+    (inputs `(("node" ,node)))
+    (home-page "https://be5invis.github.io/Iosevka/")
+    (synopsis "Coders' typeface, built from code")
+    (description
+     "Iosevka is a slender monospace sans-serif or slab-serif typeface inspired
+by Pragmata Pro, M+, and PF DIN Mono, designed to be the ideal font for
+programming.  Iosevka is completely generated from its source code.")
+    (license (list license:silofl1.1 ; build artifacts (i.e. the fonts)
+                   license:bsd-3))))
