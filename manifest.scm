@@ -5,6 +5,7 @@
              (guix profiles)
              (gnu packages)
              (local-packages fonts)
+             (local-packages ctags)
              (local-packages tools))
 
 (define system '("glibc-utf8-locales"
@@ -20,7 +21,8 @@
 
 (define monitor '("htop"))
 
-(define develop '("emacs"))
+(define develop '("emacs"
+                  "universal-ctags"))
 
 (define fonts '("font-fantasque-sans"
                 "font-overpass"
