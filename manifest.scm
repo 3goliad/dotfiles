@@ -22,6 +22,7 @@
 (define monitor '("htop"))
 
 (define develop '("emacs"
+                  "racket"
                   "universal-ctags"))
 
 (define fonts '("font-fantasque-sans"
