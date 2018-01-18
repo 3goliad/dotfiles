@@ -11,6 +11,7 @@
 (define system '("glibc-utf8-locales"
                  "nss-certs"
                  "guile"
+                 "util-linux"
                  "guix"
                  "unzip"
                  "tomb"
@@ -22,6 +23,7 @@
 (define monitor '("htop"))
 
 (define develop '("emacs"
+                  "racket"
                   "universal-ctags"))
 
 (define fonts '("font-fantasque-sans"
