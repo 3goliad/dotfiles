@@ -16,6 +16,7 @@
                  "unzip"
                  "tomb"
                  "jq"
+                 "zip"
                  "minikube"
                  "docker-machine-driver-kvm2"
                  "kubectl"))
