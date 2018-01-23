@@ -1,5 +1,7 @@
 # Bash Options
 
+export OPSWORKS_SSH_KEY=~/.ssh/broadstripes/javier_opsworks
+
 ## Check for resize after every command
 shopt -s checkwinsize
 
