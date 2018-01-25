@@ -27,7 +27,8 @@
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no "check" target
-       #:configure-flags '("--program-prefix=u")
+       #:configure-flags '("--program-prefix=u"
+                           "--enable-tmpdir=/tmp")
        #:phases
        (modify-phases %standard-phases
         (add-before 'configure 'autoconf

@@ -8,23 +8,27 @@
              (local-packages ctags)
              (local-packages tools))
 
-(define system '("glibc-utf8-locales"
-                 "nss-certs"
-                 "guile"
-                 "util-linux"
-                 "guix"
-                 "unzip"
-                 "tomb"
-                 "jq"
-                 "zip"
-                 "minikube"
-                 "docker-machine-driver-kvm2"
-                 "kubectl"))
+(define runtimes '("guile"))
+
+(define required '("glibc-utf8-locales"
+                   "nss-certs"
+                   "util-linux"
+                   "guix"))
+
+(define filesystem '("zip"
+                     "unzip"))
+
+(define kubernetes '("minikube"
+                     "docker-machine-driver-kvm2"
+                     "kubectl"))
+
+(define tools '("jq"))
+
+(define security '("tomb"))
 
 (define monitor '("htop"))
 
 (define develop '("emacs"
-                  "racket"
                   "universal-ctags"))
 
 (define fonts '("font-fantasque-sans"
@@ -40,7 +44,12 @@
 
 (packages->manifest
  (map (compose list specification->package+output)
-      (append system
+      (append required
+              runtimes
+              filesystem
+              kubernetes
+              tools
+              security
               monitor
               develop
               fonts
