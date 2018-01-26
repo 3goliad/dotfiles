@@ -40,7 +40,8 @@
                 "evince"
                 "youtube-dl"))
 
-(define gui '("dmenu"))
+(define gui '("dmenu"
+              "scrot"))
 
 (packages->manifest
  (map (compose list specification->package+output)
