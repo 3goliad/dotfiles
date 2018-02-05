@@ -6,6 +6,7 @@
              (gnu packages)
              (local-packages fonts)
              (local-packages ctags)
+             (local-packages kubernetes)
              (local-packages tools))
 
 (define runtimes '("guile"))
