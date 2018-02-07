@@ -39,6 +39,7 @@
 (define media '("mpv"
                 "rtorrent"
                 "evince"
+                "ghostscript"
                 "youtube-dl"))
 
 (define gui '("dmenu"
