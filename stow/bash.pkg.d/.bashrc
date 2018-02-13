@@ -20,14 +20,14 @@ source /usr/share/fzf/key-bindings.bash
 # Functions
 
 docker_rspec_last_screenshot () {
-    docker exec passenger ls -At1 /home/app/log/capybara | head -n 1
+    docker exec passenger ls -At1 /app/log/capybara | head -n 1
 }
 
 docker_rspec_fetch_screenshot () {
     local LATEST_SCREENSHOT
     LATEST_SCREENSHOT=$(docker_rspec_last_screenshot)
     docker cp \
-           passenger:/home/app/log/capybara/"$LATEST_SCREENSHOT" \
+           passenger:/app/log/capybara/"$LATEST_SCREENSHOT" \
            /tmp/
     feh "/tmp/$LATEST_SCREENSHOT" &
 }
