@@ -39,3 +39,4 @@ let mapleader="\<Space>"
 let localleader="\<Space>"
 nnoremap Y y$
 nnoremap P $p
+nnoremap <leader>fg :GFiles<CR>
