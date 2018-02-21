@@ -60,38 +60,16 @@ License (LGPL).")
 (define-public font-iosevka
   (package
     (name "font-iosevka")
-    (version "1.13.3")
+    (version "1.14.0")
     (source (origin
-              (method url-fetch/tarbomb)
-              (uri (string-append "https://github.com/be5invis"
-                                  "/Iosevka/archive/v"
-                                  version ".tar.gz"))
+              (method url-fetch/zipbomb)
+              (uri (string-append "https://github.com/be5invis/Iosevka/releases"
+                                  "/download/v" version "/06-iosevka-term-slab-"
+                                  version ".zip"))
               (sha256
-               (base32 "17jy7s87kcqw5ds6g7sbylr1nhgh49fd84a2bjm8hskx0yxaylbi"))))
-    (build-system trivial-build-system)
-    (arguments
-     '(#:modules ((guix build utils))
-       #:builder
-       (begin
-         (use-modules (guix build utils))
-         (write "help me \n")
-         (let ((source (assoc-ref %build-inputs "source"))
-               (font-dir (string-append %output "/share/fonts/TTF")))
-           (if
-            (and
-             (zero? (system* "npm" "install"))
-             (zero? (system* "make" "custom-config" "design=design"))
-             (zero? (system* "make" "custom")))
-            (begin
-              (for-each (lambda (font-file)
-                          (install-file font-file font-dir))
-                        (find-files "dist" "\\.ttf$"))
-              (install-file
-               "LICENSE.md"
-               (string-append %output
-                              "/share/licenses/Iosevka")))
-            #f)))))
-    (inputs `(("node" ,node)))
+               (base32 "0h2dihg9j72djxwhb7w4wd1r0sgkvp4zripz4qlqin5v5m79j227"))))
+    (build-system font-build-system)
+
     (home-page "https://be5invis.github.io/Iosevka/")
     (synopsis "Coders' typeface, built from code")
     (description

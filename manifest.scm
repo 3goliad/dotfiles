@@ -34,7 +34,8 @@
 
 (define fonts '("font-fantasque-sans"
                 "font-overpass"
-                "font-liberation"))
+                "font-liberation"
+                "font-iosevka"))
 
 (define media '("mpv"
                 "rtorrent"
