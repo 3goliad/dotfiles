@@ -131,7 +131,7 @@ bindsym $mod+z mode "resize"
 # finds out, if available)
 bar {
 	colors {
-		background #3c3836
+		background $bgb
 	}
 	position top
         status_command i3status
@@ -144,8 +144,25 @@ bindsym XF86AudioRaiseVolume exec amixer set Master 5%+
 bindsym XF86AudioLowerVolume exec amixer set Master 5%-
 bindsym XF86AudioMute exec amixer set Master toggle
 
-# class                 border  backgr. text    indicator child_border
-client.focused          #665c54 #504945 #d5c4a1 #fb4934   #665c54
-client.focused_inactive #504945 #504945 #d5c4a1 #fb4934   #504945 
-client.unfocused        #282828 #282828 #ebdbb2 #cc241d   #282828
-client.background       #ffffff
+set $bgb            #282a36
+set $bg             #282a36AA
+set $fg             #f8f8f2
+set $tf             #f8f8f2AA
+set $hi             #f1fa7c
+set $tx             #040404
+set $pk             #ff79c6
+# yellow
+set $yw             #f1fa7c
+# green
+set $gn             #50fa7b
+# red
+set $rd             #ff5555
+set $id             #ff79c6
+
+# set some nice colors      border  background  text  indicator
+client.focused              $id     $pk         $tx     $id
+client.unfocused            $bg     $bg         $tf     $id
+client.focused_inactive     $bg     $bg         $pk     $id
+client.urgent               $yw     $yw         $tx     $id
+#border & indicator are ignored
+client.placeholder          $bg     $bg         $bg     $bg
