@@ -12,7 +12,8 @@
          (super-new)
          (inherit-field name)
          (define to location)
-         (define from (string-append "~/c/" name))
+         (define from 
+           (expand-user-path (string-append "~/c/" name)))
          (define/override (installed?)
            (directory-exists? to))
          (define/override (verified?)
@@ -24,4 +25,4 @@
            (delete-directory to))))
 
 (define (dir name location)
-  (make-object dir% name location))
+  (new dir% [name name] [location location]))

@@ -6,8 +6,6 @@
 
 (provide config% updates-show updates-apply)
 
-(define (dummy) #f)
-
 (define config%
   (class object%
          (super-new)
@@ -29,11 +27,13 @@
                         (install))
                 (when (needs-update?)
                       (update)))
-               (install))
-           #f)))
+               (install)))))
 
 (define (updates-show configs)
-  (append-map (lambda (c) (send c pending-updates)) configs))
+  (if (null? configs)
+      '("No configurations are registered!")
+      (append-map (lambda (c) (send c pending-updates)) configs)))
+  
 
 (define (updates-apply configs)
   (error "apply is not implemented"))
