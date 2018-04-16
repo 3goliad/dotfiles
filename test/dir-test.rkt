@@ -1,8 +1,8 @@
                                         ; -*-scheme-*-
 #lang racket/base
- 
-(require rackunit 
-         racket/class 
+
+(require rackunit
+         racket/class
          "../lib/dir.rkt")
 
 (test-case
