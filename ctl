@@ -34,10 +34,8 @@
   (exit 1))
 
 (require "lib/config.rkt")
-(require "emacs/mod.rkt")
-
-(define updates (emacs))
+(require "manifest.rkt")
 
 (case (action)
-  [(show) (updates-show updates)]
-  [(update) (updates-apply updates)])
+  [(show) (dry-run mods)]
+  [(update) (run mods)])
