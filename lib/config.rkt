@@ -13,7 +13,7 @@
                      [depends '()])
          (define/public (pending-updates) '())
          (define/public (installed?) #t)
-         (define/public (verified?) #t)
+         (define/public (verified?) #t) ;; TODO: delete verified, this should be internal logic to a mod
          (define/public (install) #f)
          (define/public (update) #f)
          (define/public (uninstall) #f)
