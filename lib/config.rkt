@@ -9,11 +9,10 @@
 (define config%
   (class object%
          (super-new)
-         (init-field name 
+         (init-field name
                      [depends '()])
          (define/public (pending-updates) '())
          (define/public (installed?) #t)
-         (define/public (verified?) #t) ;; TODO: delete verified, this should be internal logic to a mod
          (define/public (install) #f)
          (define/public (update) #f)
          (define/public (uninstall) #f)
@@ -21,19 +20,15 @@
            (not (null? (pending-updates))))
          (define/public (run)
            (if (installed?)
-               (begin
-                (unless (verified?)
-                        (uninstall)
-                        (install))
-                (when (needs-update?)
-                      (update)))
+               (when (needs-update?)
+                 (update))
                (install)))))
 
 (define (updates-show configs)
   (if (null? configs)
       '("No configurations are registered!")
       (append-map (lambda (c) (send c pending-updates)) configs)))
-  
+
 
 (define (updates-apply configs)
   (error "apply is not implemented"))

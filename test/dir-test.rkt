@@ -13,7 +13,6 @@
  (send d run)
  (check-pred link-exists? p)
  (check-true (send d installed?))
- (check-true (send d verified?))
  (delete-file p))
 
 (test-case
@@ -21,8 +20,7 @@
  (send d run)
  (send d uninstall)
  (check-false (link-exists? p))
- (check-false (send d installed?))
- (check-false (send d verified?)))
+ (check-false (send d installed?)))
 
 (test-case
  "never needs to update"
@@ -46,8 +44,7 @@
  (send d run)
  (delete-file p)
  (make-directory p)
- (check-false (send d verified?))
- (check-true (send d installed?))
+ (check-false (send d installed?))
  (send d run)
- (check-true (send d verified?))
+ (check-true (send d installed?))
  (send d uninstall))

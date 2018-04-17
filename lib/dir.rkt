@@ -16,9 +16,7 @@
          (define from
            (expand-user-path (string-append "~/c/" name)))
          (define/override (installed?)
-           (directory-exists? to))
-         (define/override (verified?)
-           (and (installed?)
+           (and (directory-exists? to)
                 (= (file-or-directory-identity from)
                    (file-or-directory-identity to))))
          (define/override (install)
