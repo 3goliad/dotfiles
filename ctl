@@ -41,5 +41,5 @@
 
 (case (action)
   [(list) (display mods)]
-  [(show) (dry-run mods)]
+  [(show) (run mods #:dry-run #t)]
   [(update) (run mods)])
