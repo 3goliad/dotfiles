@@ -19,8 +19,10 @@
            (pacman-op "-S" #t))
          (define/override (uninstall)
            (pacman-op "-Rnss" #t))
-         (define/override (needs-update?))
-         (define/override (update))))
+         (define/override (needs-update?)
+           (pacman-op "-Qqu"))
+         (define/override (update)
+           (install))))
 
 (define (pacman name)
   (make-object pacman% name))
