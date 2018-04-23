@@ -11,18 +11,19 @@
          (super-new)
          (init-field name
                      [depends '()])
-         (define/public (pending-updates) '())
          (define/public (installed?) #t)
          (define/public (install) #f)
          (define/public (update) #f)
          (define/public (uninstall) #f)
-         (define/public (needs-update?)
-           (not (null? (pending-updates))))
+         (define/public (dirty?) #f)
+         (define/public (needs-update?) #f)
          (define/public (run)
            (if (installed?)
                (when (needs-update?)
                  (update))
-               (install)))))
+               (begin
+                 (when (dirty?) (uninstall))
+                 (install))))))
 
 (define (updates-show configs)
   (if (null? configs)

@@ -21,6 +21,10 @@
                    (file-or-directory-identity to))))
          (define/override (install)
            (make-file-or-directory-link from to))
+         (define/override (dirty?)
+           (or (file-exists? to) 
+               (link-exists? to) 
+               (directory-exists? to)))
          (define/override (uninstall)
            (cond
             [(or (file-exists? to) (link-exists? to))
