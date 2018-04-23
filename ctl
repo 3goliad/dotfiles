@@ -20,6 +20,9 @@
    [("-s" "--show")
     "Show changes that will be made by an update"
     (action 'show)]
+   [("-l" "--list")
+    "List the installed configurations along with their status"
+    (action 'list)]
 #:args resource-filter
    resource-filter))
 
@@ -37,5 +40,6 @@
 (require "manifest.rkt")
 
 (case (action)
+  [(list) (display mods)]
   [(show) (dry-run mods)]
   [(update) (run mods)])
