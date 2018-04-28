@@ -16,6 +16,8 @@
              #:update '("make upgrade" "make update")
              #:install "make install"
              #:post-change "make compile")))
+   (dir "i3" "~/.config/i3")
+   (dir "i3status" "~/.config/i3status")))
 
 (define mods
   (append
