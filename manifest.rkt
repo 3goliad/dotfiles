@@ -18,4 +18,44 @@
              #:post-change "make compile")))
 
 (define mods
-  emacs)
+  (append
+   emacs))
+
+
+;;
+;; (define runtimes '("guile"))
+;;
+;; (define required '("glibc-utf8-locales"
+;;                    "nss-certs"
+;;                    "util-linux"
+;;                    "guix"))
+;;
+;; (define filesystem '("zip"
+;;                      "unzip"))
+;;
+;; (define kubernetes '("minikube"
+;;                      "docker-machine-driver-kvm2"
+;;                      "kubectl"))
+;;
+;; (define tools '("jq"))
+;;
+;; (define security '("tomb"))
+;;
+;; (define monitor '("htop"))
+;;
+;; (define develop '("emacs"
+;;                   "universal-ctags"))
+;;
+;; (define fonts '("font-fantasque-sans"
+;;                 "font-overpass"
+;;                 "font-liberation"
+;;                 "font-iosevka"))
+;;
+;; (define media '("mpv"
+;;                 "rtorrent"
+;;                 "evince"
+;;                 "ghostscript"
+;;                 "youtube-dl"))
+;;
+;; (define gui '("dmenu"
+;;               "scrot"))
