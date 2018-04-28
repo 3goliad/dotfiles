@@ -1,8 +1,0 @@
-(define-module (local-packages tools)
-  #:use-module (guix utils)
-  #:use-module (guix packages)
-  #:use-module (guix download)
-  #:use-module (guix build-system trivial)
-  #:use-module ((guix licenses) #:prefix license:)
-  #:use-module (gnu packages base)
-  #:use-module (gnu packages compression))

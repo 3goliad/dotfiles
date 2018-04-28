@@ -1,3 +1,0 @@
-[submodule "stow/spacemacs.pkg.d/.emacs.d"]
-	path = stow/spacemacs.pkg.d/.emacs.d
-	url = https://github.com/syl20bnr/spacemacs
