@@ -11,6 +11,8 @@
          (super-new)
          (init-field name
                      [depends '()])
+         (define/public (display-name)
+           name)
          (define/public (installed?) #t)
          (define/public (install) #f)
          (define/public (update) #f)
@@ -26,4 +28,11 @@
                  (install))))))
 
 (define (run mods #:dry-run [dry-run #f])
-  (error "run is not implemented"))
+  (define (run-mod mod)
+    (define name (send mod display-name))
+    (unless (send mod installed?)
+      (displayln (string-append name " needs to be installed")))
+    (when (send mod needs-update?)
+      (displayln (string-append name " needs to update")))
+    (unless dry-run (send mod run)))
+  (for-each run-mod mods))
