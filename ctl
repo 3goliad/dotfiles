@@ -7,7 +7,7 @@
 (define refresh? (make-parameter #f))
 (define action (make-parameter 'show))
 
-(define resource-filter
+(define mod-filter
   (command-line
    #:once-each
    [("-r" "--refresh")
@@ -23,10 +23,10 @@
    [("-l" "--list")
     "List the installed configurations along with their status"
     (action 'list)]
-#:args resource-filter
-   resource-filter))
+#:args mod-filter
+   mod-filter))
 
-(unless (null? resource-filter)
+(unless (null? mod-filter)
   (displayln
    "Sorry, resource filters aren't supported in this version")
   (exit 1))
