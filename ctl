@@ -1,5 +1,4 @@
 #!/usr/bin/env racket
-                                        ; -*-scheme-*-
 #lang racket/base
 
 (require racket/cmdline)

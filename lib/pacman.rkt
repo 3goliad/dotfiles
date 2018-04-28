@@ -1,4 +1,3 @@
-                                        ; -*-scheme-*-
 #lang racket/base
 
 (require racket/class
