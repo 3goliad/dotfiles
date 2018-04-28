@@ -6,15 +6,12 @@
 
 (provide mods)
 
-(define emacs
+(define mods
   (list
    (dir "doom.d" "~/.doom.d")
    (dir "i3" "~/.config/i3")
-   (dir "i3status" "~/.config/i3status")))
-
-(define mods
-  (append
-   emacs))
+   (dir "i3status" "~/.config/i3status")
+   (pacman "vim")))
 
 ;; (git-repo "doom-emacs"
 ;;              "https://github.com/hlissner/doom-emacs"
