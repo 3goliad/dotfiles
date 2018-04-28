@@ -2,6 +2,7 @@
 #lang racket/base
 
 (require racket/cmdline)
+(require racket/system)
 
 (define refresh? (make-parameter #f))
 (define action (make-parameter 'show))
@@ -31,9 +32,7 @@
   (exit 1))
 
 (when (refresh?)
-  (displayln
-   "Sorry, refresh isn't implemented in this version")
-  (exit 1))
+  (system "sudo pacman -Sy"))
 
 (require "lib/config.rkt")
 (require "manifest.rkt")
