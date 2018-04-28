@@ -12,9 +12,9 @@
          (init folder)
          (super-new)))
 
-(define (git-repo name 
-                  url 
-                  folder 
+(define (git-repo name
+                  url
+                  folder
                   #:depends [deps '()]
                   #:update [upd #f]
                   #:install [inst #f]
