@@ -25,13 +25,5 @@
                  (when (dirty?) (uninstall))
                  (install))))))
 
-(define (updates-show configs)
-  (if (null? configs)
-      '("No configurations are registered!")
-      (append-map (lambda (c) (send c pending-updates)) configs)))
-
-(define (updates-apply configs)
-  (error "apply is not implemented"))
-
 (define (run mods #:dry-run [dry-run #f])
   (error "run is not implemented"))
