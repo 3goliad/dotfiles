@@ -11,7 +11,8 @@
    (dir "doom.d" "~/.doom.d")
    (dir "i3" "~/.config/i3")
    (dir "i3status" "~/.config/i3status")
-   (pacman "vim")))
+   (pacman "vim")
+   (pacman "python-pipenv")))
 
 ;; (git-repo "doom-emacs"
 ;;              "https://github.com/hlissner/doom-emacs"
