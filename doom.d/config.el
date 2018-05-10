@@ -13,5 +13,9 @@
   (setq doom-big-font (font-spec :family "Fira Mono"
                                  :size 30)))
 
+(setq show-trailing-whitespace t)
+(add-hook! minibuffer-setup (setq-local show-trailing-whitespace nil))
+
+
 (after! js2-mode
   (setq js-indent-level 2))
