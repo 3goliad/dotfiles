@@ -1,43 +1,39 @@
-# Bash Options
-
-export OPSWORKS_SSH_KEY=~/.ssh/broadstripes/javier_opsworks
-
-## Check for resize after every command
+# check for resize after every command
 shopt -s checkwinsize
 
-## Prompt
+# prompt
 export PS1='\n \u@\h \w \n :3 '
 
-# Set ls colors
-
+# set ls colors
 eval "$(dircolors ~/.dircolors.ansi-universal)"
 
-# Completion
-
+# completion
 source /usr/share/fzf/completion.bash
 source /usr/share/fzf/key-bindings.bash
 
-# Functions
+# functions
+export OPSWORKS_SSH_KEY=~/.ssh/broadstripes/javier_opsworks
 
 docker_rspec_last_screenshot () {
-    docker exec passenger ls -At1 /app/tmp/capybara | head -n 1
+    docker exec passenger ls -At1 /app/log/capybara | head -n 1
 }
 
 docker_rspec_fetch_screenshot () {
     local LATEST_SCREENSHOT
     LATEST_SCREENSHOT=$(docker_rspec_last_screenshot)
     docker cp \
-           passenger:/app/tmp/capybara/"$LATEST_SCREENSHOT" \
+           passenger:/app/log/capybara/"$LATEST_SCREENSHOT" \
            /tmp/
     feh "/tmp/$LATEST_SCREENSHOT" &
 }
 
 docker_rspec () {
-    docker exec -it passenger xvfb-run bundle exec rspec "$1"
+    docker exec -it -e RAILS_ENV='test' passenger bash -lc "xvfb-run rspec $1"
+    paplay /usr/share/sounds/freedesktop/stereo/complete.oga
 }
 
-docker_bundle_exec () {
-    docker exec -it passenger bundle exec rake "$*"
+docker_rake () {
+    docker exec -it passenger bin/rake "$*"
 }
 
 find_spec_file () {
@@ -60,10 +56,6 @@ daily_commits() {
     --format=%s
 }
 
-minikube_docker() {
-    minikube docker-env | awk '/^export / {sub(/export /,""); printf "%s ",$0} END {printf "docker"}'
-}
-
 # Aliases
 alias ls='ls --color=always'
 
@@ -72,11 +64,9 @@ alias dps='docker ps -a'
 
 alias dc=docker-compose
 
-alias dspec='docker_rspec'
+alias dj='docker exec -it -e COLUMNS=$(tput cols) -e LINES=$(tput lines) passenger bash -l'
 alias dfindspec='find_spec_file'
-alias dbundlerun='docker exec -it passenger bundle exec'
-alias drake='dbundlerun rake'
-alias drails='dbundlerun rails'
+alias dspec='docker_rspec'
+alias drake='docker exec -it passenger bin/rake'
+alias drails='docker exec -it passenger bin/rails'
 alias dsummon='docker_rspec_fetch_screenshot'
-
-alias md='eval "$(minikube_docker)"'

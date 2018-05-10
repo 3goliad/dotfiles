@@ -1,6 +1,7 @@
 #lang racket/base
 
 (require "lib/dir.rkt")
+(require "lib/dotfile.rkt")
 (require "lib/git.rkt")
 (require "lib/pacman.rkt")
 
@@ -11,6 +12,8 @@
    (dir "doom.d" "~/.doom.d")
    (dir "i3" "~/.config/i3")
    (dir "i3status" "~/.config/i3status")
+   (dotfile ".bashrc")
+   (dotfile ".bash_profile")
    (pacman "vim")
    (pacman "python-pipenv")))
 

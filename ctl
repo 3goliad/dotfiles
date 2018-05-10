@@ -23,7 +23,7 @@
    [("-l" "--list")
     "List the installed configurations along with their status"
     (action 'list)]
-#:args mod-filter
+   #:args mod-filter
    mod-filter))
 
 (unless (null? mod-filter)
