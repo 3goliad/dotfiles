@@ -160,7 +160,7 @@ set $rd             #ff5555
 set $id             #ff79c6
 
 # set some nice colors      border  background  text  indicator
-client.focused              $id     $pk         $tx     $id
+client.focused              $bg     $bg         $tf     $id
 client.unfocused            $bg     $bg         $tf     $id
 client.focused_inactive     $bg     $bg         $pk     $id
 client.urgent               $yw     $yw         $tx     $id
