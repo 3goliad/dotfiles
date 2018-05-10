@@ -19,7 +19,7 @@ font pango:Iosevka Term Slab 12
 floating_modifier $mod
 
 # start a terminal
-bindsym $mod+Return exec alacritty
+bindsym $mod+Return exec kitty
 
 # kill focused window
 bindsym $mod+Shift+c kill
