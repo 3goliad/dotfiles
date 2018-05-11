@@ -15,6 +15,7 @@
    (dotfile ".bashrc")
    (dotfile ".bash_profile")
    (pacman "vim")
+   (pacman "emacs")
    (pacman "python-pipenv")))
 
 ;; (git-repo "doom-emacs"
