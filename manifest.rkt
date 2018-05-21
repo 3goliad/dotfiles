@@ -15,6 +15,7 @@
    (dotfile ".bashrc")
    (dotfile ".bash_profile")
    (pacman "vim")
+   (pacman "zsh")
    (pacman "emacs")
    (pacman "stack")
    (pacman "rustup")
