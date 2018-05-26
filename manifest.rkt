@@ -19,6 +19,8 @@
    (pacman "stack")
    (pacman "rustup")
    (pacman "tokei")
+   (pacman "ripgrep")
+   (pacman "python-boto3")
    (pacman "python-pipenv")))
 
 ;; (git-repo "doom-emacs"
