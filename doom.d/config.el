@@ -13,9 +13,13 @@
   (setq doom-big-font (font-spec :family "Fira Mono"
                                  :size 30)))
 
-(setq show-trailing-whitespace t)
-(add-hook! minibuffer-setup (setq-local show-trailing-whitespace nil))
-
+(after! hideshow
+  (add-to-list 'hs-special-modes-alist
+               `(ruby-mode
+                 ,(rx (or "def" "class" "module" "do" "{" "[")) ; Block start
+                 ,(rx (or "}" "]" "end"))                       ; Block end
+                 ,(rx (or "#" "=begin"))                        ; Comment start
+                 ruby-forward-sexp nil)))
 
 (after! js2-mode
   (setq js-indent-level 2))
