@@ -4,11 +4,13 @@
 (require "lib/dotfile.rkt")
 (require "lib/git.rkt")
 (require "lib/pacman.rkt")
+(require "lib/user.rkt")
 
 (provide mods)
 
 (define mods
   (list
+   (user "jam")
    (dir "doom.d" "~/.doom.d")
    (dir "i3" "~/.config/i3")
    (dir "i3status" "~/.config/i3status")
