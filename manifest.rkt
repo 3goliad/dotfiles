@@ -20,6 +20,7 @@
    (pacman "stack")
    (pacman "rustup")
    (pacman "tokei")
+   (pacman "konsole")
    (pacman "ripgrep")
    (pacman "python-boto3")
    (pacman "python-pipenv")))
