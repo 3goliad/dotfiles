@@ -14,6 +14,8 @@
    (dir "i3status" "~/.config/i3status")
    (dotfile "bashrc")
    (dotfile "bash_profile")
+   (dotfile "user-dirs.dirs" "~/.config/user-dirs.dirs")
+   (pacman "xdg-user-dirs")
    (pacman "vim")
    (pacman "zsh")
    (pacman "emacs")
