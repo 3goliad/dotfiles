@@ -1,4 +1,3 @@
-; -*-scheme-*-
 #lang racket/base
 
 (require racket/class)
@@ -22,7 +21,7 @@
          (define/public (run)
            (if (installed?)
                (when (needs-update?)
-                 (update))
+                     (update))
                (begin
                  (when (dirty?) (uninstall))
                  (install))))))
@@ -31,8 +30,8 @@
   (define (run-mod mod)
     (define name (send mod display-name))
     (unless (send mod installed?)
-      (displayln (string-append name " needs to be installed")))
+            (displayln (string-append name " needs to be installed")))
     (when (send mod needs-update?)
-      (displayln (string-append name " needs to update")))
+          (displayln (string-append name " needs to update")))
     (unless dry-run (send mod run)))
   (for-each run-mod mods))
