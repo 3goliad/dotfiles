@@ -9,9 +9,10 @@
     (inherit-field name)
     (define/private (user-exists?)
       (system (string-append
-               "passwd -Sa "
+               "sudo passwd -Sa "
                "| awk '{print $1}' "
-               "| grep '" name "'")))
+               "| grep '" name "' "
+               "> /dev/null")))
     (define/override (installed?)
       (user-exists?))
     (define/override (install)
