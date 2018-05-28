@@ -8,26 +8,34 @@
 
 (provide mods)
 
+(define (symbol->pacman sym)
+  (pacman (symbol->string sym)))
+(define packages
+  (map symbol->pacman
+       '(vim
+         emacs
+         xdg-user-dirs
+         fzf
+         zsh
+         stack
+         rustup
+         tokei
+         konsole
+         ripgrep
+         python-boto3
+         python-pipenv)))
+
 (define mods
-  (list
-   (user "jam")
-   (dir "doom.d" "~/.doom.d")
-   (dir "i3" "~/.config/i3")
-   (dir "i3status" "~/.config/i3status")
-   (dotfile "bashrc")
-   (dotfile "bash_profile")
-   (dotfile "user-dirs.dirs" "~/.config/user-dirs.dirs")
-   (pacman "xdg-user-dirs")
-   (pacman "vim")
-   (pacman "zsh")
-   (pacman "emacs")
-   (pacman "stack")
-   (pacman "rustup")
-   (pacman "tokei")
-   (pacman "konsole")
-   (pacman "ripgrep")
-   (pacman "python-boto3")
-   (pacman "python-pipenv")))
+  (append
+   packages
+   (list
+    (user "jam")
+    (dir "doom.d" "~/.doom.d")
+    (dir "i3" "~/.config/i3")
+    (dir "i3status" "~/.config/i3status")
+    (dotfile "bashrc")
+    (dotfile "bash_profile")
+    (dotfile "user-dirs.dirs" "~/.config/user-dirs.dirs"))))
 
 ;; (git-repo "doom-emacs"
 ;;              "https://github.com/hlissner/doom-emacs"
