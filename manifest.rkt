@@ -33,6 +33,8 @@
     (dir "doom.d" "~/.doom.d")
     (dir "i3" "~/.config/i3")
     (dir "i3status" "~/.config/i3status")
+    (dir "git" "~/.config/git")
+    (dotfile "gitconfig")
     (dotfile "bashrc")
     (dotfile "bash_profile")
     (dotfile "user-dirs.dirs" "~/.config/user-dirs.dirs"))))
