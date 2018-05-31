@@ -46,6 +46,7 @@
     (dotfile "gitconfig")
     (dotfile "bashrc")
     (dotfile "bash_profile")
+    (dotfile "dircolors.ansi-universal")
     (dotfile "user-dirs.dirs" "~/.config/user-dirs.dirs"))))
 
 ;; (git-repo "doom-emacs"
