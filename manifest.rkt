@@ -13,6 +13,10 @@
 (define packages
   (map symbol->pacman
        '(vim
+         dmenu
+         rtorrent
+         htop
+         scrot
          emacs
          otf-overpass
          ttf-croscore
@@ -22,8 +26,11 @@
          stack
          rustup
          tokei
+         jq
          konsole
          ripgrep
+         zip
+         unzip
          python-boto3
          python-pipenv)))
 
