@@ -14,6 +14,8 @@
   (map symbol->pacman
        '(vim
          emacs
+         otf-overpass
+         ttf-croscore
          xdg-user-dirs
          fzf
          zsh
