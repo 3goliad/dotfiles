@@ -19,6 +19,7 @@
          scrot
          emacs
          otf-overpass
+         npm
          ttf-croscore
          xdg-user-dirs
          fzf
