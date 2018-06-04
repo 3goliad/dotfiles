@@ -7,3 +7,5 @@
 
 [core]
     excludesfile = ~/.config/git/gitignore
+[github]
+	user = 3goliad
