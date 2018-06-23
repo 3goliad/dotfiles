@@ -23,3 +23,14 @@
 
 (after! js2-mode
   (setq js-indent-level 2))
+
+(require 'company)
+(setq company-idle-delay 0.2
+      company-minimum-prefix-length 3)
+
+(after! typescript-mode
+  (setq typescript-indent-level 2)
+  (setq projectile-other-file-alist
+        (append projectile-other-file-alist
+                '(("ts" . ("spec.ts"))
+                  ("spec.ts" . ("ts"))))))
