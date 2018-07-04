@@ -33,6 +33,7 @@
          zip
          unzip
          rust-racer
+         youtube-dl
          python-boto3
          python-pipenv)))
 
