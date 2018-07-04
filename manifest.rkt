@@ -32,6 +32,7 @@
          ripgrep
          zip
          unzip
+         rust-racer
          python-boto3
          python-pipenv)))
 
