@@ -46,6 +46,7 @@
     (dir "i3" "~/.config/i3")
     (dir "i3status" "~/.config/i3status")
     (dir "git" "~/.config/git")
+    (dir "alacritty" "~/.config/alacritty")
     (dotfile "gitconfig")
     (dotfile "bashrc")
     (dotfile "bash_profile")
