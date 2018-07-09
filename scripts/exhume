@@ -1,4 +1,4 @@
 #! /bin/bash
 
 sudo mount /dev/disk/by-label/SEPULCHRE ~/m/disk
-sudo tomb open ~/m/disk/sepulchre.tomb ~/v -k ~/m/disk/sepulchre.tomb.key
+tomb open ~/m/disk/sepulchre.tomb ~/v -k ~/m/disk/sepulchre.tomb.key
