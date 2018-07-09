@@ -34,7 +34,6 @@
          unzip
          rust-racer
          youtube-dl
-         maven
          python-boto3
          python-pipenv)))
 
