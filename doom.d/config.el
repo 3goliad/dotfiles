@@ -23,3 +23,6 @@
 
 (after! js2-mode
   (setq js-indent-level 2))
+
+(after! ws-butler
+  (ws-butler-global-mode t))
