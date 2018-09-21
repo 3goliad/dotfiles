@@ -37,6 +37,12 @@ daily_commits() {
     --format=%s
 }
 
+kexec() {
+    local pod
+    pod=$(kubectl get po -l broadstripes.com/service=crm-jobs -o jsonpath='{.items[0].metadata.name}')
+    kubectl exec "$pod" -it -- "$@"
+}
+
 # Aliases
 alias ls='ls --color=always'
 
