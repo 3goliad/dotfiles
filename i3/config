@@ -166,3 +166,5 @@ client.focused_inactive     $bg     $bg         $pk     $id
 client.urgent               $yw     $yw         $tx     $id
 #border & indicator are ignored
 client.placeholder          $bg     $bg         $bg     $bg
+
+for_window [class="Yubico Authenticator"] floating enable
