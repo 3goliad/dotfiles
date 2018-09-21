@@ -28,7 +28,7 @@
          rustup
          tokei
          jq
-         konsole
+         alacritty
          ripgrep
          zip
          unzip
