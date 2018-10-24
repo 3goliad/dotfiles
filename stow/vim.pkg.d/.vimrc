@@ -1,25 +1,25 @@
 call plug#begin()
 Plug 'tpope/vim-sensible'
+
 Plug 'tpope/vim-surround'
+
 Plug 'tpope/vim-fugitive'
+Plug 'airblade/vim-gitgutter'
+
+Plug 'tpope/vim-eunuch'
 
 Plug 'dracula/vim'
+Plug 'itchyny/lightline.vim'
 
+Plug 'ervandew/supertab'
 Plug '/usr/share/vim/vimfiles/plugin/fzf'
 Plug 'junegunn/fzf.vim'
 
 Plug 'rust-lang/rust.vim'
 Plug 'racer-rust/vim-racer'
 
-Plug 'prettier/vim-prettier', { 'do': 'npm install' }
 Plug 'pangloss/vim-javascript'
 Plug 'leshill/vim-json'
-
-Plug 'ervandew/supertab'
-
-Plug 'tpope/vim-salve'
-Plug 'tpope/vim-fireplace'
-Plug 'vim-scripts/paredit.vim'
 call plug#end()
 
 colorscheme dracula
