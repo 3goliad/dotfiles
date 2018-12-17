@@ -36,6 +36,17 @@ set tabstop=2
 set shiftwidth=2
 set expandtab
 
+let g:lightline = {
+  \ 'colorscheme': 'Dracula',
+  \ 'active': {
+  \   'left': [ [ 'mode', 'paste' ],
+  \             [ 'gitbranch', 'readonly', 'filename', 'modified' ] ]
+  \ },
+  \ 'component_function': {
+  \   'gitbranch': 'fugitive#head'
+  \ },
+  \ }
+
 let mapleader="\<Space>"
 let localleader="\<Space>"
 nnoremap Y y$
