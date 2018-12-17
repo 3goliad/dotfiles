@@ -11,9 +11,6 @@ shopt -s checkwinsize
 # prompt
 export PS1='\n \u@\h \w \n :3 '
 
-# set ls colors
-eval "$(dircolors ~/.dircolors.ansi-universal)"
-
 # completion
 source /usr/share/fzf/completion.bash
 source /usr/share/fzf/key-bindings.bash
@@ -44,9 +41,11 @@ kexec() {
 }
 
 # Aliases
-alias ls='ls --color=always'
+alias ls='exa'
 
 alias d=docker
 alias dps='docker ps -a'
 
 alias dc=docker-compose
+
+alias cat=bat
