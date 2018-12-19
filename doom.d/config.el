@@ -30,7 +30,8 @@
 (after! ruby-mode
   (require 'company)
   (setq company-idle-delay 0.2
-        company-minimum-prefix-length 3))
+        company-minimum-prefix-length 3)
+  (setq-default flycheck-disabled-checkers '(ruby-rubocop ruby-reek ruby-rubylint)))
 
 (after! typescript-mode
   (setq typescript-indent-level 2)
