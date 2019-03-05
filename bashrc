@@ -38,10 +38,6 @@ export CLUSTER_SSH_KEY=$HOME/.ssh/broadstripes/Harbinger.pem
 
 # Aliases
 alias ls='exa'
-
 alias d=docker
-alias dps='docker ps -a'
-
 alias dc=docker-compose
-
 alias cat=bat
