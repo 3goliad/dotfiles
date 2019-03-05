@@ -19,7 +19,9 @@
                 '(("ts" . ("spec.ts"))
                   ("spec.ts" . ("ts"))
                   ("js" . ("spec.js"))
-                  ("spec.js" . ("js"))))))
+                  ("spec.js" . ("js"))
+                  ("clj" . ("_test.clj"))
+                  ("_test.clj" . ("clj"))))))
 
 (after! js2-mode
   (setq js-indent-level 2)
