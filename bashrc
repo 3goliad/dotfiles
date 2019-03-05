@@ -15,6 +15,9 @@ export PS1='\n \u@\h \w \n :3 '
 source /usr/share/fzf/completion.bash
 source /usr/share/fzf/key-bindings.bash
 
+# enable z (jumpy)
+[[ -r "/usr/share/z/z.sh" ]] && source /usr/share/z/z.sh
+
 # functions
 export OPSWORKS_SSH_KEY=~/.ssh/broadstripes/javier_opsworks
 
