@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+"""Quickly select OpsWorks instances to ssh into
+"""
 
 import sys
 import os
