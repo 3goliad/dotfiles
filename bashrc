@@ -34,6 +34,7 @@ daily_commits() {
     --format=%s
 }
 
+export CLUSTER_SSH_KEY=$HOME/.ssh/broadstripes/Harbinger.pem
 
 # Aliases
 alias ls='exa'
