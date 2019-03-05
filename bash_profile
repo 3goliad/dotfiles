@@ -1,5 +1,7 @@
-export PATH=$HOME/.gem/ruby/2.4.0/bin:$PATH
-export PATH=$HOME/.gem/ruby/2.5.0/bin:$PATH
+gem_user_dir=$(ruby -e 'print Gem.user_dir')
+export PATH="$PATH:$gem_user_dir/bin"
 export PATH=$HOME/.local/bin:$PATH
 export PATH=$HOME/.cargo/bin:$PATH
 export PATH=$HOME/c/scripts:$PATH
+export GEM_HOME=$gem_user_dir
+unset gem_user_dir
