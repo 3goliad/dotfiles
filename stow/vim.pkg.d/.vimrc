@@ -16,6 +16,10 @@ Plug 'ervandew/supertab'
 Plug '/usr/share/vim/vimfiles/plugin/fzf'
 Plug 'junegunn/fzf.vim'
 
+Plug 'w0rp/ale'
+
+Plug 'janko-m/vim-test'
+
 " Rust
 Plug 'rust-lang/rust.vim'
 Plug 'racer-rust/vim-racer'
@@ -24,15 +28,10 @@ Plug 'racer-rust/vim-racer'
 Plug 'pangloss/vim-javascript'
 Plug 'leshill/vim-json'
 
-Plug 'w0rp/ale'
-
-Plug 'janko-m/vim-test'
-
-Plug 'davidhalter/jedi-vim'
-
 " Python
 Plug 'Vimjas/vim-python-pep8-indent'
 Plug 'vim-python/python-syntax'
+Plug 'davidhalter/jedi-vim'
 call plug#end()
 
 colorscheme dracula
