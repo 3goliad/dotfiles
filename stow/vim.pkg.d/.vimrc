@@ -16,9 +16,11 @@ Plug 'ervandew/supertab'
 Plug '/usr/share/vim/vimfiles/plugin/fzf'
 Plug 'junegunn/fzf.vim'
 
+" Rust
 Plug 'rust-lang/rust.vim'
 Plug 'racer-rust/vim-racer'
 
+" Javascript
 Plug 'pangloss/vim-javascript'
 Plug 'leshill/vim-json'
 
