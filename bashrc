@@ -34,6 +34,9 @@ daily_commits() {
 
 export CLUSTER_SSH_KEY=$HOME/.ssh/broadstripes/Harbinger.pem
 
+source /usr/share/chruby/chruby.sh
+source /usr/share/chruby/auto.sh
+
 # Aliases
 alias ls='exa'
 alias d=docker
