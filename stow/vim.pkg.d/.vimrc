@@ -51,7 +51,7 @@ set softtabstop=2
 set expandtab
 
 let g:lightline = {
-  \ 'colorscheme': 'Dracula',
+  \ 'colorscheme': 'dracula',
   \ 'active': {
   \   'left': [ [ 'mode', 'paste' ],
   \             [ 'gitbranch', 'readonly', 'filename', 'modified' ] ]
