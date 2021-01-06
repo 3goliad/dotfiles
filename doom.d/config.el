@@ -1,9 +1,9 @@
 ;;;  -*- lexical-binding: t; -*-
 
 (setq doom-font (font-spec :family "Iosevka Term Slab"
-                           :size 18))
+                           :size 20))
 (setq doom-big-font (font-spec :family "Iosevka Term Slab"
-                               :size 30))
+                               :size 32))
 
 (after! hideshow
   (add-to-list 'hs-special-modes-alist
