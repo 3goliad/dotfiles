@@ -41,7 +41,7 @@ battery all {
 }
 
 time {
-    format = "%m/%d %H:%M"
+    format = "%m/%d %l:%M %p"
 }
 
 tztime utc {
