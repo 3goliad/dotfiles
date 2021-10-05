@@ -77,4 +77,6 @@ if __name__ == "__main__":
         os.execvp("ssh", ["ssh",
                           "-i", idfile,
                           "-l", instance['login'],
+                          "-oHostKeyAlgorithms=+ssh-rsa",
+                          "-oPubkeyAcceptedAlgorithms=+ssh-rsa",
                           instance['ip']])
