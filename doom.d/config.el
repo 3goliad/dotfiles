@@ -5,6 +5,8 @@
 (setq doom-big-font (font-spec :family "Iosevka Term Slab"
                                :size 32))
 
+(setq org-directory "~/d/notes")
+
 (after! hideshow
   (add-to-list 'hs-special-modes-alist
                `(ruby-mode
