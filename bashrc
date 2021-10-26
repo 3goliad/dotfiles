@@ -44,5 +44,3 @@ alias ls='exa'
 alias d=docker
 alias dc=docker-compose
 alias cat=bat
-export VOLTA_HOME="$HOME/.volta"
-export PATH="$VOLTA_HOME/bin:$PATH"
