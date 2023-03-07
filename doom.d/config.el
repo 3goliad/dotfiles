@@ -6,6 +6,7 @@
                                :size 32))
 
 (setq org-directory "~/d/notes")
+(setq deft-directory org-directory)
 
 (after! hideshow
   (add-to-list 'hs-special-modes-alist
