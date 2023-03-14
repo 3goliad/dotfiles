@@ -1,8 +1,8 @@
 ;;;  -*- lexical-binding: t; -*-
 
-(setq doom-font (font-spec :family "Iosevka Term Slab"
+(setq doom-font (font-spec :family "Fantasque Sans Mono"
                            :size 20))
-(setq doom-big-font (font-spec :family "Iosevka Term Slab"
+(setq doom-big-font (font-spec :family "Fantasque Sans Mono"
                                :size 32))
 
 (setq org-directory "~/d/notes")
