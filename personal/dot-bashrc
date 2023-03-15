@@ -12,6 +12,8 @@ export PS1='\n \u@\h \w \n :3 '
 source /usr/share/fzf/completion.bash
 source /usr/share/fzf/key-bindings.bash
 
+source /opt/asdf-vm/asdf.sh
+
 # functions
 #export OPSWORKS_SSH_KEY=~/.ssh/broadstripes/javier_opsworks
 
