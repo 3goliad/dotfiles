@@ -59,17 +59,18 @@ fi
 # completion
 source /usr/share/doc/fzf/examples/key-bindings.bash
 
+. "$HOME/.cargo/env"
+. "/usr/local/share/chruby/chruby.sh"
+. "/usr/local/share/chruby/auto.sh"
+. "$HOME/.asdf/asdf.sh"
+. "$HOME/.asdf/completions/asdf.bash"
+
 daily_commits() {
   git log \
     --since=midnight \
     --author="$(git config --get user.email)" \
     --format=%s
 }
-
-source /usr/local/share/chruby/chruby.sh
-source /usr/local/share/chruby/auto.sh
-source ~/.asdf/asdf.sh
-source ~/.asdf/completions/asdf.bash
 
 # Aliases
 alias d=docker
