@@ -1,5 +1,8 @@
 ;;;  -*- lexical-binding: t; -*-
 
+(setq user-full-name "Javier Maldonado"
+      user-mail-address "3goliad@gmail.com")
+
 (setq doom-font (font-spec :family "Fantasque Sans Mono"
                            :size 22))
 
