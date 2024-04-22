@@ -9,19 +9,38 @@
 (setq doom-big-font (font-spec :family "Fantasque Sans Mono"
                                :size 32))
 
-(setq org-directory "~/d/notes")
-(setq deft-directory org-directory)
+;; There are two ways to load a theme. Both assume the theme is installed and
+;; available. You can either set `doom-theme' or manually load a theme with the
+;; `load-theme' function. This is the default:
+(setq doom-theme 'doom-palenight)
 
+;; This determines the style of line numbers in effect. If set to `nil', line
+;; numbers are disabled. For relative line numbers, set this to `relative'.
+(setq display-line-numbers-type t)
+
+(setq org-directory "~/d/notes")
+
+(after! tide
+  (setq tide-node-executable
+        "/home/jam/.asdf/installs/nodejs/18.19.0/bin/node"))
+
+(after! flycheck
+  (advice-add 'flycheck-eslint-config-exists-p :override (lambda() t)))
+
+;; (setq deft-directory org-directory)
+;; (add-hook! ruby-mode
+;;   (setq ruby-block-indent nil))
 ;; (after! ruby)
 ;; (require 'company)
 ;; (setq company-idle-delay 0.2
 ;;       company-minimum-prefix-length 3)
 ;; (setq-default flycheck-disabled-checkers '(ruby-reek ruby-rubylint))
 
+;; (after! rjsx-mode
+;;   (setq-default flycheck-disabled-checkers '(jsx-tide)))
 
-(add-hook! ruby-mode
-  (setq ruby-block-indent nil))
-
+;; (setq iedit-toggle-key-default nil)
+;; (setq tide-tsserver-process-environment '("TSS_LOG=-level verbose -file /tmp/tss.log"))
 
 ;; (after! hideshow
 ;;   (add-to-list 'hs-special-modes-alist
