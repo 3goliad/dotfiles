@@ -27,6 +27,12 @@
 (after! flycheck
   (advice-add 'flycheck-eslint-config-exists-p :override (lambda() t)))
 
+(after! js-mode
+  (setq js-indent-level 2))
+
+(after! dtrt-indent
+  (setq dtrt-indent-max-merge-deviation 15.0))
+
 ;; (setq deft-directory org-directory)
 ;; (add-hook! ruby-mode
 ;;   (setq ruby-block-indent nil))
