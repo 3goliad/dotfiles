@@ -1,0 +1,28 @@
+# frozen_string_literal: true
+
+RSpec.describe `(progn
+                    (setq-local pkgs
+                                (split-string
+                                    (string-remove-prefix
+                                        (concat (doom-project-root) "spec/")
+                                        (string-remove-suffix
+                                            "_spec"
+                                            (file-name-sans-extension
+                                                buffer-file-name)))
+                                    "/"
+                                    t))
+                    (setq-local pkgs-p (eq (length pkgs) 1))
+                    (setq-local pkg-module
+                        (replace-regexp-in-string
+                            "_" ""
+                            (replace-regexp-in-string
+                                " " "::"
+                                (capitalize (if pkgs-p
+                                                (car pkgs)
+                                                (string-join (butlast pkgs) " ")))
+                                nil t)
+                            nil t))
+
+                    (concat pkg-module " do"))`
+  $0
+end
