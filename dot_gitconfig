@@ -1,0 +1,18 @@
+[credential "https://github.com"]
+    helper =
+    helper = !/usr/bin/gh auth git-credential
+[credential "https://gist.github.com"]
+    helper =
+    helper = !/usr/bin/gh auth git-credential
+
+[user]
+    email = 3goliad@gmail.com
+    name = "Javier Maldonado"
+
+[help]
+    autocorrect = 15
+
+[core]
+    excludesfile = ~/.config/git/gitignore
+[github]
+    user = 3goliad

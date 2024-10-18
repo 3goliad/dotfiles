@@ -1,8 +1,0 @@
-XDG_DESKTOP_DIR="/home/jam"
-XDG_DOCUMENTS_DIR="$HOME/d"
-XDG_DOWNLOAD_DIR="$HOME/m/downloads"
-XDG_MUSIC_DIR="$HOME/m/music"
-XDG_PICTURES_DIR="$HOME/m/pics"
-XDG_PUBLICSHARE_DIR="$HOME/d/public"
-XDG_TEMPLATES_DIR="$HOME/d/templates"
-XDG_VIDEOS_DIR="$HOME/m/videos"
