@@ -47,7 +47,8 @@
         "/home/jam/.asdf/installs/nodejs/22.10.0/bin/node"))
 
 (after! flycheck
-  (advice-add 'flycheck-eslint-config-exists-p :override (lambda() t)))
+  (advice-add 'flycheck-eslint-config-exists-p :override (lambda() t))
+  (setq flycheck-ruby-rubocop-executable "bin/rubocop"))
 
 (after! js-mode
   (setq js-indent-level 2))
