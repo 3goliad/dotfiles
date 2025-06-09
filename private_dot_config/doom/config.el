@@ -42,9 +42,9 @@
 ;; change `org-directory'. It must be set before org loads!
 (setq org-directory "~/Documents/org/")
 
-;; (after! tide
-;;   (setq tide-node-executable
-;;         "/home/jam/.asdf/installs/nodejs/18.19.0/bin/node"))
+(after! tide
+  (setq tide-node-executable
+        "/home/jam/.asdf/installs/nodejs/22.10.0/bin/node"))
 
 (after! flycheck
   (advice-add 'flycheck-eslint-config-exists-p :override (lambda() t)))
