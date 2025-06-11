@@ -42,6 +42,12 @@ return {
       local tb = require("telescope.builtin")
       vim.keymap.set(
         "n",
+        "<leader><leader>",
+        tb.find_files,
+        { desc = "[ ] search files in this tree" }
+      )
+      vim.keymap.set(
+        "n",
         "<leader>sh",
         tb.help_tags,
         { desc = "[S]earch [H]elp" }
@@ -55,7 +61,7 @@ return {
       vim.keymap.set(
         "n",
         "<leader>ff",
-        tb.find_files,
+        ":Telescope file_browser<CR>",
         { desc = "[F]ind [F]iles" }
       )
       vim.keymap.set(
