@@ -30,4 +30,4 @@ vim.keymap.set(
 -- vim.keymap.set('n', '<down>', '<cmd>echo "Use j to move!!"<CR>')
 
 -- Save buffer
-vim.keymap.set("n", "<leader>bs", "<C-w>v", { desc = "[B]uffer, [S]ave" })
+vim.keymap.set("n", "<leader>bs", "<cmd>w<CR>", { desc = "[B]uffer, [S]ave" })
