@@ -7,37 +7,9 @@ vim.g.maplocalleader = " "
 -- Set to true if you have a Nerd Font installed and selected in the terminal
 vim.g.have_nerd_font = true
 
-vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>")
-vim.keymap.set(
-  "n",
-  "<leader>q",
-  vim.diagnostic.setloclist,
-  { desc = "Open diagnostic [Q]uickfix list" }
-)
-vim.keymap.set(
-  "t",
-  "<Esc><Esc>",
-  "<C-\\><C-n>",
-  { desc = "Exit terminal mode" }
-)
+require("config.settings")
 
-Private = {
-  keymap = {
-    groups = {},
-  }
-}
-
-function Private:map_key_group(desc, prefix, ...)
-  if self.keymap.groups[prefix] == nil then
-    self.keymap.groups[prefix] = desc
-  end
-  local arg = { ... }
-  for i, m in ipairs(arg) do
-    local mapping = prefix .. m[1]
-    vim.keymap.set("n", mapping, m[2], m[3])
-  end
-end
-
+require("config.brown")
 require("config.keymaps")
 
 -- [[ Basic Autocommands ]]
