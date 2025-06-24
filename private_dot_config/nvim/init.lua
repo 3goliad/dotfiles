@@ -77,7 +77,6 @@ vim.o.scrolloff = 10
 vim.o.confirm = true
 
 require("config.keymaps")
-require("config.windows")
 
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
