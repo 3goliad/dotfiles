@@ -1,0 +1,64 @@
+#!/usr/bin/env python3
+
+import sys
+import subprocess
+import json
+
+def list_issues():
+    request_data = {
+        'query': """
+            query($org: String!, $repo: String!, $user: String!){
+              repository(owner: $org, name: $repo){
+                issues(
+                  filterBy: {
+                    assignee: $user,
+                    states: [OPEN]
+                  },
+                  first: 100
+                ) {
+                  nodes {
+                    id
+                    number
+                    title
+                    projectItems(includeArchived: false, first: 20) {
+                      nodes {
+                        status: fieldValueByName(name: "Status") {
+                          ... on ProjectV2ItemFieldSingleSelectValue {
+                            name
+                          }
+                        }
+                      }
+                      
+                    }
+                  }
+                }
+              }
+            }
+        """,
+        'variables': {
+            'user': '3goliad',
+            'org': 'broadstripes',
+            'repo': 'broadstripes_crm'
+        }
+    }
+    process = subprocess.run(
+        [ "gh", "api", "graphql", "--input", "-"],
+        input=json.dumps(request_data).encode(),
+        capture_output=True
+    )
+    if process.returncode != 0:
+        print(json.dumps(json.loads(process.stdout), indent=2))
+        raise Exception("failed to fetch project items")
+    resp = json.loads(process.stdout)
+    return resp["data"]["repository"]["issues"]["nodes"]
+
+result = list_issues()
+for issue in result:
+    number = issue['number']
+    title = issue['title']
+    status = []
+    for item in issue['projectItems']['nodes']:
+        if item['status']:
+          status.append(item['status']['name'])
+    print(f"[{number}] {title} ({status})")
+
