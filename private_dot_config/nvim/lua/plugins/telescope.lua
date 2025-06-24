@@ -46,61 +46,17 @@ return {
         tb.find_files,
         { desc = "[ ] search files in this tree" }
       )
-      vim.keymap.set(
-        "n",
-        "<leader>sh",
-        tb.help_tags,
-        { desc = "[S]earch [H]elp" }
+      Private:map_key_group(
+        "[S]earch",
+        "<leader>s",
+        { "h", tb.help_tags, { desc = "[S]earch [H]elp" } },
+        { "k", tb.keymaps, { desc = "[S]earch [K]eymaps" } },
+        { "s", tb.builtin, { desc = "[S]earch [S]elect Telescope" } },
+        { "w", tb.grep_string, { desc = "[S]earch current [W]ord" } },
+        { "g", tb.live_grep, { desc = "[S]earch by [G]rep" } },
+        { "d", tb.diagnostics, { desc = "[S]earch [D]iagnostics" } },
+        { "r", tb.resume, { desc = "[S]earch [R]esume" } }
       )
-      vim.keymap.set(
-        "n",
-        "<leader>sk",
-        tb.keymaps,
-        { desc = "[S]earch [K]eymaps" }
-      )
-      vim.keymap.set(
-        "n",
-        "<leader>ss",
-        tb.builtin,
-        { desc = "[S]earch [S]elect Telescope" }
-      )
-      vim.keymap.set(
-        "n",
-        "<leader>sw",
-        tb.grep_string,
-        { desc = "[S]earch current [W]ord" }
-      )
-      vim.keymap.set(
-        "n",
-        "<leader>sg",
-        tb.live_grep,
-        { desc = "[S]earch by [G]rep" }
-      )
-      vim.keymap.set(
-        "n",
-        "<leader>sd",
-        tb.diagnostics,
-        { desc = "[S]earch [D]iagnostics" }
-      )
-      vim.keymap.set(
-        "n",
-        "<leader>sr",
-        tb.resume,
-        { desc = "[S]earch [R]esume" }
-      )
-      vim.keymap.set(
-        "n",
-        "<leader>f.",
-        tb.oldfiles,
-        { desc = '[F]ind Recent File ("." for repeat)' }
-      )
-      vim.keymap.set(
-        "n",
-        "<leader>bb",
-        tb.buffers,
-        { desc = "[B]ounce to [B]uffer" }
-      )
-
       -- Slightly advanced example of overriding default behavior and theme
       vim.keymap.set("n", "<leader>sb", function()
         -- You can pass additional configuration to Telescope to change the theme, layout, etc.
@@ -109,6 +65,19 @@ return {
           previewer = false,
         }))
       end, { desc = "[S]earch this [B]uffer" })
+
+      vim.keymap.set(
+        "n",
+        "<leader>f.",
+        tb.oldfiles,
+        { desc = 'Recent [F]iles ("." for repeat)' }
+      )
+      vim.keymap.set(
+        "n",
+        "<leader>bb",
+        tb.buffers,
+        { desc = "[B]ounce to [B]uffer" }
+      )
     end,
   },
 }

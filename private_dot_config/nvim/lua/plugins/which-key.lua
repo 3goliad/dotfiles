@@ -1,3 +1,12 @@
+local spec = {
+  { "<leader>t", group = "[T]oggle" },
+  { "<leader>h", group = "Git [H]unk", mode = { "n", "v" } },
+}
+
+for prefix, desc in pairs(Private.keymap.groups) do
+  table.insert(spec, { prefix, group = desc })
+end
+
 return {
   { -- Useful plugin to show you pending keybinds.
     "folke/which-key.nvim",
@@ -44,12 +53,7 @@ return {
       },
 
       -- Document existing key chains
-      spec = {
-        unpack(vim.g.which_key_specs),
-        { "<leader>s", group = "[S]earch" },
-        { "<leader>t", group = "[T]oggle" },
-        { "<leader>h", group = "Git [H]unk", mode = { "n", "v" } },
-      },
+      spec = spec,
     },
   },
 }

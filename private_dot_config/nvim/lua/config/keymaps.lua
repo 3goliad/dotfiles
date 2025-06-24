@@ -1,29 +1,4 @@
-vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>")
-vim.keymap.set(
-  "n",
-  "<leader>q",
-  vim.diagnostic.setloclist,
-  { desc = "Open diagnostic [Q]uickfix list" }
-)
-vim.keymap.set(
-  "t",
-  "<Esc><Esc>",
-  "<C-\\><C-n>",
-  { desc = "Exit terminal mode" }
-)
-
-vim.g.which_key_specs = {}
-
-function set_keymap_group(desc, prefix, ...)
-  table.insert(vim.g.which_key_specs, { prefix, group = desc })
-  local arg = { ... }
-  for i, m in ipairs(arg) do
-    local mapping = prefix .. m[1]
-    vim.keymap.set("n", mapping, m[2], m[3])
-  end
-end
-
-set_keymap_group(
+Private:map_key_group(
   "[W]indow",
   "<leader>w",
   -- Splitting windows
@@ -43,7 +18,7 @@ set_keymap_group(
   { "K", "<C-w>K", { desc = "Move window to far top" } }
 )
 
-set_keymap_group(
+Private:map_key_group(
   "[B]uffer",
   "<leader>b",
   { "s", "<cmd>w<CR>", { desc = "[B]uffer [S]ave" } },
@@ -52,7 +27,7 @@ set_keymap_group(
   { "]", "<cmd>bn<CR>", { desc = "[B]uffer [N]ext" } }
 )
 
-set_keymap_group(
+Private:map_key_group(
   "[F]ile",
   "<leader>f",
   { "f", "<cmd>Explore<CR>", { desc = "[F]ile Browser" } }
