@@ -13,7 +13,7 @@ return {
       },
       { "nvim-telescope/telescope-ui-select.nvim" },
       { "nvim-tree/nvim-web-devicons", enabled = vim.g.have_nerd_font },
-      { "nvim-telescope/telescope-file-browser.nvim" },
+      -- { "nvim-telescope/telescope-file-browser.nvim" },
     },
     config = function()
       require("telescope").setup({
@@ -36,7 +36,7 @@ return {
       -- Enable Telescope extensions if they are installed
       pcall(require("telescope").load_extension, "fzf")
       require("telescope").load_extension("ui-select")
-      require("telescope").load_extension("file_browser")
+      -- require("telescope").load_extension("file_browser")
 
       -- See `:help telescope.builtin`
       local tb = require("telescope.builtin")
@@ -57,12 +57,6 @@ return {
         "<leader>sk",
         tb.keymaps,
         { desc = "[S]earch [K]eymaps" }
-      )
-      vim.keymap.set(
-        "n",
-        "<leader>ff",
-        ":Telescope file_browser<CR>",
-        { desc = "[F]ind [F]iles" }
       )
       vim.keymap.set(
         "n",
