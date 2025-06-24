@@ -46,7 +46,6 @@ return {
       -- Document existing key chains
       spec = {
         unpack(Brown.keymaps.which_key_spec),
-        { "<leader>t", group = "[T]oggle" },
         { "<leader>h", group = "Git [H]unk", mode = { "n", "v" } },
       },
     },

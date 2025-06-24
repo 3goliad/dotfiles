@@ -39,3 +39,6 @@ Brown.keymaps:add_group("f", {
   desc = "[F]ile",
   { "f", "<cmd>Explore<CR>", desc = "[F]ile Browser" },
 })
+Brown.keymaps:add_group("t", {
+  desc = "[T]oggle",
+})
