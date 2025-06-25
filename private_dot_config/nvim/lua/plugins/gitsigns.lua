@@ -11,6 +11,7 @@ return {
         topdelete = { text = "‾" },
         changedelete = { text = "~" },
       },
+      -- on_attach = function(bufnr) end,
     },
   },
 }
