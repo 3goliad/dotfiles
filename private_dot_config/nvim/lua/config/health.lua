@@ -36,12 +36,24 @@ local check_external_reqs = function()
   return true
 end
 
+local check_mason_deps = function()
+  local registry = require("mason-registry")
+  for _, dep in ipairs(Brown.masondeps) do
+    if registry.is_installed(dep) then
+      vim.health.ok(string.format("Mason package '%s' is installed", dep))
+    else
+      vim.health.warn(string.format("Mason package '%s' is not installed", dep))
+    end
+  end
+end
+
 return {
   check = function()
-    vim.health.start("personal config")
+    vim.health.start("personal")
     vim.health.info("System Information: " .. vim.inspect(vim.uv.os_uname()))
 
     check_version()
     check_external_reqs()
+    check_mason_deps()
   end,
 }

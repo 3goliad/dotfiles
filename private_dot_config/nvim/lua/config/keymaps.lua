@@ -10,8 +10,7 @@ Brown.keymaps:add({
   "<C-\\><C-n>",
   desc = "Exit terminal mode",
 })
-Brown.keymaps:add_group("w", {
-  desc = "[W]indow",
+Brown.keymaps.w:add(
   -- Splitting windows
   { "v", "<C-w>v", desc = "[W]indow [V]ertical Split" },
   { "s", "<C-w>s", desc = "[W]indow [H]orizontal Split" },
@@ -26,19 +25,12 @@ Brown.keymaps:add_group("w", {
   { "H", "<C-w>H", desc = "Move window far left" },
   { "L", "<C-w>L", desc = "Move window far right" },
   { "J", "<C-w>J", desc = "Move window far bottom" },
-  { "K", "<C-w>K", desc = "Move window to far top" },
-})
-Brown.keymaps:add_group("b", {
-  desc = "[B]uffer",
-  { "s", "<cmd>w<CR>", desc = "[B]uffer [S]ave" },
-  { "k", "<cmd>q<CR>", desc = "[B]uffer [K]ill" },
-  { "[", "<cmd>bp<CR>", desc = "[B]uffer [P]rev" },
-  { "]", "<cmd>bn<CR>", desc = "[B]uffer [N]ext" },
-})
-Brown.keymaps:add_group("f", {
-  desc = "[F]ile",
-  { "f", "<cmd>Explore<CR>", desc = "[F]ile Browser" },
-})
-Brown.keymaps:add_group("t", {
-  desc = "[T]oggle",
-})
+  { "K", "<C-w>K", desc = "Move window to far top" }
+)
+Brown.keymaps.b:add(
+	{ "s", "<cmd>w<CR>", desc = "[B]uffer [S]ave" },
+	{ "k", "<cmd>q<CR>", desc = "[B]uffer [K]ill" },
+	{ "[", "<cmd>bp<CR>", desc = "[B]uffer [P]rev" },
+	{ "]", "<cmd>bn<CR>", desc = "[B]uffer [N]ext" }
+)
+Brown.keymaps.f:add({ "f", "<cmd>Explore<CR>", desc = "[F]ile Browser" })

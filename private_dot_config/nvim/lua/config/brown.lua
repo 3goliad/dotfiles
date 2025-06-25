@@ -2,6 +2,7 @@ Brown = {
   keymaps = {
     which_key_spec = {},
   },
+  masondeps = {},
 }
 
 function Brown.keymaps:add(arg)
@@ -29,12 +30,32 @@ function Brown.keymaps:add_group(name, options)
   self[name] = { desc = desc, prefix = prefix }
 
   local parent = self
-  self[name].add = function(self, arg)
-    local lhs = self.prefix .. arg[1]
-    parent:add({ lhs, unpack(arg, 2) })
+  self[name].add = function(self, ...)
+    local args = { ... }
+    for _, arg in ipairs(args) do
+      local lhs = self.prefix .. arg[1]
+      parent:add({ lhs, unpack(arg, 2) })
+    end
   end
 
   for _, mapping in ipairs(options) do
     self[name]:add(mapping)
   end
+end
+
+Brown.keymaps:add_group("f", {
+  desc = "[F]ile",
+})
+Brown.keymaps:add_group("t", {
+  desc = "[T]oggle",
+})
+Brown.keymaps:add_group("w", {
+  desc = "[W]indow",
+})
+Brown.keymaps:add_group("b", {
+  desc = "[B]uffer",
+})
+
+function Brown:add_dep(mason_dep_name)
+  table.insert(self.masondeps, mason_dep_name)
 end
