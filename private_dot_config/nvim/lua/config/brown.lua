@@ -1,11 +1,9 @@
-Brown = {
-  keymaps = {
-    which_key_spec = {},
-  },
-  masondeps = {},
-}
+local M = {}
+Brown = M
 
-function Brown.keymaps:add(arg)
+M.keymaps = {}
+
+function M.keymaps:add(arg)
   local mode = arg.mode or "n"
   arg.mode = nil
   local lhs = arg[1]
@@ -19,43 +17,41 @@ function Brown.keymaps:add(arg)
   vim.keymap.set(mode, lhs, rhs, opts)
 end
 
-function Brown.keymaps:add_group(name, options)
-  if self[name] ~= nil then
-    error("Key group name '" .. tostring(name) .. "' is taken")
-  end
+local KeyGroup = {}
+KeyGroup.__index = KeyGroup
 
-  local desc = options.desc
-  local prefix = options.prefix or ("<leader>" .. name)
-  table.insert(self.which_key_spec, { prefix, group = desc })
-  self[name] = { desc = desc, prefix = prefix }
+function KeyGroup.new(prefix, desc)
+  local self = setmetatable({}, KeyGroup)
 
-  local parent = self
-  self[name].add = function(self, ...)
-    local args = { ... }
-    for _, arg in ipairs(args) do
-      local lhs = self.prefix .. arg[1]
-      parent:add({ lhs, unpack(arg, 2) })
-    end
-  end
+  self.prefix = prefix
+  self.desc = desc
 
-  for _, mapping in ipairs(options) do
-    self[name]:add(mapping)
+  return self
+end
+
+function KeyGroup:add(...)
+  local args = { ... }
+  for _, arg in ipairs(args) do
+    arg[1] = self.prefix .. arg[1]
+    M.keymaps:add(arg)
   end
 end
 
-Brown.keymaps:add_group("f", {
-  desc = "[F]ile",
-})
-Brown.keymaps:add_group("t", {
-  desc = "[T]oggle",
-})
-Brown.keymaps:add_group("w", {
-  desc = "[W]indow",
-})
-Brown.keymaps:add_group("b", {
-  desc = "[B]uffer",
-})
+M.keymaps.f = KeyGroup.new("<leader>f", "[F]ile")
+M.keymaps.t = KeyGroup.new("<leader>t", "[T]oggle")
+M.keymaps.w = KeyGroup.new("<leader>w", "[W]indow")
+M.keymaps.b = KeyGroup.new("<leader>b", "[B]uffer")
+M.keymaps.g = KeyGroup.new("<leader>g", "[G]it")
+M.keymaps.s = KeyGroup.new("<leader>s", "[S]earch")
 
-function Brown:add_dep(mason_dep_name)
+M.which_key_spec = {}
+local i = 1
+for _, v in pairs(M.keymaps) do
+  M.which_key_spec[i] = { v.prefix, group = v.desc }
+  i = i + 1
+end
+
+M.masondeps = {}
+function M:add_dep(mason_dep_name)
   table.insert(self.masondeps, mason_dep_name)
 end

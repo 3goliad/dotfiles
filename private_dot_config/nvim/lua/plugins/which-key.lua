@@ -44,10 +44,7 @@ return {
       },
 
       -- Document existing key chains
-      spec = {
-        unpack(Brown.keymaps.which_key_spec),
-        { "<leader>h", group = "Git [H]unk", mode = { "n", "v" } },
-      },
+      spec = Brown.keymaps.which_key_spec,
     },
   },
 }

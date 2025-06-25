@@ -28,9 +28,9 @@ Brown.keymaps.w:add(
   { "K", "<C-w>K", desc = "Move window to far top" }
 )
 Brown.keymaps.b:add(
-	{ "s", "<cmd>w<CR>", desc = "[B]uffer [S]ave" },
-	{ "k", "<cmd>q<CR>", desc = "[B]uffer [K]ill" },
-	{ "[", "<cmd>bp<CR>", desc = "[B]uffer [P]rev" },
-	{ "]", "<cmd>bn<CR>", desc = "[B]uffer [N]ext" }
+  { "s", "<cmd>w<CR>", desc = "[B]uffer [S]ave" },
+  { "k", "<cmd>q<CR>", desc = "[B]uffer [K]ill" },
+  { "[", "<cmd>bp<CR>", desc = "[B]uffer [P]rev" },
+  { "]", "<cmd>bn<CR>", desc = "[B]uffer [N]ext" }
 )
 Brown.keymaps.f:add({ "f", "<cmd>Explore<CR>", desc = "[F]ile Browser" })

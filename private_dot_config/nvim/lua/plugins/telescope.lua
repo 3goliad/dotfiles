@@ -45,8 +45,7 @@ return {
         tb.find_files,
         desc = "[ ] search files in this tree",
       })
-      Brown.keymaps:add_group("s", {
-        desc = "[S]earch",
+      Brown.keymaps.s:add(
         { "h", tb.help_tags, desc = "[S]earch [H]elp" },
         { "k", tb.keymaps, desc = "[S]earch [K]eymaps" },
         { "s", tb.builtin, desc = "[S]earch [S]elect Telescope" },
@@ -67,8 +66,8 @@ return {
             )
           end,
           desc = "[S]earch this [B]uffer",
-        },
-      })
+        }
+      )
       Brown.keymaps.f:add({
         ".",
         tb.oldfiles,
