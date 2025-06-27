@@ -1,9 +1,9 @@
 local M = {}
 Brown = M
 
-M.keymaps = {}
+local KeymapContainer = {}
 
-function M.keymaps:add(arg)
+function KeymapContainer:add(arg)
   local mode = arg.mode or "n"
   arg.mode = nil
   local lhs = arg[1]
@@ -17,11 +17,12 @@ function M.keymaps:add(arg)
   vim.keymap.set(mode, lhs, rhs, opts)
 end
 
+M.keymaps = setmetatable({}, {__index = KeymapContainer})
+
 local KeyGroup = {}
-KeyGroup.__index = KeyGroup
 
 function KeyGroup.new(prefix, desc)
-  local self = setmetatable({}, KeyGroup)
+  local self = setmetatable({}, { __index = KeyGroup })
 
   self.prefix = prefix
   self.desc = desc
