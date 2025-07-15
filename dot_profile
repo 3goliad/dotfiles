@@ -32,3 +32,5 @@ if [ -d "$HOME/bin" ] ; then
 fi
 
 . "$HOME/.cargo/env"
+
+export EDITOR=nvim
