@@ -68,6 +68,7 @@ return {
           desc = "[S]earch this [B]uffer",
         }
       )
+      Brown.keymaps.g:add({ "g", tb.git_status, "[G]it status" })
       Brown.keymaps.f:add({
         ".",
         tb.oldfiles,
