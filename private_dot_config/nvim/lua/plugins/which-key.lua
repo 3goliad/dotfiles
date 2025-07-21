@@ -44,7 +44,7 @@ return {
       },
 
       -- Document existing key chains
-      spec = Brown.keymaps.which_key_spec,
+      spec = Brown.which_key_spec,
     },
   },
 }
