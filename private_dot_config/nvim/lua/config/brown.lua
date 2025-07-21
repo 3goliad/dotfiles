@@ -43,6 +43,7 @@ M.keymaps.t = KeyGroup.new("<leader>t", "[T]oggle")
 M.keymaps.w = KeyGroup.new("<leader>w", "[W]indow")
 M.keymaps.b = KeyGroup.new("<leader>b", "[B]uffer")
 M.keymaps.g = KeyGroup.new("<leader>g", "[G]it")
+M.keymaps.g.h = KeyGroup.new("<leader>gh", "[G]it [H]unk")
 M.keymaps.s = KeyGroup.new("<leader>s", "[S]earch")
 
 M.which_key_spec = {}
