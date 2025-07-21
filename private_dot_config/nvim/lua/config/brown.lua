@@ -17,7 +17,7 @@ function KeymapContainer:add(arg)
   vim.keymap.set(mode, lhs, rhs, opts)
 end
 
-M.keymaps = setmetatable({}, {__index = KeymapContainer})
+M.keymaps = setmetatable({}, { __index = KeymapContainer })
 
 local KeyGroup = {}
 
