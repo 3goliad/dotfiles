@@ -11,7 +11,7 @@ return {
         topdelete = { text = "‾" },
         changedelete = { text = "~" },
       },
-      on_attach = function(bufnr)
+      on_attach = function()
         local gitsigns = require("gitsigns")
 
         Brown.keymaps.g:add(
@@ -21,7 +21,7 @@ return {
               if vim.wo.diff then
                 vim.cmd.normal({ "<leader>g]", bang = true })
               else
-                gitsigns.nav_hunk("next")
+                gitsigns.nav_hunk("next", nil)
               end
             end,
             desc = "Jump to next git change",
@@ -57,6 +57,12 @@ return {
           { "r", gitsigns.reset_hunk, desc = "git [r]eset hunk" },
           { "S", gitsigns.stage_buffer, desc = "git [S]tage buffer" }
         )
+
+        Brown.keymaps.t.add({
+          "g",
+          gitsigns.toggle_signs,
+          desc = "[T]oggle [g]it signs",
+        })
       end,
     },
   },
