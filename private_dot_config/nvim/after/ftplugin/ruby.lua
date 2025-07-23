@@ -1,0 +1,3 @@
+-- vim.o.makeprg = "bundle exec rubocop --format emacs"
+-- vim.o.errorformat = "%f:%l:%c: %t: %m," .. vim.o.errorformat
+-- nothing here for now
