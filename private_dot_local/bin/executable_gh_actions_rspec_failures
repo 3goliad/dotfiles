@@ -1,0 +1,91 @@
+#!/usr/bin/env python3
+
+import sys
+import subprocess
+import json
+import time
+import argparse
+from urllib.parse import urlparse
+from pathlib import Path
+
+def run_gh(*args, **kwargs):
+    process = subprocess.run(
+        [ 
+            "gh", *args
+        ],
+        capture_output=True,
+        **kwargs
+    )
+    if process.returncode != 0:
+        print(process.stdout)
+        raise Exception("failed to call gh command")
+
+    if process.stdout:
+        return json.loads(process.stdout)
+    else:
+        return None
+
+
+def get_branch_name():
+    process = subprocess.run(
+        [ "git", "rev-parse", "--abbrev-ref", "HEAD"],
+        capture_output=True
+    )
+    if process.returncode != 0:
+        print(process.stdout)
+        raise Exception('failed to get git branch name')
+    return str(process.stdout, errors='strict').strip()
+
+
+def get_last_workflow_run_id(branch_name):
+    resp = run_gh(
+        "run", "list",
+        "--branch", branch_name,
+        "--json", "number,databaseId"
+    )
+    return str(max(resp, key=lambda run: run["number"])["databaseId"])
+
+
+def read_run_id_cache():
+    cache_file = Path('./tmp/last_gh_workflow_run_id')
+    if not cache_file.exists():
+        return None
+    if (time.time() - cache_file.stat().st_mtime) > (60 * 60):
+        return None
+    return cache_file.read_text()
+
+
+def write_run_id_cache(run_id):
+    cache_file = Path('./tmp/last_gh_workflow_run_id')
+    cache_file.touch(exist_ok=True)
+    cache_file.write_text(run_id)
+
+
+parser = argparse.ArgumentParser(prog="gh_actions_rspec_failures")
+parser.add_argument("-f", "--force", action='store_true')
+args = parser.parse_args()
+force = vars(args)["force"]
+
+workflow_run_id = read_run_id_cache()
+
+if not workflow_run_id or force:
+    branch_name = get_branch_name()
+    print(f"fetching last workflow run id...", file=sys.stderr)
+    workflow_run_id = get_last_workflow_run_id(branch_name)
+    write_run_id_cache(workflow_run_id)
+
+dst = Path('./tmp/gh_workflow_runs/', str(workflow_run_id))
+if not dst.exists() or force:
+    print("downloading run results...", file=sys.stderr)
+    dst.mkdir(parents=True, exist_ok=True)
+    run_gh("run", "download", str(workflow_run_id), cwd=dst)
+
+failures = set()
+for results_file in dst.glob("rspec-results-*/results.json"):
+    results = json.loads(results_file.read_text())
+    for example in results['examples']:
+        if example["status"] == "failed":
+            failures.add(example["file_path"])
+
+for failure in failures:
+  print(failure)
