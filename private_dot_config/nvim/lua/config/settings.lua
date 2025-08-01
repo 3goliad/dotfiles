@@ -66,3 +66,6 @@ vim.o.scrolloff = 10
 -- instead raise a dialog asking if you wish to save the current file(s)
 -- See `:help 'confirm'`
 vim.o.confirm = true
+
+-- this is causing odd issues in diffs
+vim.o.fixendofline = false
