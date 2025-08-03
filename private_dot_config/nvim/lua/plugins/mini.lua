@@ -3,7 +3,18 @@ return {
   config = function()
     require("mini.files").setup()
 
-    Brown.keymaps.f:add({ "f", MiniFiles.open, desc = "[F]ile Browser" })
+    Brown.keymaps.f:add({
+      "f",
+      function()
+        MiniFiles.open(vim.api.nvim_buf_get_name(0), false)
+      end,
+      desc = "Browse at this [f]ile",
+    }, {
+      "l",
+      MiniFiles.open,
+      desc = "Open [l]ast file browser",
+    })
+
     -- Better Around/Inside textobjects
     --
     -- Examples:
