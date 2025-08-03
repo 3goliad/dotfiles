@@ -33,4 +33,3 @@ Brown.keymaps.b:add(
   { "[", "<cmd>bp<CR>", desc = "[B]uffer [P]rev" },
   { "]", "<cmd>bn<CR>", desc = "[B]uffer [N]ext" }
 )
-Brown.keymaps.f:add({ "f", "<cmd>Explore<CR>", desc = "[F]ile Browser" })
