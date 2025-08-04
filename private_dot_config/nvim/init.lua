@@ -10,6 +10,8 @@ vim.g.have_nerd_font = true
 require("config.settings")
 require("config.brown")
 
+vim.cmd.colorscheme("jawbreaker")
+
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
 
