@@ -1,5 +1,5 @@
 {
-	"height": 24,
+	"height": 48,
 	"spacing": 5,
 	"modules-left": [
 		"sway/workspaces",
@@ -71,17 +71,35 @@
 	"battery": {
 		"states": {
 			// "good": 95,
-			"warning": 30,
-			"critical": 15
+			"eighty": 80,
+			"seventy": 70,
+			"sixty": 60,
+			"fifty": 50,
+			"forty": 40,
+			"thirty": 30,
+			"twenty": 20,
+			"critical": 10
 		},
-		"format": "{capacity}% {icon}",
-		"format-full": "{capacity}% {icon}",
-		"format-charging": "{capacity}% ",
-		"format-plugged": "{capacity}% ",
-		"format-alt": "{time} {icon}",
-		// "format-good": "", // An empty format will hide the module
-		// "format-full": "",
-		"format-icons": ["", "", "", "", ""]
+		"format": "󰂑 {capacity}%",
+		"format-full": "󰁹 {capacity}%",
+		"format-discharging-eighty": "󰂁 {capacity}%",
+		"format-discharging-seventy": "󰂀 {capacity}%",
+		"format-discharging-sixty": "󰁿 {capacity}%",
+		"format-discharging-fifty": "󰁾 {capacity}%",
+		"format-discharging-forty": "󰁽 {capacity}%",
+		"format-discharging-thirty": "󰁼 {capacity}%",
+		"format-discharging-twenty": "󰁻 {capacity}%",
+		"format-discharging-critical": "󰁺 {capacity}%",
+		"format-charging-eighty": "󰂊����� {capacity}%",
+		"format-charging-seventy": "󰢞 {capacity}%",
+		"format-charging-sixty": "󰂉 {capacity}%",
+		"format-charging-fifty": "󰢝 {capacity}%",
+		"format-charging-forty": "󰂈 {capacity}%",
+		"format-charging-thirty": "󰂇 {capacity}%",
+		"format-charging-twenty": "󰂆 {capacity}%",
+		"format-charging-critical": "󰢜 {capacity}%",
+		"format-plugged": " {capacity}%",
+		"format-alt": "{capacity}% {time}",
 	},
 	"battery#bat2": {
 		"bat": "BAT2"
@@ -110,54 +128,20 @@
 		"tooltip-format-disconnected": "Disconnected",
 		"format-alt": "{ifname}: {ipaddr}/{cidr}"
 	},
-	"pulseaudio": {
-		// "scroll-step": 1, // %, can be a float
-		"format": "{volume}% {icon} {format_source}",
-		"format-bluetooth": "{volume}% {icon} {format_source}",
-		"format-bluetooth-muted": " {icon} {format_source}",
-		"format-muted": " {format_source}",
-		"format-source": "{volume}% ",
-		"format-source-muted": "",
-		"format-icons": {
-			"headphone": "",
-			"hands-free": "",
-			"headset": "",
-			"phone": "",
-			"portable": "",
-			"car": "",
-			"default": ["", "", ""]
-		},
-		"on-click": "pavucontrol"
-	},
 	"wireplumber": {
 		"node-type": "Audio/Sink",
-		"format":  "",
-		"format-medium": "",
-		"format-high": "",
-		"format_muted":  "",
-		"states": {
-			"medium": 20,
-			"high": 60
-		},
-		"tooltip-format": "{node_name} ({volume}%)",
+		"format": "{icon} {volume}%",
+		"format-muted":  "󰝟",
+		"format-icons": ["󰕿", "󰖀", "󰕾"],
+		"tooltip-format": "{node_name} ({source_desc})",
+		"on-click": "flatpak run org.pulseaudio.pavucontrol"
 	},
 	"wireplumber#mic": {
 		"node-type": "Audio/Source",
 		"format":  "",
 		"format_muted":  "",
 		"tooltip-format": "{node_name} ({volume}%)",
-	},
-	"custom/media": {
-		"format": "{icon} {text}",
-		"return-type": "json",
-		"max-length": 40,
-		"format-icons": {
-			"spotify": "",
-			"default": "🎜"
-		},
-		"escape": true,
-		"exec": "$HOME/.config/waybar/mediaplayer.py 2> /dev/null" // Script in resources folder
-		// "exec": "$HOME/.config/waybar/mediaplayer.py --player spotify 2> /dev/null" // Filter player based on name
+		"on-click": "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"
 	},
 	"custom/power": {
 		"format" : "⏻ ",
