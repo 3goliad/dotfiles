@@ -10,7 +10,7 @@ vim.g.have_nerd_font = true
 require("config.settings")
 require("config.brown")
 
-vim.cmd.colorscheme("jawbreaker")
+-- vim.cmd.colorscheme("onedark")
 
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
@@ -33,6 +33,7 @@ require("config.lazy")
 
 require("config.keymaps")
 require("config.lang.lua")
+require("config.lang.python")
 -- [[ Configure and install plugins ]]
 --
 --  To check the current status of your plugins, run
