@@ -1,15 +1,18 @@
 #!/usr/bin/env python3
 
+import argparse
 import sys
+from fnmatch import fnmatch
 from pathlib import Path
+
 from xdg import BaseDirectory
 from xdg.DesktopEntry import DesktopEntry
-from fnmatch import fnmatch
-import argparse
+
 
 def desktop_file_id(file_path, data_dir):
     relative_path = str(file_path.relative_to(data_dir))
-    return relative_path.removeprefix("applications/").replace('/', '-')
+    return relative_path.removeprefix("applications/").replace("/", "-")
+
 
 def find_desktop_entries():
     entries = {}
@@ -17,7 +20,7 @@ def find_desktop_entries():
     for data_dir in data_dirs:
         if not data_dir.is_dir():
             continue
-        for entry_path in data_dir.glob('applications/**/*.desktop'):
+        for entry_path in data_dir.glob("applications/**/*.desktop"):
             if not entry_path.is_file():
                 continue
             id = desktop_file_id(entry_path, data_dir)
@@ -25,7 +28,7 @@ def find_desktop_entries():
             entry_name = entry.getName()
             if id in entries:
                 override = entries[id]
-                print('WARNING: overridden desktop entry!', file=sys.stderr)
+                print("WARNING: overridden desktop entry!", file=sys.stderr)
                 print(f"\tID={id} Name={entry_name}", file=sys.stderr)
                 print(f"\tOverride: {override.filename}", file=sys.stderr)
                 print(f"\tHidden: {entry_path}", file=sys.stderr)
@@ -34,10 +37,11 @@ def find_desktop_entries():
 
     return entries
 
+
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(prog='xdg-desktop-entries-list')
-    parser.add_argument("-v", "--verbose", action='store_true')
-    parser.add_argument("patterns", nargs='*')
+    parser = argparse.ArgumentParser(prog="xdg-desktop-entries-list")
+    parser.add_argument("-v", "--verbose", action="store_true")
+    parser.add_argument("patterns", nargs="*")
     args = parser.parse_args()
 
     if args.verbose:
