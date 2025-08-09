@@ -1,8 +1,14 @@
-export PATH="$HOME/bin:$HOME/.local/bin:$PATH"
-export PATH="${ASDF_DATA_DIR:-$HOME/.asdf}/shims:$PATH"
+#!/bin/sh
+# When you change these, don't forget to update the SystemD user environment
+# files under .config/environment.d/
+export PATH="$HOME/bin:$HOME/.local/bin:$PATH" export
+export _JAVA_AWT_WM_NONREPARENTING=1
+export EDITOR=nvim
+export TERMINAL=foot
+
+PATH="${ASDF_DATA_DIR:-$HOME/.asdf}/shims:$PATH"
 . "$HOME/.cargo/env"
 
-export EDITOR=nvim
 
 # if running bash
 if [ -n "$BASH_VERSION" ]; then

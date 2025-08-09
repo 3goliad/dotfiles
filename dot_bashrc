@@ -1,4 +1,4 @@
-# -*- mode: sh -*-
+#!/bin/bash
 
 # If not running interactively, don't do anything
 case $- in
@@ -33,5 +33,6 @@ daily_commits() {
 }
 
 # Aliases
-# alias d=docker
-# alias dc=docker-compose
+alias d="docker"
+alias dc="docker compose"
+alias dcrm="docker compose -p crm -f ~/Work/crm/development/bind-compose.yml"
