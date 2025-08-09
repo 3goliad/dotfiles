@@ -69,3 +69,8 @@ vim.o.confirm = true
 
 -- this is causing odd issues in diffs
 vim.o.fixendofline = false
+
+vim.diagnostic.config({
+  underline = true,
+  virtual_lines = { current_line = true },
+})
