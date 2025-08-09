@@ -10,14 +10,16 @@ set $right l
 # Your preferred terminal emulator
 set $term foot
 # Your preferred application launcher
-set $menu wmenu-run -l 8 -f "BigBlueTermPlus Nerd Font Propo Regular 24px"
+set $menu fuzzel
 
-font pango:BigBlueTermPlus Nerd Font Propo Regular 12px
-default_border pixel 2
+font pango:BigBlueTermPlus Nerd Font Propo Regular 24px
+default_border pixel 4
 smart_borders no_gaps
 # for_window [app_id="foot"] border pixel 2
 # output * bg /home/jam/Pictures/wallpapers/The_Burghers_Of_Calais.jpg fill
 output * bg #0a0a0a solid_color
+output eDP-1 scale 1 pos 0 0
+output "Dell Inc. DELL U2715H H7YCC54P0HRL" pos 2256 0
 
 bindsym $mod+Return exec $term
 bindsym $mod+Shift+c kill
