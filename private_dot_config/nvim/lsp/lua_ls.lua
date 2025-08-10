@@ -1,6 +1,4 @@
-Brown:add_dep("lua-language-server")
-
-vim.lsp.config("lua_ls", {
+return {
   cmd = { "lua-language-server" },
   filetypes = { "lua" },
   root_markers = {
@@ -11,8 +9,4 @@ vim.lsp.config("lua_ls", {
     "selene.yml",
     ".git",
   },
-})
-
-vim.lsp.enable("lua_ls")
-
-require("conform").formatters_by_ft.lua = { "stylua" }
+}

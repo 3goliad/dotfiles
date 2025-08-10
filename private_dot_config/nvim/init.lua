@@ -1,87 +1,108 @@
--- Set <space> as the leader key
--- See `:help mapleader`
---  NOTE: Must happen before plugins are loaded (otherwise wrong leader will be used)
-vim.g.mapleader = " "
-vim.g.maplocalleader = " "
-
--- Set to true if you have a Nerd Font installed and selected in the terminal
-vim.g.have_nerd_font = true
-
-require("config.settings")
 require("config.brown")
 
--- vim.cmd.colorscheme("onedark")
+-- keymaps and typing
+vim.g.mapleader = " "
+vim.g.maplocalleader = " "
+vim.o.timeoutlen = 400
+vim.o.confirm = true
+-- display
+vim.g.have_nerd_font = true
+vim.o.updatetime = 350
+vim.o.number = true
+vim.o.showmode = false
+vim.o.signcolumn = "yes"
+vim.o.list = true
+vim.opt.listchars = { tab = "» ", trail = "·", nbsp = "␣" }
+vim.o.cursorline = true
+vim.o.scrolloff = 10
+-- state and history
+vim.o.undofile = true
+vim.opt.messagesopt = { "hit-enter", "history:2000" }
+-- formatting
+vim.o.breakindent = true
+vim.o.fixendofline = false -- this is causing odd issues in diffs
+-- searching
+vim.o.ignorecase = true
+vim.o.smartcase = true
+vim.o.inccommand = "split"
+-- windows
+vim.o.splitright = true
+vim.o.splitbelow = true
 
--- [[ Basic Autocommands ]]
---  See `:help lua-guide-autocommands`
+vim.diagnostic.config({
+  underline = true,
+  -- underline = { severity = vim.diagnostic.severity.ERROR },
+  severity_sort = true,
+  virtual_lines = { current_line = true },
+  -- float = { border = "rounded", source = "if_many" },
+  -- signs = vim.g.have_nerd_font and {
+  --   text = {
+  --     [vim.diagnostic.severity.ERROR] = "󰅚 ",
+  --     [vim.diagnostic.severity.WARN] = "󰀪 ",
+  --     [vim.diagnostic.severity.INFO] = "󰋽 ",
+  --     [vim.diagnostic.severity.HINT] = "󰌶 ",
+  --   },
+  -- } or {},
+  -- virtual_text = {
+  --   source = "if_many",
+  --   spacing = 2,
+  --   format = function(diagnostic)
+  --     local diagnostic_message = {
+  --       [vim.diagnostic.severity.ERROR] = diagnostic.message,
+  --       [vim.diagnostic.severity.WARN] = diagnostic.message,
+  --       [vim.diagnostic.severity.INFO] = diagnostic.message,
+  --       [vim.diagnostic.severity.HINT] = diagnostic.message,
+  --     }
+  --     return diagnostic_message[diagnostic.severity]
+  --   end,
+  -- },
+})
 
--- Highlight when yanking (copying) text
---  Try it with `yap` in normal mode
---  See `:help vim.hl.on_yank()`
 vim.api.nvim_create_autocmd("TextYankPost", {
   desc = "Highlight when yanking (copying) text",
-  group = vim.api.nvim_create_augroup(
-    "kickstart-highlight-yank",
-    { clear = true }
-  ),
+  group = vim.api.nvim_create_augroup("yank-highlighting", { clear = true }),
   callback = function()
     vim.hl.on_yank()
   end,
 })
 
+Brown.keymaps:add({ "<Esc>", "<cmd>nohlsearch<CR>" })
+Brown.keymaps:add({
+  "<leader>q",
+  vim.diagnostic.setloclist,
+  desc = "Open diagnostic [Q]uickfix list",
+})
+Brown.keymaps:add({
+  mode = "t",
+  "<Esc><Esc>",
+  "<C-\\><C-n>",
+  desc = "Exit terminal mode",
+})
+Brown.keymaps.w:add(
+  -- Splitting windows
+  { "v", "<C-w>v", desc = "[W]indow [V]ertical Split" },
+  { "s", "<C-w>s", desc = "[W]indow [H]orizontal Split" },
+  -- Closing windows
+  { "c", "<C-w>c", desc = "[W]indow [C]lose" },
+  -- Switching windows
+  { "h", "<C-w><C-h>", desc = "Focus left window" },
+  { "l", "<C-w><C-l>", desc = "Focus right window" },
+  { "j", "<C-w><C-j>", desc = "Focus lower window" },
+  { "k", "<C-w><C-k>", desc = "Focus upper window" },
+  -- Moving windows
+  { "H", "<C-w>H", desc = "Move window far left" },
+  { "L", "<C-w>L", desc = "Move window far right" },
+  { "J", "<C-w>J", desc = "Move window far bottom" },
+  { "K", "<C-w>K", desc = "Move window to far top" }
+)
+Brown.keymaps.b:add(
+  { "s", "<cmd>w<CR>", desc = "[B]uffer [S]ave" },
+  { "k", "<cmd>q<CR>", desc = "[B]uffer [K]ill" },
+  { "[", "<cmd>bp<CR>", desc = "[B]uffer [P]rev" },
+  { "]", "<cmd>bn<CR>", desc = "[B]uffer [N]ext" }
+)
+
+vim.lsp.enable("lua_ls")
+vim.lsp.enable("ruff")
+
 require("config.lazy")
-
-require("config.keymaps")
-require("config.lang.lua")
-require("config.lang.python")
--- [[ Configure and install plugins ]]
---
---  To check the current status of your plugins, run
---    :Lazy
---
---  You can press `?` in this menu for help. Use `:q` to close the window
---
---  To update plugins you can run
---    :Lazy update
---
--- NOTE: Here is where you install your plugins.
-foo = {
-
-  -- Highlight todo, notes, etc in comments
-  {
-    "folke/todo-comments.nvim",
-    event = "VimEnter",
-    dependencies = { "nvim-lua/plenary.nvim" },
-    opts = { signs = false },
-  },
-  -- The following comments only work if you have downloaded the kickstart repo, not just copy pasted the
-  -- init.lua. If you want these files, they are in the repository, so you can just download them and
-  -- place them in the correct locations.
-
-  -- NOTE: Next step on your Neovim journey: Add/Configure additional plugins for Kickstart
-  --
-  --  Here are some example plugins that I've included in the Kickstart repository.
-  --  Uncomment any of the lines below to enable them (you will need to restart nvim).
-  --
-  -- require 'kickstart.plugins.debug',
-  -- require 'kickstart.plugins.indent_line',
-  -- require 'kickstart.plugins.lint',
-  -- require 'kickstart.plugins.autopairs',
-  -- require 'kickstart.plugins.neo-tree',
-  -- require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
-
-  -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
-  --    This is the easiest way to modularize your config.
-  --
-  --  Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
-  -- { import = 'custom.plugins' },
-  --
-  -- For additional information with loading, sourcing and examples see `:help lazy.nvim-🔌-plugin-spec`
-  -- Or use telescope!
-  -- In normal mode type `<space>sh` then write `lazy.nvim-plugin`
-  -- you can continue same window with `<space>sr` which resumes last telescope search
-  --
-}
-
--- The line beneath this is called `modeline`. See `:help modeline`
--- vim: ts=2 sts=2 sw=2 et

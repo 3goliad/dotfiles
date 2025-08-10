@@ -52,8 +52,3 @@ for _, v in pairs(M.keymaps) do
   M.which_key_spec[i] = { v.prefix, group = v.desc }
   i = i + 1
 end
-
-M.masondeps = {}
-function M:add_dep(mason_dep_name)
-  table.insert(self.masondeps, mason_dep_name)
-end
