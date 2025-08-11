@@ -20,7 +20,7 @@ vim.o.undofile = true
 vim.opt.messagesopt = { "hit-enter", "history:2000" }
 -- formatting
 vim.o.breakindent = true
-vim.o.fixendofline = false -- this is causing odd issues in diffs
+vim.o.fixendofline = false -- don't fix up old files
 -- searching
 vim.o.ignorecase = true
 vim.o.smartcase = true
@@ -28,6 +28,14 @@ vim.o.inccommand = "split"
 -- windows
 vim.o.splitright = true
 vim.o.splitbelow = true
+-- diffs
+vim.opt.diffopt = {
+  "internal",
+  "filler",
+  "closeoff",
+  "iwhiteeol",
+  "linematch:80",
+}
 
 vim.diagnostic.config({
   underline = true,
