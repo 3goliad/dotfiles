@@ -31,9 +31,9 @@ vim.o.splitbelow = true
 -- diffs
 vim.opt.diffopt = {
   "internal",
+  "indent-heuristic",
   "filler",
   "closeoff",
-  "iwhiteeol",
   "linematch:80",
 }
 
