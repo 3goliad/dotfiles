@@ -1,6 +1,8 @@
 return {
   "echasnovski/mini.nvim",
   config = function()
+    require("mini.pairs").setup()
+    require("mini.misc").setup()
     require("mini.files").setup()
 
     Brown.keymaps.f:add({

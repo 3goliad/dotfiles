@@ -1,0 +1,35 @@
+{
+    "Insert do … end block": {
+        "prefix": "do",
+        "body": ["do", "\t$0", "end"]
+    },
+    "Insert do |variable| … end block": {
+        "prefix": "dop",
+        "body": ["do |${1:variable}|", "\t$0", "end"]
+    },
+    "case": {
+        "prefix": "case",
+        "body": [
+            "case ${1:test}",
+            "when $2",
+            "\t$3",
+            "when $4",
+            "\t$5",
+            "else",
+            "\t$6",
+            "end"
+        ]
+    },
+    "RSpec skeleton": {
+        "prefix": "rspecskeleton",
+        "body": [
+            "# frozen_string_literal: true",
+            "",
+            "require \"rails_helper\"",
+            "",
+            "RSpec.describe $1 do",
+            "\t$0",
+            "end"
+        ]
+    }
+}
