@@ -9,8 +9,9 @@ vim.o.confirm = true
 vim.g.have_nerd_font = true
 vim.o.updatetime = 350
 vim.o.number = true
+vim.o.numberwidth = 3
 vim.o.showmode = false
-vim.o.signcolumn = "yes"
+vim.o.signcolumn = "auto:1-2"
 vim.o.list = true
 vim.opt.listchars = { tab = "» ", trail = "·", nbsp = "␣" }
 vim.o.cursorline = true
