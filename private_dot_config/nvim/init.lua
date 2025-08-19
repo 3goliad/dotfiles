@@ -105,12 +105,12 @@ Brown.keymaps.w:add(
 )
 Brown.keymaps.b:add(
   { "s", "<cmd>w<CR>", desc = "[B]uffer [S]ave" },
-  { "k", "<cmd>q<CR>", desc = "[B]uffer [K]ill" },
   { "[", "<cmd>bp<CR>", desc = "[B]uffer [P]rev" },
   { "]", "<cmd>bn<CR>", desc = "[B]uffer [N]ext" }
 )
 
 vim.lsp.enable("lua_ls")
 vim.lsp.enable("ruff")
+vim.lsp.enable("rust_analyzer")
 
 require("config.lazy")

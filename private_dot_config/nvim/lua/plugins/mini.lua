@@ -3,8 +3,11 @@ return {
   config = function()
     require("mini.pairs").setup()
     require("mini.misc").setup()
-    require("mini.files").setup()
 
+    require("mini.bufremove").setup()
+    Brown.keymaps.b:add({ "k", MiniBufremove.delete, desc = "[B]uffer [K]ill" })
+
+    require("mini.files").setup()
     Brown.keymaps.f:add({
       "f",
       function()
