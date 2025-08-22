@@ -12,7 +12,7 @@ set $term foot
 # Your preferred application launcher
 set $menu fuzzel
 
-font pango:BigBlueTermPlus Nerd Font Propo Regular 24px
+font pango:BigBlueTermPlus Nerd Font Propo Regular 22px
 default_border pixel 4
 smart_borders no_gaps
 # for_window [app_id="foot"] border pixel 2
