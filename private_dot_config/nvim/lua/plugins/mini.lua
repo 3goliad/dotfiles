@@ -3,6 +3,17 @@ return {
   config = function()
     require("mini.pairs").setup()
     require("mini.misc").setup()
+    require("mini.statusline").setup({ use_icons = vim.g.have_nerd_font })
+
+    require("mini.trailspace").setup()
+    Brown.keymaps.b:add({
+      "s",
+      function()
+        MiniTrailspace.trim()
+        MiniTrailspace.trim_last_lines()
+      end,
+      desc = "[s]trip trailing whitespace",
+    })
 
     require("mini.bufremove").setup()
     Brown.keymaps.b:add({ "k", MiniBufremove.delete, desc = "[B]uffer [K]ill" })
@@ -34,16 +45,5 @@ return {
     -- - sd'   - [S]urround [D]elete [']quotes
     -- - sr)'  - [S]urround [R]eplace [)] [']
     -- require("mini.surround").setup()
-
-    local statusline = require("mini.statusline")
-    statusline.setup({ use_icons = vim.g.have_nerd_font })
-
-    -- You can configure sections in the statusline by overriding their
-    -- default behavior. For example, here we set the section for
-    -- cursor location to LINE:COLUMN
-    ---@diagnostic disable-next-line: duplicate-set-field
-    -- statusline.section_location = function()
-    -- return "%2l:%-2v"
-    -- end
   end,
 }
