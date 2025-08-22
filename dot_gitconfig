@@ -15,6 +15,15 @@
 [core]
     excludesfile = ~/.config/git/gitignore
 
+[commit]
+    verbose = true
+
+[init]
+    defaultBranch = main
+
+[rebase]
+    autoSquash = true
+
 [github]
     user = 3goliad
 
