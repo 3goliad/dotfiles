@@ -13,22 +13,38 @@ return {
       },
       { "nvim-telescope/telescope-ui-select.nvim" },
       { "nvim-tree/nvim-web-devicons", enabled = vim.g.have_nerd_font },
+      "nvim-telescope/telescope-project.nvim",
       -- { "nvim-telescope/telescope-file-browser.nvim" },
     },
     config = function()
       require("telescope").setup({
-        -- You can put your default mappings / updates / etc. in here
-        --  All the info you're looking for is in `:help telescope.setup()`
-        --
-        -- defaults = {
-        --   mappings = {
-        --     i = { ['<c-enter>'] = 'to_fuzzy_refine' },
-        --   },
-        -- },
-        -- pickers = {}
         extensions = {
           ["ui-select"] = {
             require("telescope.themes").get_dropdown(),
+          },
+          project = {
+            on_project_selected = function(prompt_bufnr)
+              local project_actions =
+                require("telescope._extensions.project.actions")
+              local cowed_tabline = require("cowed-tabline")
+
+              local title = project_actions.get_selected_title(prompt_bufnr)
+
+              local tab_id = cowed_tabline.find_tab_id_by_name(title)
+              if tab_id then
+                vim.schedule(function()
+                  vim.api.nvim_set_current_tabpage(tab_id)
+                end)
+              else
+                vim.cmd.tabnew()
+                vim.schedule(function()
+                  local path = project_actions.get_selected_path(prompt_bufnr)
+                  vim.cmd.tchdir(path)
+                  cowed_tabline.set_tab_name(title)
+                  require("telescope.builtin").find_files()
+                end)
+              end
+            end,
           },
         },
       })
@@ -36,7 +52,7 @@ return {
       -- Enable Telescope extensions if they are installed
       pcall(require("telescope").load_extension, "fzf")
       require("telescope").load_extension("ui-select")
-      -- require("telescope").load_extension("file_browser")
+      require("telescope").load_extension("project")
 
       -- See `:help telescope.builtin`
       local tb = require("telescope.builtin")
@@ -77,6 +93,12 @@ return {
         "b",
         tb.buffers,
         desc = "[B]ounce to [B]uffer",
+      })
+      local tele_project = require("telescope").extensions.project
+      Brown.keymaps.p:add({
+        "p",
+        tele_project.project,
+        desc = "switch to [p]roject tab",
       })
     end,
   },

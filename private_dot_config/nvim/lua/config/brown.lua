@@ -46,6 +46,7 @@ M.keymaps.g = KeyGroup.new("<leader>g", "[G]it")
 M.keymaps.g.h = KeyGroup.new("<leader>gh", "[G]it [H]unk")
 M.keymaps.s = KeyGroup.new("<leader>s", "[S]earch")
 M.keymaps.m = KeyGroup.new("<leader>m", "Filetype ([M]ode)")
+M.keymaps.p = KeyGroup.new("<leader>p", "[P]roject")
 
 M.which_key_spec = {}
 local i = 1
