@@ -31,6 +31,7 @@ vim.o.splitright = true
 vim.o.splitbelow = true
 -- diffs
 vim.opt.diffopt = {
+  "algorithm:patience",
   "internal",
   "indent-heuristic",
   "filler",

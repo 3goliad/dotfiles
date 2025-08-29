@@ -1,5 +1,5 @@
 return {
-  "echasnovski/mini.nvim",
+  "nvim-mini/mini.nvim",
   config = function()
     require("mini.pairs").setup()
     require("mini.misc").setup()
@@ -7,12 +7,12 @@ return {
 
     require("mini.trailspace").setup()
     Brown.keymaps.b:add({
-      "s",
+      "t",
       function()
         MiniTrailspace.trim()
         MiniTrailspace.trim_last_lines()
       end,
-      desc = "[s]trip trailing whitespace",
+      desc = "[t]rim trailing whitespace",
     })
 
     require("mini.bufremove").setup()
