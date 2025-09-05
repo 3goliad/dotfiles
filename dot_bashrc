@@ -35,4 +35,4 @@ daily_commits() {
 # Aliases
 alias d="docker"
 alias dc="docker compose"
-alias dcrm="docker compose -p crm -f ~/Work/crm/development/bind-compose.yml"
+alias dcrm="docker compose -p crm -f ~/Work/crm/development/compose.yml"
