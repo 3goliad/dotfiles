@@ -33,6 +33,8 @@ daily_commits() {
 }
 
 # Aliases
+alias g="git"
+
 alias d="docker"
 alias dc="docker compose"
 alias dcrm="docker compose -p crm -f ~/Work/crm/development/compose.yml"
