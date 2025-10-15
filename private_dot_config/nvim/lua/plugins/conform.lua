@@ -35,6 +35,8 @@ return {
         "ruff_format",
         "ruff_organize_imports",
       },
+      javascript = { "prettier" },
+      javascriptreact = { "prettier" },
     },
   },
 }
