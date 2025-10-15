@@ -115,6 +115,7 @@ Brown.keymaps.b:add(
 vim.lsp.enable("lua_ls")
 vim.lsp.enable("ruff")
 vim.lsp.enable("rust_analyzer")
+vim.lsp.enable("ts_ls")
 
 require("cowed-tabline").setup()
 require("config.lazy")
