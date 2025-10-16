@@ -44,16 +44,16 @@ vim.diagnostic.config({
   underline = true,
   -- underline = { severity = vim.diagnostic.severity.ERROR },
   severity_sort = true,
-  virtual_lines = { current_line = true },
-  -- float = { border = "rounded", source = "if_many" },
-  -- signs = vim.g.have_nerd_font and {
-  --   text = {
-  --     [vim.diagnostic.severity.ERROR] = "󰅚 ",
-  --     [vim.diagnostic.severity.WARN] = "󰀪 ",
-  --     [vim.diagnostic.severity.INFO] = "󰋽 ",
-  --     [vim.diagnostic.severity.HINT] = "󰌶 ",
-  --   },
-  -- } or {},
+  -- virtual_lines = { current_line = true },
+  float = { border = "rounded", source = "if_many" },
+  signs = vim.g.have_nerd_font and {
+    text = {
+      [vim.diagnostic.severity.ERROR] = "󰅚 ",
+      [vim.diagnostic.severity.WARN] = "󰀪 ",
+      [vim.diagnostic.severity.INFO] = "󰋽 ",
+      [vim.diagnostic.severity.HINT] = "󰌶 ",
+    },
+  } or {},
   -- virtual_text = {
   --   source = "if_many",
   --   spacing = 2,
@@ -67,6 +67,16 @@ vim.diagnostic.config({
   --     return diagnostic_message[diagnostic.severity]
   --   end,
   -- },
+})
+
+vim.api.nvim_create_autocmd("CursorHold", {
+  desc = "Show diagnostics on hover",
+  group = vim.api.nvim_create_augroup("hover-diagnostics", { clear = true }),
+  callback = function()
+    vim.diagnostic.open_float(nil, {
+      scope = "cursor",
+    })
+  end,
 })
 
 vim.api.nvim_create_autocmd("TextYankPost", {
@@ -116,6 +126,11 @@ vim.lsp.enable("lua_ls")
 vim.lsp.enable("ruff")
 vim.lsp.enable("rust_analyzer")
 vim.lsp.enable("ts_ls")
+-- biome
+-- eslint
+-- tailwindcss
+-- ttags
+-- asg-grep
 
 require("cowed-tabline").setup()
 require("config.lazy")
