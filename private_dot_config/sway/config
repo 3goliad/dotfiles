@@ -155,4 +155,7 @@ bar {
     swaybar_command waybar
 }
 
+exec lxpolkit
+exec nm-applet
+
 include /etc/sway/config.d/*

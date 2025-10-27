@@ -17,7 +17,7 @@
         "temperature",
         // "cpu",
         // "memory",
-        "network",
+        // "network",
         "backlight",
         "power-profiles-daemon",
         "battery",
@@ -36,7 +36,7 @@
         "tooltip-format": "{app}: {title}"
     },
     "tray": {
-        // "icon-size": 21,
+        "icon-size": 21,
         "spacing": 10,
         // "icons": {
         //   "blueman": "bluetooth",
