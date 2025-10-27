@@ -126,8 +126,8 @@ vim.lsp.enable("lua_ls")
 vim.lsp.enable("ruff")
 vim.lsp.enable("rust_analyzer")
 vim.lsp.enable("ts_ls")
+vim.lsp.enable("eslint")
 -- biome
--- eslint
 -- tailwindcss
 -- ttags
 -- asg-grep
