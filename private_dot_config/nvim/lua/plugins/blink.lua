@@ -4,6 +4,7 @@ return { -- Autocompletion
   dependencies = {
     "folke/lazydev.nvim",
   },
+  version = "1.*",
   --- @module 'blink.cmp'
   --- @type blink.cmp.Config
   opts = {
