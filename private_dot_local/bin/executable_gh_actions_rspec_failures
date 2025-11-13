@@ -11,8 +11,13 @@ from pathlib import Path
 def run_gh(*args, **kwargs):
     process = subprocess.run(["gh", *args], capture_output=True, **kwargs)
     if process.returncode != 0:
+        print(
+            "gh returned non-zero exit code!",
+            exit_code=process.returncode,
+            argv=["gh", *args],
+        )
         print(process.stdout)
-        raise Exception("failed to call gh command")
+        raise Exception("failed to call gh command: ")
 
     if process.stdout:
         return json.loads(process.stdout)
