@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+set -euxo pipefail
+
+devcontainer up --workspace-folder .
+devcontainer exec --workspace-folder . "${SHELL:-/usr/bin/bash}"
