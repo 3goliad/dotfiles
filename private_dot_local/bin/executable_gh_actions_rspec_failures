@@ -75,11 +75,11 @@ if not dst.exists() or force:
     run_gh("run", "download", str(workflow_run_id), cwd=dst)
 
 failures = set()
-for results_file in dst.glob("rspec-results-*/results.json"):
+for results_file in dst.glob("results-rspec-*/tmp/rwx-results.json"):
     results = json.loads(results_file.read_text())
-    for example in results["examples"]:
-        if example["status"] == "failed":
-            failures.add(example["file_path"])
+    for test in results["tests"]:
+        if test["attempt"]["status"]["kind"] == "failed":
+            failures.add(test["id"])
 
 for failure in failures:
     print(failure)
