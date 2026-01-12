@@ -127,10 +127,6 @@ vim.lsp.enable("ruff")
 vim.lsp.enable("rust_analyzer")
 vim.lsp.enable("ts_ls")
 vim.lsp.enable("eslint")
--- biome
--- tailwindcss
--- ttags
--- asg-grep
 
 require("cowed-tabline").setup()
 require("config.lazy")

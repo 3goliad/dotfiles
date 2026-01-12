@@ -37,6 +37,13 @@ return {
       },
       javascript = { "prettier" },
       javascriptreact = { "prettier" },
+      typescript = { "prettier" },
+      typescriptreact = { "prettier" },
+      json = { "prettier" },
+      markdown = { "prettier" },
+      css = { "prettier" },
+      html = { "prettier" },
+      yaml = { "prettier" },
     },
   },
 }
