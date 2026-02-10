@@ -3,7 +3,7 @@ require("config.brown")
 -- keymaps and typing
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
-vim.o.timeoutlen = 400
+vim.o.timeoutlen = 500
 vim.o.confirm = true
 -- display
 vim.g.have_nerd_font = true
