@@ -22,30 +22,6 @@ return {
           ["ui-select"] = {
             require("telescope.themes").get_dropdown(),
           },
-          project = {
-            on_project_selected = function(prompt_bufnr)
-              local project_actions =
-                require("telescope._extensions.project.actions")
-              local cowed_tabline = require("cowed-tabline")
-
-              local title = project_actions.get_selected_title(prompt_bufnr)
-
-              local tab_id = cowed_tabline.find_tab_id_by_name(title)
-              if tab_id then
-                vim.schedule(function()
-                  vim.api.nvim_set_current_tabpage(tab_id)
-                end)
-              else
-                vim.cmd.tabnew()
-                vim.schedule(function()
-                  local path = project_actions.get_selected_path(prompt_bufnr)
-                  vim.cmd.tchdir(path)
-                  cowed_tabline.set_tab_name(title)
-                  require("telescope.builtin").find_files()
-                end)
-              end
-            end,
-          },
         },
       })
 
@@ -93,12 +69,6 @@ return {
         "b",
         tb.buffers,
         desc = "[B]ounce to [B]uffer",
-      })
-      local tele_project = require("telescope").extensions.project
-      Brown.keymaps.p:add({
-        "p",
-        tele_project.project,
-        desc = "switch to [p]roject tab",
       })
     end,
   },

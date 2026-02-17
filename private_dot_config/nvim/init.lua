@@ -16,7 +16,7 @@ vim.o.list = true
 vim.opt.listchars = { tab = "» ", trail = "·", nbsp = "␣" }
 vim.o.cursorline = true
 vim.o.scrolloff = 10
-vim.o.showtabline = 2
+vim.o.showtabline = 1
 -- state and history
 vim.o.undofile = true
 vim.opt.messagesopt = { "hit-enter", "history:2000" }
@@ -145,5 +145,4 @@ vim.lsp.enable("rust_analyzer")
 vim.lsp.enable("ts_ls")
 vim.lsp.enable("eslint")
 
-require("cowed-tabline").setup()
 require("config.lazy")
