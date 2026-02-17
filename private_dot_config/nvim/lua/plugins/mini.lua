@@ -6,30 +6,31 @@ return {
     require("mini.statusline").setup({ use_icons = vim.g.have_nerd_font })
 
     require("mini.trailspace").setup()
-    Brown.keymaps.b:add({
-      "t",
-      function()
-        MiniTrailspace.trim()
-        MiniTrailspace.trim_last_lines()
-      end,
+    vim.keymap.set("n", "<leader>bt", function()
+      MiniTrailspace.trim()
+      MiniTrailspace.trim_last_lines()
+    end, {
       desc = "[t]rim trailing whitespace",
     })
 
     require("mini.bufremove").setup()
-    Brown.keymaps.b:add({ "k", MiniBufremove.delete, desc = "[B]uffer [K]ill" })
+    vim.keymap.set(
+      "n",
+      "<leader>bt",
+      MiniBufremove.delete,
+      { desc = "[B]uffer [K]ill" }
+    )
 
     require("mini.files").setup()
-    Brown.keymaps.f:add({
-      "f",
-      function()
-        MiniFiles.open(vim.api.nvim_buf_get_name(0), false)
-      end,
-      desc = "Browse at this [f]ile",
-    }, {
-      "l",
+    vim.keymap.set("n", "<leader>ff", function()
+      MiniFiles.open(vim.api.nvim_buf_get_name(0), false)
+    end, { desc = "Browse at this [f]ile" })
+    vim.keymap.set(
+      "n",
+      "<leader>fl",
       MiniFiles.open,
-      desc = "Open [l]ast file browser",
-    })
+      { desc = "Open [l]ast file browser" }
+    )
 
     -- Better Around/Inside textobjects
     --
