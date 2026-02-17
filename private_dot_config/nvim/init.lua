@@ -54,31 +54,18 @@ vim.diagnostic.config({
       [vim.diagnostic.severity.HINT] = "󰌶 ",
     },
   } or {},
-  -- virtual_text = {
-  --   source = "if_many",
-  --   spacing = 2,
-  --   format = function(diagnostic)
-  --     local diagnostic_message = {
-  --       [vim.diagnostic.severity.ERROR] = diagnostic.message,
-  --       [vim.diagnostic.severity.WARN] = diagnostic.message,
-  --       [vim.diagnostic.severity.INFO] = diagnostic.message,
-  --       [vim.diagnostic.severity.HINT] = diagnostic.message,
-  --     }
-  --     return diagnostic_message[diagnostic.severity]
-  --   end,
-  -- },
 })
 
-vim.api.nvim_create_autocmd("CursorHold", {
-  desc = "Show diagnostics on hover",
-  group = vim.api.nvim_create_augroup("hover-diagnostics", { clear = true }),
-  callback = function()
-    vim.diagnostic.open_float(nil, {
-      scope = "cursor",
-    })
-  end,
-})
-
+-- vim.api.nvim_create_autocmd("CursorHold", {
+--   desc = "Show diagnostics on hover",
+--   group = vim.api.nvim_create_augroup("hover-diagnostics", { clear = true }),
+--   callback = function()
+--     vim.diagnostic.open_float(nil, {
+--       scope = "cursor",
+--     })
+--   end,
+-- })
+--
 vim.api.nvim_create_autocmd("TextYankPost", {
   desc = "Highlight when yanking (copying) text",
   group = vim.api.nvim_create_augroup("yank-highlighting", { clear = true }),
@@ -121,6 +108,36 @@ Brown.keymaps.b:add(
   { "[", "<cmd>bp<CR>", desc = "[B]uffer [P]rev" },
   { "]", "<cmd>bn<CR>", desc = "[B]uffer [N]ext" }
 )
+Brown.keymaps.i:add({
+  "d",
+  function()
+    vim.diagnostic.open_float(nil, {
+      scope = "cursor",
+    })
+  end,
+  desc = "[I]nspect [D]iagnostic under cursor",
+})
+Brown.keymaps.t:add({
+  "d",
+  function()
+    vim.diagnostic.show(nil, 0, nil, {
+      virtual_text = {
+        source = "if_many",
+        spacing = 2,
+        format = function(diagnostic)
+          local diagnostic_message = {
+            [vim.diagnostic.severity.ERROR] = diagnostic.message,
+            [vim.diagnostic.severity.WARN] = diagnostic.message,
+            [vim.diagnostic.severity.INFO] = diagnostic.message,
+            [vim.diagnostic.severity.HINT] = diagnostic.message,
+          }
+          return diagnostic_message[diagnostic.severity]
+        end,
+      },
+    })
+  end,
+  desc = "[T]oggle [D]iagnostics (virtual text)",
+})
 
 vim.lsp.enable("lua_ls")
 vim.lsp.enable("ruff")
