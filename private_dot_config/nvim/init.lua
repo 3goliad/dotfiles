@@ -23,6 +23,10 @@ vim.opt.messagesopt = { "hit-enter", "history:2000" }
 -- formatting
 vim.o.breakindent = true
 vim.o.fixendofline = false -- don't fix up old files
+vim.o.tabstop = 8
+vim.o.softtabstop = 4
+vim.o.shiftwidth = 4
+vim.o.expandtab = true
 -- searching
 vim.o.ignorecase = true
 vim.o.smartcase = true
@@ -56,16 +60,6 @@ vim.diagnostic.config({
   } or {},
 })
 
--- vim.api.nvim_create_autocmd("CursorHold", {
---   desc = "Show diagnostics on hover",
---   group = vim.api.nvim_create_augroup("hover-diagnostics", { clear = true }),
---   callback = function()
---     vim.diagnostic.open_float(nil, {
---       scope = "cursor",
---     })
---   end,
--- })
---
 vim.api.nvim_create_autocmd("TextYankPost", {
   desc = "Highlight when yanking (copying) text",
   group = vim.api.nvim_create_augroup("yank-highlighting", { clear = true }),
