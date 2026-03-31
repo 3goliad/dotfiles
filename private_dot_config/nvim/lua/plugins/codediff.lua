@@ -6,13 +6,7 @@ return {
     require("codediff").setup({
       explorer = {
         position = "bottom",
-        height = "14",
-      },
-      keymaps = {
-        view = {
-          diff_get = "<leader>do",
-          diff_put = "<leader>dp",
-        },
+        height = 14,
       },
     })
   end,
