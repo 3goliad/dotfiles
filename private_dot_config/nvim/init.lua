@@ -17,6 +17,11 @@ vim.opt.listchars = { tab = "» ", trail = "·", nbsp = "␣" }
 vim.o.cursorline = true
 vim.o.scrolloff = 10
 vim.o.showtabline = 1
+-- code folding
+vim.o.foldmethod = "expr"
+vim.o.foldtext = ""
+vim.o.foldlevelstart = 99
+vim.o.foldnestmax = 10
 -- state and history
 vim.o.undofile = true
 vim.opt.messagesopt = { "hit-enter", "history:2000" }
