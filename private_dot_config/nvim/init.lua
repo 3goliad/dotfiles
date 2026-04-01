@@ -55,14 +55,14 @@ vim.diagnostic.config({
   severity_sort = true,
   -- virtual_lines = { current_line = true },
   float = { border = "rounded", source = "if_many" },
-  signs = vim.g.have_nerd_font and {
+  signs = {
     text = {
       [vim.diagnostic.severity.ERROR] = "󰅚 ",
       [vim.diagnostic.severity.WARN] = "󰀪 ",
       [vim.diagnostic.severity.INFO] = "󰋽 ",
       [vim.diagnostic.severity.HINT] = "󰌶 ",
     },
-  } or {},
+  },
 })
 
 vim.api.nvim_create_autocmd("TextYankPost", {
