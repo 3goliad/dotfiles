@@ -13,7 +13,7 @@ vim.o.numberwidth = 3
 vim.o.showmode = false
 vim.o.signcolumn = "auto:1-2"
 vim.o.list = true
-vim.opt.listchars = { tab = "» ", trail = "·", nbsp = "␣" }
+vim.o.listchars = "tab:» ,trail:·,nbsp:␣"
 vim.o.cursorline = true
 vim.o.scrolloff = 10
 vim.o.showtabline = 1
