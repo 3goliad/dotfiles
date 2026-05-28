@@ -1,6 +1,13 @@
-vim.cmd.colorscheme("vim")
-vim.o.background = "dark"
+if vim.g.colors_name ~= nil then
+  vim.cmd("highlight clear")
+end
 vim.g.colors_name = "jawbreaker"
+
+local colors = {
+  cool_black = "#0e1013",
+  warm_black = "#130d08",
+}
+
 -- vim.api.nvim_set_hl(0, "Normal", { bg = "#5b003c" })
 local warm_black = "#130d08"
 local sand_body = "#ffe1c7"

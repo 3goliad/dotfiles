@@ -60,7 +60,7 @@ return {
           desc = "[S]earch this [B]uffer",
         }
       )
-      Brown.keymaps.g:add({ "s", tb.builtin, desc = "Search Git [S]tatus" })
+      Brown.keymaps.g:add({ "s", tb.git_status, desc = "Search Git [S]tatus" })
       Brown.keymaps.f:add({
         ".",
         tb.oldfiles,
