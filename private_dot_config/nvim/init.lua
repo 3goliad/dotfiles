@@ -140,10 +140,12 @@ miniclue.setup({
     { mode = { "n", "x" }, keys = "z" },
   },
   clues = {
+    { mode = "n", keys = "<Leader>b", desc = "[B]uffer" },
+    { mode = "n", keys = "<Leader>s", desc = "[S]earch" },
     { mode = "n", keys = "<Leader>g", desc = "[G]it" },
     { mode = "n", keys = "<Leader>f", desc = "[F]ile" },
     { mode = "n", keys = "<Leader>t", desc = "[T]oggle" },
-    { mode = "n", keys = "<Leader>t", desc = "[I]nspect" },
+    { mode = "n", keys = "<Leader>i", desc = "[I]nspect" },
     miniclue.gen_clues.square_brackets(),
     -- miniclue.gen_clues.builtin_completion(),
     miniclue.gen_clues.g(),
@@ -155,8 +157,8 @@ miniclue.setup({
 })
 
 local win_config = function()
-  local height = math.floor(0.618 * vim.o.lines)
-  local width = math.floor(0.618 * vim.o.columns)
+  local height = math.floor(0.8 * vim.o.lines)
+  local width = math.floor(0.8 * vim.o.columns)
   return {
     anchor = "NW",
     height = height,
@@ -167,9 +169,32 @@ local win_config = function()
 end
 require("mini.pick").setup({
   window = { config = win_config },
+  mappings = {
+    choose_all_as_marked = {
+      char = "<C-q>",
+      func = function()
+        local opts = MiniPick.get_picker_opts()
+        if not opts then
+          return false
+        end
+
+        local ok, res =
+          pcall(opts.source.choose_marked, MiniPick.get_picker_matches().all)
+
+        if not ok then
+          vim.schedule(function()
+            error("(mini.pick) Error during choose marked:\n" .. res, 0)
+          end)
+        end
+
+        return not (ok and res)
+      end,
+    },
+  },
 })
 nmap_leader(" ", MiniPick.builtin.files, "[ ] Search files")
-nmap_leader("ss", MiniPick.builtin.grep_live, "Live [g]rep search")
+nmap_leader("sg", MiniPick.builtin.grep_live, "Live [g]rep search")
+nmap_leader("sb", MiniExtra.pickers.buf_lines, "Search [b]uffer")
 nmap_leader("sh", MiniPick.builtin.help, "Search [h]elp")
 nmap_leader("bb", MiniPick.builtin.buffers, "[B]ounce to buffer")
 
