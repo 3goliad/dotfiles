@@ -1,0 +1,67 @@
+-- vim.o.completeopt = "menuone,fuzzy,popup,noinsert,noselect"
+-- vim.o.autocomplete = true
+-- vim.o.complete = "o,.,w,b,u"
+--
+-- vim.pack.add({
+--   "https://github.com/neovim/nvim-lspconfig",
+-- })
+--
+-- vim.lsp.enable({
+--   "lua_ls",
+-- })
+--
+-- -- The rest of this file is only needed for kind highlighting
+--
+-- -- Less than optimal, just for show, only needed if your colorscheme
+-- -- doesn't have completion kind hlgroups already built in
+-- local _kind_hl = {
+--   Text          = "@string",
+--   Method        = "@function",
+--   Function      = "@function",
+--   Constructor   = "@constructor",
+--   Field         = "@variable.member",
+--   Variable      = "@variable",
+--   Class         = "@type",
+--   Interface     = "@type",
+--   Module        = "@module",
+--   Property      = "@property",
+--   Unit          = "@operator",
+--   Value         = "@constant",
+--   Enum          = "@type",
+--   Keyword       = "@keyword",
+--   Snippet       = "@string",
+--   Color         = "@string",
+--   File          = "@constant",
+--   Reference     = "@constant",
+--   Folder        = "@constant",
+--   EnumMember    = "@constant",
+--   Constant      = "@constant",
+--   Struct        = "@type",
+--   Event         = "@keyword",
+--   Operator      = "@operator",
+--   TypeParameter = "@variable.parameter",
+-- }
+--
+-- vim.api.nvim_create_autocmd("LspAttach", {
+--   group = vim.api.nvim_create_augroup("user.lsp-autocompletion", { clear = true }),
+--   callback = function(args)
+--     local client = assert(vim.lsp.get_client_by_id(args.data.client_id))
+--     if client:supports_method("textDocument/completion") then
+--       vim.lsp.completion.enable(true, client.id, args.buf, {
+--         autotrigger = false,
+--         convert = function(item)
+--           -- If your colorscheme supports blink.cmp, you can use its hlgroups
+--           -- if vim.lsp.protocol.CompletionItemKind[item.kind] ~= nil then
+--           --   return { kind_hlgroup = "BlinkCmpKind" .. vim.lsp.protocol.CompletionItemKind[item.kind] }
+--           -- end
+--
+--           if vim.lsp.protocol.CompletionItemKind[item.kind] ~= nil then
+--             return { kind_hlgroup = _kind_hl[vim.lsp.protocol.CompletionItemKind[item.kind]] }
+--           end
+--
+--           return {}
+--         end,
+--       })
+--     end
+--   end,
+-- })

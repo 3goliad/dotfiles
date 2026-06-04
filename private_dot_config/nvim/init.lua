@@ -1,53 +1,10 @@
-require("config.brown")
+require("config.settings")
 
--- keymaps and typing
-vim.g.mapleader = " "
-vim.g.maplocalleader = " "
-vim.o.timeoutlen = 500
-vim.o.confirm = true
--- display
-vim.g.have_nerd_font = true
-vim.o.updatetime = 350
-vim.o.number = true
-vim.o.numberwidth = 3
-vim.o.showmode = false
-vim.o.signcolumn = "auto:1-2"
-vim.o.list = true
-vim.o.listchars = "tab:» ,trail:·,nbsp:␣"
-vim.o.cursorline = true
-vim.o.scrolloff = 10
-vim.o.showtabline = 1
--- code folding
-vim.o.foldmethod = "expr"
-vim.o.foldtext = ""
-vim.o.foldlevelstart = 99
-vim.o.foldnestmax = 10
--- state and history
-vim.o.undofile = true
-vim.opt.messagesopt = { "hit-enter", "history:2000" }
--- formatting
-vim.o.breakindent = true
-vim.o.fixendofline = false -- don't fix up old files
-vim.o.tabstop = 8
-vim.o.softtabstop = 4
-vim.o.shiftwidth = 4
-vim.o.expandtab = true
--- searching
-vim.o.ignorecase = true
-vim.o.smartcase = true
-vim.o.inccommand = "split"
--- windows
-vim.o.splitright = true
-vim.o.splitbelow = true
--- diffs
-vim.opt.diffopt = {
-  "algorithm:patience",
-  "internal",
-  "indent-heuristic",
-  "filler",
-  "closeoff",
-  "linematch:80",
-}
+local nmap_leader = function(suffix, rhs, desc)
+  vim.keymap.set("n", "<Leader>" .. suffix, rhs, {
+    desc = desc,
+  })
+end
 
 vim.diagnostic.config({
   underline = true,
@@ -74,52 +31,16 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 })
 
 vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>")
-vim.keymap.set("n", "<leader>q", vim.diagnostic.setloclist, {
-  desc = "Open diagnostic [Q]uickfix list",
-})
-vim.keymap.set("t", "<Esc><Esc>", "<C-\\><C-n>", {
-  desc = "Exit terminal mode",
-})
+nmap_leader("q", vim.diagnostic.setloclist, "Open diagnostic [Q]uickfix list")
 
--- Splitting windows
-vim.keymap.set(
-  "n",
-  "<leader>wv",
-  "<C-w>v",
-  { desc = "[W]indow [V]ertical Split" }
-)
-vim.keymap.set(
-  "n",
-  "<leader>ws",
-  "<C-w>s",
-  { desc = "[W]indow [H]orizontal Split" }
-)
--- Closing windows
-vim.keymap.set("n", "<leader>wc", "<C-w>c", { desc = "[W]indow [C]lose" })
--- Switching windows
-vim.keymap.set("n", "<leader>wh", "<C-w><C-h>", { desc = "Focus left window" })
-vim.keymap.set("n", "<leader>wl", "<C-w><C-l>", { desc = "Focus right window" })
-vim.keymap.set("n", "<leader>wj", "<C-w><C-j>", { desc = "Focus lower window" })
-vim.keymap.set("n", "<leader>wk", "<C-w><C-k>", { desc = "Focus upper window" })
--- Moving windows
-vim.keymap.set("n", "<leader>wH", "<C-w>H", { desc = "Move window far left" })
-vim.keymap.set("n", "<leader>wL", "<C-w>L", { desc = "Move window far right" })
-vim.keymap.set("n", "<leader>wJ", "<C-w>J", { desc = "Move window far bottom" })
-vim.keymap.set("n", "<leader>wK", "<C-w>K", { desc = "Move window to far top" })
-
-vim.keymap.set("n", "<leader>bs", "<cmd>w<CR>", { desc = "[B]uffer [S]ave" })
-vim.keymap.set("n", "<leader>b[", "<cmd>bp<CR>", { desc = "[B]uffer [P]rev" })
-vim.keymap.set("n", "<leader>b]", "<cmd>bn<CR>", { desc = "[B]uffer [N]ext" })
-
-vim.keymap.set("n", "<leader>id", function()
+-- Diagnostics
+nmap_leader("id", function()
   vim.diagnostic.open_float(nil, {
     scope = "cursor",
   })
-end, {
-  desc = "[I]nspect [D]iagnostic under cursor",
-})
+end, "[I]nspect [D]iagnostic under cursor")
 
-vim.keymap.set("n", "<leader>td", function()
+nmap_leader("td", function()
   vim.diagnostic.show(nil, 0, nil, {
     virtual_text = {
       source = "if_many",
@@ -135,9 +56,27 @@ vim.keymap.set("n", "<leader>td", function()
       end,
     },
   })
-end, {
-  desc = "[T]oggle [D]iagnostics (virtual text)",
+end, "[T]oggle [D]iagnostics (virtual text)")
+
+vim.pack.add({
+  { src = "https://github.com/navarasu/onedark.nvim" },
+  {
+    src = "https://github.com/neovim/nvim-lspconfig",
+    version = "v2.9.0",
+  },
+  { src = "https://github.com/nvim-mini/mini.nvim" },
+  { src = "https://github.com/folke/lazydev.nvim" },
+  { src = "https://github.com/saghen/blink.cmp", version = "v1.10.2" },
+  { src = "https://github.com/stevearc/conform.nvim" },
+  { src = "https://github.com/akinsho/toggleterm.nvim" },
+  { src = "https://github.com/tpope/vim-fugitive" },
 })
+
+require("onedark").setup({
+  style = "darker",
+})
+-- Enable theme
+require("onedark").load()
 
 vim.lsp.enable("lua_ls")
 vim.lsp.enable("ruff")
@@ -146,4 +85,127 @@ vim.lsp.enable("ts_ls")
 vim.lsp.enable("eslint")
 vim.lsp.enable("rubocop")
 
-require("config.lazy")
+require("mini.extra").setup()
+require("mini.pairs").setup()
+require("mini.misc").setup()
+require("mini.statusline").setup({ use_icons = vim.g.have_nerd_font })
+
+require("mini.trailspace").setup()
+nmap_leader("bt", function()
+  MiniTrailspace.trim()
+  MiniTrailspace.trim_last_lines()
+end, "[T]rim trailing whitespace")
+
+require("mini.bufremove").setup()
+nmap_leader("bk", MiniBufremove.delete, "[B]uffer [K]ill")
+
+require("mini.files").setup()
+nmap_leader("ff", function()
+  MiniFiles.open(vim.api.nvim_buf_get_name(0), false)
+end, "Browse at this [f]ile")
+nmap_leader("fl", MiniFiles.open, "Open [l]ast file browser")
+
+require("mini.ai").setup({ n_lines = 500 })
+
+require("mini.surround").setup()
+
+require("mini.splitjoin").setup()
+
+local hi_words = MiniExtra.gen_highlighter.words
+require("mini.hipatterns").setup({
+  highlighters = {
+    fixme = hi_words({ "FIXME" }, "MiniHipatternsFixme"),
+    hack = hi_words({ "HACK" }, "MiniHipatternsHack"),
+    todo = hi_words({ "TODO" }, "MiniHipatternsTodo"),
+    note = hi_words({ "NOTE" }, "MiniHipatternsNote"),
+  },
+})
+
+local miniclue = require("mini.clue")
+miniclue.setup({
+  window = {
+    width = "auto",
+  },
+  triggers = {
+    { mode = { "n", "x" }, keys = "<Leader>" },
+    { mode = "n", keys = "[" },
+    { mode = "n", keys = "]" },
+    -- { mode = 'i', keys = '<C-x>' },
+    { mode = { "n", "x" }, keys = "g" },
+    { mode = { "n", "x" }, keys = "'" },
+    { mode = { "n", "x" }, keys = "`" },
+    { mode = { "n", "x" }, keys = '"' },
+    { mode = { "i", "c" }, keys = "<C-r>" },
+    { mode = "n", keys = "<C-w>" },
+    { mode = { "n", "x" }, keys = "z" },
+  },
+  clues = {
+    { mode = "n", keys = "<Leader>g", desc = "[G]it" },
+    { mode = "n", keys = "<Leader>f", desc = "[F]ile" },
+    { mode = "n", keys = "<Leader>t", desc = "[T]oggle" },
+    { mode = "n", keys = "<Leader>t", desc = "[I]nspect" },
+    miniclue.gen_clues.square_brackets(),
+    -- miniclue.gen_clues.builtin_completion(),
+    miniclue.gen_clues.g(),
+    miniclue.gen_clues.marks(),
+    miniclue.gen_clues.registers(),
+    miniclue.gen_clues.windows(),
+    miniclue.gen_clues.z(),
+  },
+})
+
+local win_config = function()
+  local height = math.floor(0.618 * vim.o.lines)
+  local width = math.floor(0.618 * vim.o.columns)
+  return {
+    anchor = "NW",
+    height = height,
+    width = width,
+    row = math.floor(0.5 * (vim.o.lines - height)),
+    col = math.floor(0.5 * (vim.o.columns - width)),
+  }
+end
+require("mini.pick").setup({
+  window = { config = win_config },
+})
+nmap_leader(" ", MiniPick.builtin.files, "[ ] Search files")
+nmap_leader("ss", MiniPick.builtin.grep_live, "Live [g]rep search")
+nmap_leader("sh", MiniPick.builtin.help, "Search [h]elp")
+nmap_leader("bb", MiniPick.builtin.buffers, "[B]ounce to buffer")
+
+require("lazydev").setup({
+  library = {
+    -- See the configuration section for more details
+    -- Load luvit types when the `vim.uv` word is found
+    { path = "${3rd}/luv/library", words = { "vim%.uv" } },
+  },
+})
+
+require("blink.cmp").setup(require("config.settings-blink"))
+
+-- Formatting
+local conform = require("conform")
+
+conform.setup(require("config.settings-conform"))
+
+nmap_leader("bf", function()
+  conform.format({ async = true, lsp_format = "fallback" })
+end, "[F]ormat buffer")
+
+-- Toggleterm
+require("toggleterm").setup({
+  open_mapping = "<C-\\>",
+  direction = "float",
+  float_opts = {
+    border = "rounded",
+  },
+})
+
+vim.keymap.set("t", "<Esc><Esc>", "<C-\\><C-n>", {
+  desc = "Exit terminal mode",
+})
+
+-- Fugitive
+nmap_leader("gg", "<cmd>tab Git<CR>", "Open Fu[g]itive")
+nmap_leader("gB", "<cmd>Git blame<CR>", "Git [b]lame buffer")
+nmap_leader("gL", "<cmd>vertical Git log --oneline %<CR>", "Git [l]og buffer")
