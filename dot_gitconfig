@@ -32,3 +32,5 @@
 
 [safe]
     directory = *
+[coderabbit]
+	machineId = cli/a066b943f51542009fa4e06347fa1168
