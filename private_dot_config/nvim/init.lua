@@ -194,7 +194,9 @@ require("mini.pick").setup({
 })
 nmap_leader(" ", MiniPick.builtin.files, "[ ] Search files")
 nmap_leader("sg", MiniPick.builtin.grep_live, "Live [g]rep search")
-nmap_leader("sb", MiniExtra.pickers.buf_lines, "Search [b]uffer")
+nmap_leader("sb", function()
+  MiniExtra.pickers.buf_lines({ scope = "current" })
+end, "Search [b]uffer")
 nmap_leader("sh", MiniPick.builtin.help, "Search [h]elp")
 nmap_leader("bb", MiniPick.builtin.buffers, "[B]ounce to buffer")
 
@@ -234,3 +236,6 @@ vim.keymap.set("t", "<Esc><Esc>", "<C-\\><C-n>", {
 nmap_leader("gg", "<cmd>tab Git<CR>", "Open Fu[g]itive")
 nmap_leader("gB", "<cmd>Git blame<CR>", "Git [b]lame buffer")
 nmap_leader("gL", "<cmd>vertical Git log --oneline %<CR>", "Git [l]og buffer")
+
+-- Vitest
+require("vitest").setup()
