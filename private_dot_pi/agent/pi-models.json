@@ -1,0 +1,10 @@
+{
+  "providers": {
+    "lemonade": {
+      "baseUrl": "http://localhost:13305/v1",
+      "api": "openai-completions",
+      "apiKey": "lemonade",
+      "models": [{ "id": "Gemma-4-E4B-it-GGUF" }]
+    }
+  }
+}

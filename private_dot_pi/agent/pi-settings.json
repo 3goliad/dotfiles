@@ -1,0 +1,9 @@
+{
+  "lastChangelogVersion": "0.80.7",
+  "hideThinkingBlock": false,
+  "defaultProvider": "lemonade",
+  "defaultModel": "Gemma-4-E4B-it-GGUF",
+  "packages": [],
+  "enableInstallTelemetry": false,
+  "theme": "dark"
+}
