@@ -70,6 +70,7 @@ vim.pack.add({
   { src = "https://github.com/stevearc/conform.nvim" },
   { src = "https://github.com/akinsho/toggleterm.nvim" },
   { src = "https://github.com/tpope/vim-fugitive" },
+  { src = "https://github.com/esmuellert/codediff.nvim" },
 })
 
 require("onedark").setup({
@@ -236,6 +237,11 @@ vim.keymap.set("t", "<Esc><Esc>", "<C-\\><C-n>", {
 nmap_leader("gg", "<cmd>tab Git<CR>", "Open Fu[g]itive")
 nmap_leader("gB", "<cmd>Git blame<CR>", "Git [b]lame buffer")
 nmap_leader("gL", "<cmd>vertical Git log --oneline %<CR>", "Git [l]og buffer")
+
+-- Codediff
+require("codediff").setup({
+  explorer = { position = "bottom" },
+})
 
 -- Vitest
 require("vitest").setup()
