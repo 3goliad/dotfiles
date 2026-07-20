@@ -1,9 +1,10 @@
 {
-  "lastChangelogVersion": "0.80.7",
-  "hideThinkingBlock": false,
-  "defaultProvider": "lemonade",
-  "defaultModel": "Gemma-4-E4B-it-GGUF",
+  "lastChangelogVersion": "0.80.10",
+  "hideThinkingBlock": true,
+  "defaultProvider": "openrouter",
+  "defaultModel": "z-ai/glm-5.2",
   "packages": [],
   "enableInstallTelemetry": false,
-  "theme": "dark"
+  "theme": "dark",
+  "defaultThinkingLevel": "medium"
 }
