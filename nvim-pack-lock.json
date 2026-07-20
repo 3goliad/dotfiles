@@ -26,10 +26,6 @@
       "src": "https://github.com/neovim/nvim-lspconfig",
       "version": "'v2.9.0'"
     },
-    "onedark.nvim": {
-      "rev": "df4792accde9db0043121f32628bcf8e645d9aea",
-      "src": "https://navarasu/onedark.nvim"
-    },
     "toggleterm.nvim": {
       "rev": "9a88eae817ef395952e08650b3283726786fb5fb",
       "src": "https://github.com/akinsho/toggleterm.nvim"

@@ -59,7 +59,6 @@ nmap_leader("td", function()
 end, "[T]oggle [D]iagnostics (virtual text)")
 
 vim.pack.add({
-  { src = "https://github.com/navarasu/onedark.nvim" },
   {
     src = "https://github.com/neovim/nvim-lspconfig",
     version = "v2.9.0",
@@ -73,11 +72,7 @@ vim.pack.add({
   { src = "https://github.com/esmuellert/codediff.nvim" },
 })
 
-require("onedark").setup({
-  style = "darker",
-})
--- Enable theme
-require("onedark").load()
+vim.cmd.colorscheme("jawbreaker")
 
 vim.lsp.enable("lua_ls")
 vim.lsp.enable("ruff")
