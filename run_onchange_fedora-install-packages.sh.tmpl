@@ -8,7 +8,7 @@ echo "[install-packages] Installing packages..." 1>&2
 {{   if eq .chezmoi.osRelease.id "fedora" -}}
 set -x
 sudo dnf install \
-    {{ range .packages.fedora }} {{. | quote}} {{ end }}
+    {{ range .commonpackages.fedora }} {{. | quote}} {{ end }}
 set +x
 {{   end -}}
 {{ end -}}

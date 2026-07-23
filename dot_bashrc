@@ -37,6 +37,6 @@ alias g="git"
 
 alias d="docker"
 alias dc="docker compose"
-alias dcrm="docker compose -p crm -f ~/Work/crm/development/compose-base.yml"
 eval "$(uv generate-shell-completion bash)"
 eval "$(uvx --generate-shell-completion bash)"
+eval "$(direnv hook bash)"
