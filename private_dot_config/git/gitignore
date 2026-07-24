@@ -1,0 +1,6 @@
+# used by direnv
+/.envrc
+
+/.claude/
+/.claude/worktrees/
+/.worktreeinclude

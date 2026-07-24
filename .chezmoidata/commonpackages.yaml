@@ -5,3 +5,4 @@ commonpackages:
     - fd
     - fzf
     - direnv
+    - jq
