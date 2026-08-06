@@ -58,6 +58,9 @@ nmap_leader("td", function()
   })
 end, "[T]oggle [D]iagnostics (virtual text)")
 
+-- Custom LSP configs
+vim.lsp.enable("typescript_lsp")
+
 vim.pack.add({
   {
     src = "https://github.com/neovim/nvim-lspconfig",
@@ -77,7 +80,6 @@ vim.cmd.colorscheme("jawbreaker")
 vim.lsp.enable("lua_ls")
 vim.lsp.enable("ruff")
 vim.lsp.enable("rust_analyzer")
-vim.lsp.enable("ts_ls")
 vim.lsp.enable("eslint")
 vim.lsp.enable("ruby_lsp")
 vim.lsp.enable("rubocop")
