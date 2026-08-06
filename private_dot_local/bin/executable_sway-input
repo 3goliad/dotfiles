@@ -1,0 +1,43 @@
+#!/bin/bash
+
+set -euo pipefail
+
+format="%s"
+inputcmd="fuzzel --dmenu"
+swaymsg="swaymsg"
+while [ $# -gt 0 ]
+do
+    case $1 in
+        -s)
+            swaymsg="$swaymsg -s '$2'"
+            shift
+            ;;
+        -F)
+            format="$2"
+            shift
+            ;;
+        -f)
+            echo "Warning: -f is not supported"
+            ;;
+        -P)
+            inputcmd="$inputcmd --prompt-only '$2'"
+            shift
+            ;;
+        -l)
+            echo "Warning: -l is not supported"
+            ;;
+        -v)
+            exec swaymsg -v
+            ;;
+        *)
+            echo "Unknown argument '$1'" >&2
+            exit 1
+            ;;
+    esac
+    shift
+done
+cmd=$(eval $inputcmd < /dev/null)
+[ $? -ne 0 ] && exit $?
+cmd=$(printf "$format" "$cmd")
+eval $swaymsg "$cmd"
+exit $?
