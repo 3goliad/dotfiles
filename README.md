@@ -1,4 +1,5 @@
 Currently relies on:
+
 - chezmoi
 - alacritty
 - i3
@@ -12,4 +13,9 @@ Currently relies on:
   ```
 
 # TODO
+
 - verify system integrity on boot
+
+# Theme packages
+
+- `NsCDE-icon-theme`
