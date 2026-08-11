@@ -5,3 +5,5 @@ packages:
     - "ripgrep"
     - "fd"
     - "fzf"
+    - "direnv"
+    - "jq"

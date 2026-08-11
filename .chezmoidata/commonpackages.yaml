@@ -1,8 +1,0 @@
-commonpackages:
-  fedora:
-    - neovim
-    - ripgrep
-    - fd
-    - fzf
-    - direnv
-    - jq
