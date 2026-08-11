@@ -1,6 +1,3 @@
--- vim.o.makeprg = "bundle exec rubocop --format emacs"
--- vim.o.errorformat = "%f:%l:%c: %t: %m," .. vim.o.errorformat
-
 vim.keymap.set("n", "<leader>mtt", function()
   local root_dir = MiniMisc.find_root(0, { ".git", "Gemfile" })
   if root_dir == nil then
