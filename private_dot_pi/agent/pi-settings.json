@@ -1,5 +1,5 @@
 {
-  "lastChangelogVersion": "0.80.10",
+  "lastChangelogVersion": "0.84.2",
   "hideThinkingBlock": true,
   "defaultProvider": "openrouter",
   "defaultModel": "z-ai/glm-5.2",
