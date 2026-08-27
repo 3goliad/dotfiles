@@ -1,12 +1,12 @@
 #!/bin/sh
 # When you change these, don't forget to update the SystemD user environment
 # files under .config/environment.d/
-export PATH="$HOME/bin:$HOME/.local/bin:$PATH" export
+export PATH="$HOME/bin:$HOME/.local/bin:$PATH"
 export _JAVA_AWT_WM_NONREPARENTING=1
 export EDITOR=nvim
-export TERMINAL=foot
+export TERMINAL=ghostty
 
-PATH="${ASDF_DATA_DIR:-$HOME/.asdf}/shims:$PATH"
+# Setup rustup
 . "$HOME/.cargo/env"
 
 

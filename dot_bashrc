@@ -21,6 +21,9 @@ CYAN="\[$(tput setaf 6)\]"
 RESET="\[$(tput sgr0)\]"
 export PS1="\n ${BLUE}\u${MAGE}@${BLUE}\h ${CYAN}\w${RESET} \n :3 "
 
+# directory-dependent tools
+PATH="${ASDF_DATA_DIR:-$HOME/.asdf}/shims:$PATH"
+
 # completion
 eval "$(fzf --bash)"
 . <(asdf completion bash)
@@ -39,4 +42,3 @@ alias d="docker"
 alias dc="docker compose"
 eval "$(uv generate-shell-completion bash)"
 eval "$(uvx --generate-shell-completion bash)"
-eval "$(direnv hook bash)"
