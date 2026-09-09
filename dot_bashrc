@@ -26,21 +26,24 @@ PATH="${ASDF_DATA_DIR:-$HOME/.asdf}/shims:$PATH"
 
 # completion
 eval "$(fzf --bash)"
-. <(asdf completion bash)
 
-daily_commits() {
-  git log \
-    --since=midnight \
-    --author="$(git config --get user.email)" \
-    --format=%s
-}
+# Homebrew
+if type brew &>/dev/null; then
+    HOMEBREW_PREFIX="$(brew --prefix)"
 
-# Aliases
-alias g="git"
-
-alias d="docker"
-alias dc="docker compose"
-eval "$(uv generate-shell-completion bash)"
-eval "$(uvx --generate-shell-completion bash)"
+    if [[ -r "${HOMEBREW_PREFIX}/etc/profile.d/bash_completion.sh" ]]; then
+        source "${HOMEBREW_PREFIX}/etc/profile.d/bash_completion.sh"
+    else
+        for COMPLETION in "${HOMEBREW_PREFIX}/etc/bash_completion.d/"*; do
+            if [[ -r "${COMPLETION}" ]]; then
+                source "${COMPLETION}"
+            fi
+        done
+    fi
+fi
 
 alias bw="flatpak run --command=bw com.bitwarden.desktop"
+
+if type mise &>/dev/null; then
+    eval "$(mise activate bash)"
+fi
