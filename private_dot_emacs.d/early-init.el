@@ -32,8 +32,10 @@
 (push '(horizontal-scroll-bars . nil) default-frame-alist)
 
 ;; Set initial frame colors here to avoid flashes later
-(push '(background-color . "#FFFCF0") initial-frame-alist)
-(push '(foreground-color . "#100F0F") initial-frame-alist)
+;;
+;; The current theme has a white background, so we don't need these
+;; (push '(background-color . "#FFFCF0") initial-frame-alist)
+;; (push '(foreground-color . "#100F0F") initial-frame-alist)
 
 ;; Don't resize the frame in response to font or UI changes during
 ;; startup. Avoids needless work before the frame is even visible.

@@ -12,15 +12,12 @@
 
 ;;;; Package setup and utils
 
-;; unclear what needs this
 (require 'package)
-
 (setq package-archives
       '(("melpa" . "https://melpa.org/packages/")
         ("melpa-stable" .  "https://stable.melpa.org/packages/")
         ("gnu" . "https://elpa.gnu.org/packages/")
         ("nongnu" . "https://elpa.nongnu.org/nongnu/")))
-
 (package-initialize)
 
 (setq use-package-verbose t)
@@ -33,6 +30,9 @@
 (load (expand-file-name "init-lang-yaml" config-dir))
 
 ;;;; UI
+
+;; load a theme
+(load-theme 'modus-operandi)
 
 ;; don't blink the cursor
 (blink-cursor-mode -1)
