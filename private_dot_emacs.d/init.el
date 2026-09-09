@@ -1,5 +1,4 @@
 ;;; -*- lexical-binding: t -*-
-;;; Code:
 
 (setq user-full-name "Javier Maldonado"
       user-mail-address "javier.maldonado@gartner.com")
@@ -14,7 +13,6 @@
 ;;;; Package setup and utils
 
 ;; unclear what needs this
-(require 'cl-lib)
 (require 'package)
 
 (setq package-archives
@@ -31,6 +29,7 @@
 (load (expand-file-name "init-modal-editing" config-dir))
 (load (expand-file-name "init-completion" config-dir))
 (load (expand-file-name "init-magit" config-dir))
+(load (expand-file-name "init-lang-yaml" config-dir))
 
 ;;;; UI
 
@@ -94,7 +93,7 @@
 (setq-default tab-width 8)
 
 ;; final newlines
-(setq require-final-newline t)
+(setq require-final-newline 'ask)
 
 ;; delete selection if text is typed
 (delete-selection-mode t)
@@ -143,5 +142,5 @@
 ;;;; Final setup
 
 ;; config changes made through the customize UI will be stored here
-(setq custom-file (expand-file-name "custom.el" config-dir))
+(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 (load custom-file)
