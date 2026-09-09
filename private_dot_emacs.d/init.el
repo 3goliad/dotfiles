@@ -29,6 +29,7 @@
 (load (expand-file-name "init-modal-editing" config-dir))
 (load (expand-file-name "init-completion" config-dir))
 (load (expand-file-name "init-magit" config-dir))
+(load (expand-file-name "init-prog-mode" config-dir))
 (load (expand-file-name "init-lang-yaml" config-dir))
 
 ;;;; UI

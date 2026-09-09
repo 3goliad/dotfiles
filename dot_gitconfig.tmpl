@@ -1,17 +1,17 @@
 [credential "https://github.com"]
-	helper = 
+	helper =
 	helper = !/opt/homebrew/bin/gh auth git-credential
 [credential "https://gist.github.com"]
-	helper = 
+	helper =
 	helper = !/opt/homebrew/bin/gh auth git-credential
 [user]
 	name = Javier Maldonado
 	email = {{ if eq .chezmoi.os "darwin" -}}
                   javier.maldonado@gartner.com
                 {{- else -}}
-                  3goliad@gmail.com     
+                  3goliad@gmail.com
                 {{- end }}
-        
+
 [help]
     autocorrect = 15
 
