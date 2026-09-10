@@ -1,16 +1,7 @@
 ;;; -*- lexical-binding: t -*-
 
-(setq user-full-name "Javier Maldonado"
-      user-mail-address "javier.maldonado@gartner.com")
- 
 ;; Always load newest byte code
 (setq load-prefer-newer t)
-
-;; define some directories
-(defvar config-dir (expand-file-name "lisp" user-emacs-directory)
-  "Personal configuration")
-
-;;;; Package setup and utils
 
 (require 'package)
 (setq package-archives
@@ -23,115 +14,108 @@
 (setq use-package-verbose t)
 (setq package-install-upgrade-built-in t)
 
-(load (expand-file-name "init-modal-editing" config-dir))
-(load (expand-file-name "init-completion" config-dir))
-(load (expand-file-name "init-magit" config-dir))
-(load (expand-file-name "init-prog-mode" config-dir))
-(load (expand-file-name "init-lang-yaml" config-dir))
+(load (expand-file-name "lisp/settings" user-emacs-directory))
 
-;;;; UI
+;; Maintain balanced parentheses
+(use-package smartparens
+  :ensure t
+  :hook
+  ((prog-mode . smartparens-mode)
+   (text-mode . smartparens-mode)
+   (markdown-mode . smartparens-mode)
+   (emacs-lisp-mode . smartparens-strict-mode))
+  :config
+  (require 'smartparens-config)
+  :bind (:map
+         smartparens-mode-map
+         ("C-M-f" . sp-forward-sexp)
+         ("C-M-b" . sp-backward-sexp)
+         ("C-M-t" . sp-transpose-sexp)))
 
-;; load a theme
-(load-theme 'modus-operandi)
+;; A nice completion system
+(use-package vertico
+  :ensure t
+  :pin melpa-stable
+  :init
+  (vertico-mode))
 
-;; don't blink the cursor
-(blink-cursor-mode -1)
+;; Use the `orderless' completion style.
+(use-package orderless
+  :ensure t
+  :pin melpa-stable
+  :custom
+  ;; Configure a custom style dispatcher (see the Consult wiki)
+  ;; (orderless-style-dispatchers '(+orderless-consult-dispatch orderless-affix-dispatch))
+  ;; (orderless-component-separator #'orderless-escapable-split-on-space)
+  (completion-styles '(orderless basic))
+  (completion-category-overrides '((file (styles partial-completion))))
+  (completion-category-defaults nil) ;; Disable defaults, use our settings
+  (completion-pcm-leading-wildcard t)) ;; Emacs 31: partial-completion behaves like substring
 
-;; silence ringing bell
-(setq ring-bell-function 'ignore)
+;; Rich annotations in the minibuffer (docstrings, file sizes, etc.)
+(use-package marginalia
+  :ensure t
+  :pin melpa-stable
+  :init
+  (marginalia-mode))
 
-;; no startup screen
-(setq inhibit-startup-screen t)
+;; Cool completing commands, replacing some default ones
+(use-package consult
+  :ensure t
+  :pin melpa-stable)
 
-;; improve scrolling
-(setq scroll-margin 0
-      scroll-conservatively 100000
-      scroll-preserve-screen-position 1)
-(pixel-scroll-precision-mode t)
+;; Code completion
+(use-package corfu
+  :ensure t
+  :config
+  (global-corfu-mode))
 
-;; more useful frame title, that show either a file or a
-;; buffer name (if the buffer isn't visiting a file)
-(setq frame-title-format
-      '("Emacs - " (:eval (if (buffer-file-name)
-                              (abbreviate-file-name (buffer-file-name))
-                            "%b"))))
+;; Temporary menus, important for Magit
+(use-package transient
+  :ensure t)
 
-;; disable BiDi text scanning
-(setq-default bidi-display-reordering 'left-to-right
-              bidi-paragraph-direction 'left-to-right)
-(setq bidi-inhibit-bpa t)
+;; Document & Knowledge system
+(use-package org
+  :ensure t
+  :hook ((org-mode . visual-line-mode))
+  :custom
+  (org-directory "~/Documents/org")
+  (org-agenda-files '("inbox.org"))
+  :config
+  (add-to-list 'org-export-backends 'md))
 
-;; don't re-highlight until input stops
-(setq redisplay-skip-fontification-on-input t)
+;; Great Git UI
+(use-package magit
+  :ensure t
+  :pin melpa-stable
+  :custom
+  (magit-define-global-key-bindings nil)
+  :config
+  (setq magit-view-git-manual-method 'man))
 
-;; hide cursors and highlights in non-focused windows
-(setq-default cursor-in-non-selected-windows nil)
-(setq highlight-nonselected-windows nil)
+;; Show VC changes in gutter
+(use-package diff-hl
+  :ensure t
+  :config
+  (global-diff-hl-mode)
+  (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh))
 
-;; modeline
-(line-number-mode t)
-(column-number-mode t)
-(size-indication-mode t)
-(meow-setup-indicator)
+;; elisp
+;; (setopt elisp-fontify-semantically t)
 
-;; line numbers
-(dolist (hook '(prog-mode-hook text-mode-hook conf-mode-hook))
-  (add-hook hook #'display-line-numbers-mode))
+;; (font-lock-add-keywords 'emacs-lisp-mode
+;;                         `((,(rx (and (group (or "`" "'" "#'"))
+;;                                      (? (* whitespace)
+;;                                         (group (+ (or (syntax word)
+;;                                                       (syntax symbol))))))))
+;;                           (1 'font-lock-keyword-face)
+;;                           (2 'font-lock-constant-face nil t))
+;;                         :append)
 
-;; accept y/n for prompts
-(setq use-short-answers t)
-
-;;;; External programs
-
-;; raise default amount read from external processes from 64KB to 4MB
-;; helps with big LSP responses
-(setq read-process-output-max (* 4 1024 1024)) ; 4MB
-
-;;;; Editing
-
-;; no tabs
-(setq-default indent-tabs-mode nil)
-(setq-default tab-width 8)
-
-;; final newlines
-(setq require-final-newline 'ask)
-
-;; delete selection if text is typed
-(delete-selection-mode t)
-
-;; store all backup and autosave files in the tmp dir
-(setq backup-directory-alist
-      `((".*" . ,temporary-file-directory)))
-(setq auto-save-file-name-transforms
-      `((".*" ,temporary-file-directory t)))
-
-;; warn when opening files bigger than 100MB
-(setq large-file-warning-threshold 100000000)
-
-;; revert buffers automatically when underlying files are changed externally
-(global-auto-revert-mode t)
-
-;; smart tab behavior - indent or complete
-(setq tab-always-indent 'complete)
-
-;; don't wipe system clipboard when killing
-(setq save-interprogram-paste-before-kill t)
-
-;; don't save dupes to the kill ring
-(setq kill-do-not-save-duplicates t)
-
-;;;; Keybinds
-
-;; replace default buffer menu
-(keymap-global-set "C-x C-b" 'ibuffer)
-
-;;;; Help and Info
-
-;; ensure which-key-mode is on
-(which-key-mode +1)
-
-;; always switch to the help window
-(setq help-window-select t)
+(use-package highlight-quoted
+  :ensure t
+  :hook
+  ((emacs-lisp-mode . highlight-quoted-mode)))
 
 ;;;; LSP
 
@@ -140,7 +124,8 @@
   (setq eglot-events-buffer-config '(:size 0 :format full))
   (setq eglot-extend-to-xref t))
 
-;;;; Final setup
+(load (expand-file-name "lisp/keybinds" user-emacs-directory))
+(load (expand-file-name "lisp/meow" user-emacs-directory))
 
 ;; config changes made through the customize UI will be stored here
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
