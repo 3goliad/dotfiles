@@ -64,6 +64,19 @@
 (setopt display-line-numbers-width 3)
 
 
+;; Whitespace
+
+(global-whitespace-mode)
+(setq whitespace-style
+      '(face
+        trailing
+        space-before-tab
+        indentation
+        empty
+        space-after-tab
+        missing-newline-at-eof))
+
+
 ;; Modeline
 
 
