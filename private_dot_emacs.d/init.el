@@ -67,8 +67,16 @@
 ;; Code completion
 (use-package corfu
   :ensure t
+  :custom
+  (corfu-auto t)
+  (corfu-auto-delay 0.25)
+  (corfu-auto-trigger ".")
+  (corfu-quit-no-match 'separator)
+  :init
+  (global-corfu-mode)
   :config
-  (global-corfu-mode))
+  (corfu-popupinfo-mode)
+  (corfu-history-mode))
 
 ;; Temporary menus, important for Magit
 (use-package transient
