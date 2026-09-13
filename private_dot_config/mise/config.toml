@@ -1,3 +1,10 @@
 [tools]
+"pipx:pre-commit" = "4.6.0"
+argo = "latest"
+argocd = "latest"
+helm = "latest"
+kubectl = "1.35"
 node = "26"
 python = "3.11"
+stern = "latest"
+ty = "latest"
