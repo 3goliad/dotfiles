@@ -15,11 +15,58 @@ HISTSIZE=5000
 HISTFILESIZE=10000
 
 # prompt
+YELL="\[$(tput setaf 3)\]"
 BLUE="\[$(tput setaf 4)\]"
 MAGE="\[$(tput setaf 5)\]"
 CYAN="\[$(tput setaf 6)\]"
+WHIT="\[$(tput setaf 7)\]"
 RESET="\[$(tput sgr0)\]"
-export PS1="\n ${BLUE}\u${MAGE}@${BLUE}\h ${CYAN}\w${RESET} \n :3 "
+
+aws_profile () {
+    if [[ -n "$AWS_PROFILE" ]]; then
+        echo "$(tput setaf 3)[AWS $AWS_PROFILE]$(tput sgr0) "
+    fi
+}
+current_eks () {
+    if [ -n "$KUBECONFIG" ]; then
+        EKS=$(basename "$KUBECONFIG" 2>/dev/null)
+        if [ "$EKS" = "allk8" ] || [ "$EKS" = "alldptk8" ]; then
+            local CTX=$(kubectl config current-context 2>/dev/null || echo "no-context")
+            local CTX_DISPLAY=$(echo "$CTX" |sed 's/\([^-]*\)-\(.\)[^-]*-\(.*\)/\1\2\3/')
+            if echo "$CTX" | grep -q "use2"; then
+                if echo "$CTX" | egrep -qi "prod"; then
+                    echo "$(tput setaf 210)[$CTX_DISPLAY]$(tput sgr0) "
+                else
+                    echo "$(tput setaf 120)[$CTX_DISPLAY]$(tput sgr0) "
+                fi
+            else
+                if echo "$CTX" | egrep -qi "prod"; then
+                    echo "$(tput setaf 91)[$CTX_DISPLAY]$(tput sgr0) "
+                else
+                    echo "$(tput setaf 32)[$CTX_DISPLAY]$(tput sgr0) "
+                fi
+            fi
+        else
+            EKS=$(echo "$EKS" | sed 's/\([^-]*\)-\(.\)[^-]*-\(.*\)/\1\2\3/')
+            echo "$KUBECONFIG" | egrep -i "prod" > /dev/null
+            if [ "$?" = "0" ]; then
+                if echo "$EKS" | grep -q "use2"; then
+                    EKS_PS1="$(tput setaf 210)[$EKS]$(tput sgr0) "
+                else
+                    EKS_PS1="$(tput setaf 120)[$EKS]$(tput sgr0) "
+                fi
+            else
+                if echo "$EKS" | grep -q "use2"; then
+                    EKS_PS1="$(tput setaf 91)[$EKS]$(tput sgr0) "
+                else
+                    EKS_PS1="$(tput setaf 32)[$EKS]$(tput sgr0) "
+                fi
+            fi
+        fi
+    fi
+
+}
+export PS1="\n ${BLUE}\u${MAGE}@${BLUE}\h \$(aws_profile)\$(current_eks)${CYAN}\w${RESET} \n :3 "
 
 # directory-dependent tools
 PATH="${ASDF_DATA_DIR:-$HOME/.asdf}/shims:$PATH"
@@ -50,4 +97,8 @@ alias bw="flatpak run --command=bw com.bitwarden.desktop"
 
 if type mise &>/dev/null; then
     eval "$(mise activate bash)"
+fi
+
+if [[ -f "$HOME/.k8utils" ]]; then
+    source "$HOME/.k8utils"
 fi
