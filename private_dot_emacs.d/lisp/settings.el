@@ -2,7 +2,7 @@
 
 (setq user-full-name "Javier Maldonado"
       user-mail-address "javier.maldonado@gartner.com")
- 
+
 ;; always load newest byte code
 (setq load-prefer-newer t)
 
