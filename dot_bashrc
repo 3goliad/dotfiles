@@ -24,45 +24,29 @@ RESET="\[$(tput sgr0)\]"
 
 aws_profile () {
     if [[ -n "$AWS_PROFILE" ]]; then
-        echo "$(tput setaf 3)[AWS $AWS_PROFILE]$(tput sgr0) "
+        echo "$(tput setaf 6)[AWS $AWS_PROFILE]$(tput sgr0) "
     fi
 }
 current_eks () {
     if [ -n "$KUBECONFIG" ]; then
-        EKS=$(basename "$KUBECONFIG" 2>/dev/null)
-        if [ "$EKS" = "allk8" ] || [ "$EKS" = "alldptk8" ]; then
-            local CTX=$(kubectl config current-context 2>/dev/null || echo "no-context")
-            local CTX_DISPLAY=$(echo "$CTX" |sed 's/\([^-]*\)-\(.\)[^-]*-\(.*\)/\1\2\3/')
-            if echo "$CTX" | grep -q "use2"; then
-                if echo "$CTX" | egrep -qi "prod"; then
-                    echo "$(tput setaf 210)[$CTX_DISPLAY]$(tput sgr0) "
-                else
-                    echo "$(tput setaf 120)[$CTX_DISPLAY]$(tput sgr0) "
-                fi
+        local ctx=$(kubectl config current-context 2>/dev/null || echo "no-context")
+
+        local color=166 # strong orange
+        if [[ $ctx = *prod* ]]; then
+            if [[ $ctx = *use2* ]]; then
+                color=161 # royal red
             else
-                if echo "$CTX" | egrep -qi "prod"; then
-                    echo "$(tput setaf 91)[$CTX_DISPLAY]$(tput sgr0) "
-                else
-                    echo "$(tput setaf 32)[$CTX_DISPLAY]$(tput sgr0) "
-                fi
+                color=160 # guardsman red
             fi
         else
-            EKS=$(echo "$EKS" | sed 's/\([^-]*\)-\(.\)[^-]*-\(.*\)/\1\2\3/')
-            echo "$KUBECONFIG" | egrep -i "prod" > /dev/null
-            if [ "$?" = "0" ]; then
-                if echo "$EKS" | grep -q "use2"; then
-                    EKS_PS1="$(tput setaf 210)[$EKS]$(tput sgr0) "
-                else
-                    EKS_PS1="$(tput setaf 120)[$EKS]$(tput sgr0) "
-                fi
+            if [[ $ctx = *use2* ]]; then
+                color=34 # dark lime green
             else
-                if echo "$EKS" | grep -q "use2"; then
-                    EKS_PS1="$(tput setaf 91)[$EKS]$(tput sgr0) "
-                else
-                    EKS_PS1="$(tput setaf 32)[$EKS]$(tput sgr0) "
-                fi
+                color=70 # dark green
             fi
         fi
+
+        echo "$(tput setaf $color)[K8S $ctx]$(tput sgr0) "
     fi
 
 }
@@ -93,12 +77,73 @@ if type brew &>/dev/null; then
     fi
 fi
 
-alias bw="flatpak run --command=bw com.bitwarden.desktop"
+# kubectl completion
+if type kubectl &>/dev/null; then
+    # include completion for k alias
+    source <(
+        kubectl completion bash | \
+            awk '
+                /^[\t ]+complete.* kubectl/ { print; gsub(/ kubectl$/, " k"); print; next };
+                { print }
+            '
+    )
+fi
 
 if type mise &>/dev/null; then
     eval "$(mise activate bash)"
 fi
 
-if [[ -f "$HOME/.k8utils" ]]; then
-    source "$HOME/.k8utils"
-fi
+function chaws () {
+    if ! type aws &>/dev/null; then
+        echo "No aws command found!"
+        return 1
+    fi
+
+    local newprofile=$(aws configure list-profiles | fzf)
+
+    if [[ -n $newprofile ]]; then
+        export AWS_PROFILE=$newprofile
+    fi
+
+    return 0
+}
+
+function cheks () {
+    if ! type kubectl &>/dev/null; then
+        echo "No kubectl command found!"
+        return 1
+    fi
+
+    local merged_kubeconfig="$HOME/.local/var/gc1-eks/allk8"
+    if [[ ! -f "$merged_kubeconfig" ]]; then
+        echo "No merged kubeconfig found!"
+        return 1
+    fi
+
+    local newctx=$(kubectl --kubeconfig "$merged_kubeconfig" config get-contexts -o name | fzf)
+
+    if [[ -n $newctx ]]; then
+        export KUBECONFIG="$merged_kubeconfig"
+        kubectl config use-context "$newctx"
+    else
+        return 0
+    fi
+
+    local user=$(kubectl config view -o jsonpath='{.contexts[?(@.name == "'$newctx'")].context.user}')
+
+    local profile=$(
+        kubectl config view -o json | \
+            jq -r '
+              .["current-context"] as $ctx
+              | (.contexts[] | select(.name == $ctx) | .context.user) as $user
+              | .users[] | select(.name == $user)
+              | .user.exec.env[] | select(.name == "AWS_PROFILE") | .value'
+    )
+
+    export AWS_PROFILE=$profile
+
+    return 0
+}
+
+alias bw="flatpak run --command=bw com.bitwarden.desktop"
+alias k='kubectl'
