@@ -18,7 +18,7 @@
 
 
 ;; load a theme
-(load-theme 'modus-vivendi)
+(load-theme 'modus-operandi)
 
 ;; don't blink the cursor
 (blink-cursor-mode -1)
