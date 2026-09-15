@@ -1,8 +1,11 @@
 #!/bin/sh
 
-# When you change these, don't forget to update the SystemD user
-# environment files under ~/.config/environment.d
+# These are mirrored in two other places:
+# 1. The SystemD user environment files under ~/.config/environment.d/
+# 2. The .zshenv file
 export PATH="$HOME/.local/bin:$PATH"
+export EDITOR=nvim
+export TERMINAL=ghostty
 {{- if eq .chezmoi.os "linux" -}}
 export _JAVA_AWT_WM_NONREPARENTING=1
 {{- end -}}
