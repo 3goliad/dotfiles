@@ -88,7 +88,7 @@
   :hook ((org-mode . visual-line-mode))
   :custom
   (org-directory "~/Documents/org")
-  (org-agenda-files '("inbox.org"))
+  (org-agenda-files '("inbox.org" "personal.org"))
   :config
   (add-to-list 'org-export-backends 'md))
 
