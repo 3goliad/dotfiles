@@ -99,7 +99,12 @@ function chaws () {
         return 1
     fi
 
-    local newprofile=$(aws configure list-profiles | fzf)
+    local fzf_args=""
+    if [[ -n $1 ]]; then
+        fzf_args="--query $1"
+    fi
+
+    local newprofile=$(aws configure list-profiles | fzf $fzf_args)
 
     if [[ -n $newprofile ]]; then
         export AWS_PROFILE=$newprofile
@@ -120,7 +125,19 @@ function cheks () {
         return 1
     fi
 
-    local newctx=$(kubectl --kubeconfig "$merged_kubeconfig" config get-contexts -o name | fzf)
+    local fzf_args=""
+    if [[ -n $1 ]]; then
+        fzf_args="--query $1"
+    fi
+
+    local newctx=$( \
+                    kubectl \
+                        --kubeconfig "$merged_kubeconfig" \
+                        config \
+                        get-contexts \
+                        -o name \
+                        | fzf $fzf_args \
+          )
 
     if [[ -n $newctx ]]; then
         export KUBECONFIG="$merged_kubeconfig"
