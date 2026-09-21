@@ -10,6 +10,30 @@
 ;;;; Projects and files
 
 
+(setq
+ ;; Disable creation of lockfiles (.#foo)
+ create-lockfiles nil
+ ;; Disable creation of backup files (foo~)
+ make-backup-files nil
+ ;; store all backup and autosave files in the tmp dir
+ backup-directory-alist `((".*" . ,temporary-file-directory))
+ auto-save-file-name-transforms `((".*" ,temporary-file-directory t)))
+
+;; autosave
+(setq
+ auto-save-no-message t
+ ;; Do not auto-disable auto-save after deleting large chunks of text.
+ auto-save-include-big-deletions t
+ auto-save-list-file-prefix (expand-file-name "autosave/" user-emacs-directory))
+
+;; warn when opening files bigger than 100MB
+(setq large-file-warning-threshold 100000000)
+
+;; revert buffers automatically when underlying files are changed externally
+(global-auto-revert-mode t)
+
+
+
 (recentf-mode)
 (savehist-mode)
 
@@ -29,18 +53,18 @@
 ;; no startup screen
 (setq inhibit-startup-screen t)
 
-;; improve scrolling
-(setq scroll-margin 0
-      scroll-conservatively 100000
-      scroll-preserve-screen-position 1)
-(pixel-scroll-precision-mode t)
-
 ;; more useful frame title, that show either a file or a
 ;; buffer name (if the buffer isn't visiting a file)
 (setq frame-title-format
       '("Emacs - " (:eval (if (buffer-file-name)
                               (abbreviate-file-name (buffer-file-name))
                             "%b"))))
+
+;; improve scrolling
+(setq scroll-margin 0
+      scroll-conservatively 100000
+      scroll-preserve-screen-position 1)
+(pixel-scroll-precision-mode t)
 
 ;; disable BiDi text scanning
 (setq-default bidi-display-reordering 'left-to-right
@@ -61,8 +85,48 @@
 (dolist (hook '(prog-mode-hook conf-mode-hook))
   (add-hook hook #'display-line-numbers-mode))
 
-(setopt display-line-numbers-width 3)
+(setq-default display-line-numbers-width 3
+              display-line-numbers-widen t)
 
+
+;; Windows, Frames and Layouts
+
+(setq
+ ;; limit the number of side windows
+ window-sides-slots '(2 1 2 2)
+ fit-window-to-buffer-horizontally t
+ window-resize-pixelwise t)
+;; display *info* buffers on the right side
+(add-to-list
+ 'display-buffer-alist
+ '("\\(?:Preview:\\)?\\*info"
+   (display-buffer-in-side-window)
+   (side . right)
+   (slot . 0)
+   (window-width . 80)
+   (window-parameters . ( ; (no-other-window . t)
+                         (no-delete-other-windows . t)))))
+
+;; display *Help* buffers in the existing window, or make a new one
+(add-to-list
+ 'display-buffer-alist
+ '("\\*Help\\*"
+   (display-buffer-in-side-window)
+   (side . right)
+   (slot . 1)
+   (window-width . 80)
+   (window-parameters . ( ; (no-other-window . t)
+                         (no-delete-other-windows . t)))))
+
+;; Show terminals at the bottom
+(add-to-list
+ 'display-buffer-alist
+ '("\\*ghostel\\*"
+   (display-buffer-in-side-window)
+   (side . bottom)
+   (window-height . 20)
+   (window-parameters . ( ; (no-other-window . t)
+                         (no-delete-other-windows . t)))))
 
 ;; Whitespace
 
@@ -86,7 +150,7 @@
 ;; (meow-setup-indicator)
 (setopt project-mode-line t)
 
-(setq mode-line-collapse-minor-modes '(which-key-mode eldoc-mode))
+(setq mode-line-collapse-minor-modes '(which-key-mode eldoc-mode whitespace-mode))
 
 
 ;;;; External programs
@@ -110,23 +174,14 @@
 ;; delete selection if text is typed
 (delete-selection-mode t)
 
-;; store all backup and autosave files in the tmp dir
-(setq backup-directory-alist
-      `((".*" . ,temporary-file-directory)))
-(setq auto-save-file-name-transforms
-      `((".*" ,temporary-file-directory t)))
-
-;; warn when opening files bigger than 100MB
-(setq large-file-warning-threshold 100000000)
-
-;; revert buffers automatically when underlying files are changed externally
-(global-auto-revert-mode t)
-
 ;; don't wipe system clipboard when killing
 (setq save-interprogram-paste-before-kill t)
 
 ;; don't save dupes to the kill ring
 (setq kill-do-not-save-duplicates t)
+
+;; try to keep lines under 80 chars
+(setq fill-column 80)
 
 
 ;;;; Help and Info
@@ -140,6 +195,9 @@
 
 ;; Hide commands in M-x which do not work in the current mode.
 (setq read-extended-command-predicate #'command-completion-default-include-p)
+
+;; Search more things with apropos
+(setq apropos-do-all t)
 
 
 ;;;; Syntax & Highlighting

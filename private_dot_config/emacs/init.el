@@ -90,7 +90,12 @@
   (org-directory "~/Documents/org")
   (org-agenda-files '("inbox.org" "personal.org"))
   :config
-  (add-to-list 'org-export-backends 'md))
+  (add-to-list 'org-export-backends 'md)
+  (setq org-todo-keywords
+        '((sequence "TODO(t)"  "STARTED(s!)" "|" "DONE(d!)")))
+  (setq org-clock-persist 'history)
+  (org-clock-persistence-insinuate)
+  (setq org-log-into-drawer t))
 
 ;; Great Git UI
 (use-package magit
@@ -107,6 +112,15 @@
   :config
   (global-diff-hl-mode)
   (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh))
+
+;; Terminal emulator
+(use-package ghostel
+  :ensure t
+  :config
+  (add-hook 'ghostel-mode-hook
+            (lambda ()
+              (keymap-local-set "C-\\" 'other-window)))
+  )
 
 ;; elisp
 ;; (setopt elisp-fontify-semantically t)
@@ -125,15 +139,89 @@
   :hook
   ((emacs-lisp-mode . highlight-quoted-mode)))
 
-;;;; LSP
+;; GUI Emacs on macOS doesn't inherit the environment from the shell, so
+;; we'll launch shells to borrow their environment
+(use-package exec-path-from-shell
+  :ensure t
+  :defer t)
+(when (eq system-type 'darwin)
+  (require 'exec-path-from-shell)
+  (exec-path-from-shell-initialize))
+
+;;;; Eldoc
+
+(use-package eldoc
+  :ensure nil
+  :init
+  (global-eldoc-mode)
+  :custom
+  (eldoc-echo-area-use-multiline-p nil)
+  (eldoc-echo-area-prefer-doc-buffer t)
+  (eldoc-documentation-strategy 'eldoc-documentation-compose))
+
+;;;; Treesitter
+
+(setopt treesit-enabled-modes t)
+(setopt treesit-font-lock-level 4)
+(setopt treesit-auto-install-grammar 'ask)
+
+;;;; Eglot
+
+(setq
+ ;; Prevent minibuffer spam
+ eglot-report-progress init-file-debug
+ ;; Shut down after killing last managed buffer
+ eglot-autoshutdown t
+ ;; A setting of 0 means Eglot will not block the UI at all, allowing Emacs
+ ;; to remain fully responsive, although LSP features will only become
+ ;; available once the connection is established in the background.
+ eglot-sync-connect 0
+ ;; Activate Eglot in cross-referenced non-project files
+ eglot-extend-to-xref t
+ ;; Disable margin indicators to prevent line-height shifts caused by emoji
+ ;; font rendering issues. This disables both `left-fringe' and `margin'
+ ;; indicators.
+ ; eglot-code-action-indications '(eldoc-hint)
+ )
 
 (with-eval-after-load 'eglot
   (setq eglot-autoshutdown t)
   (setq eglot-events-buffer-config '(:size 0 :format full))
-  (setq eglot-extend-to-xref t))
+  (setq eglot-extend-to-xref t)
+  (add-to-list 'eglot-server-programs
+               '('python-base-mode . ("ty" "server"))))
+
+;;;; Flycheck
+
+(use-package flycheck
+  :ensure t
+  :hook
+  ((python-ts-mode . flycheck-mode)
+   (yaml-ts-mode . flycheck-mode))
+  :config
+  (setq flycheck-python-ruff-executable "ruff"))
+
+;; (use-package flymake
+;;   :ensure nil
+;;   :hook
+;;   ((yaml-ts-mode . flymake-mode))
+;;   :config
+;;   (setq flymake-wrap-around nil))
+
+;;;; Keybinds
 
 (load (expand-file-name "lisp/keybinds" user-emacs-directory))
 (load (expand-file-name "lisp/meow" user-emacs-directory))
+
+;;;; Python
+
+(setq python-indent-guess-indent-offset-verbose nil)
+
+;; format with Ruff on save
+(add-hook 'python-base-mode-hook
+          (lambda ()
+            (eglot-ensure)
+            (add-hook 'after-save-hook 'eglot-format nil t)))
 
 ;; config changes made through the customize UI will be stored here
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
