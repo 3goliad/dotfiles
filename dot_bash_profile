@@ -1,16 +1,27 @@
-#!/bin/zsh
+#!/bin/bash
 
-# These are copied from ~/.profile
+# Source ~/.profile if present, bash won't otherwise
+if [ -f "$HOME/.profile" ]; then
+    source "$HOME/.profile"
+fi
 
-export PATH="$HOME/.local/bin:$PATH"
-export EDITOR=nvim
-export TERMINAL=ghostty
+# Detect MacOS
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    # Silence complaints about not using zsh
+    export BASH_SILENCE_DEPRECATION_WARNING=1
 
-# The following section is copied from ~/.bash_profile
+    # If we're on an interactive login terminal on MacOS, bash won't get a
+    # chance to load ~/.bashrc, so we'll do it here.
+    if [[ $- == *i* && -f "$HOME/.bashrc" ]]; then
+        source "$HOME/.bashrc"
+    fi
+fi
+
+# The following section is mirrored in ~/.zshenv
 
 # Detect Homebrew and use its environment
 if type brew &>/dev/null; then
-    eval "$(brew shellenv zsh)"
+    eval "$(brew shellenv bash)"
 
     # Add Homebrew's coreutils to PATH
     if [ -d "$(brew --prefix)/opt/coreutils/libexec/gnubin" ]; then
