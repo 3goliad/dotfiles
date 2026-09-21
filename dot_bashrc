@@ -52,9 +52,6 @@ current_eks () {
 }
 export PS1="\n ${BLUE}\u${MAGE}@${BLUE}\h \$(aws_profile)\$(current_eks)${CYAN}\w${RESET} \n :3 "
 
-# directory-dependent tools
-PATH="${ASDF_DATA_DIR:-$HOME/.asdf}/shims:$PATH"
-
 # completion
 eval "$(fzf --bash)"
 
@@ -99,9 +96,9 @@ function chaws () {
         return 1
     fi
 
-    local fzf_args=""
+    local fzf_args="--select-1"
     if [[ -n $1 ]]; then
-        fzf_args="--query $1"
+        fzf_args="$fzf_args --query $1"
     fi
 
     local newprofile=$(aws configure list-profiles | fzf $fzf_args)
@@ -125,9 +122,9 @@ function cheks () {
         return 1
     fi
 
-    local fzf_args=""
+    local fzf_args="--select-1"
     if [[ -n $1 ]]; then
-        fzf_args="--query $1"
+        fzf_args="$fzf_args --query $1"
     fi
 
     local newctx=$( \
