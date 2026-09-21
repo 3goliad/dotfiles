@@ -10,3 +10,9 @@ stern = "latest"
 ruff = "latest"
 acli = "latest"
 flux2 = "latest"
+uv = "latest"
+yamllint = "latest"
+ty = "latest"
+
+[settings]
+idiomatic_version_file_enable_tools = ["python", "node", "yarn"]
