@@ -6,11 +6,12 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(consult corfu csharp-mode dictionary diff-hl editorconfig
-             elixir-ts-mode exec-path-from-shell faceup ghostel
-             highlight-quoted less-css-mode lua-mode magit marginalia
-             markdown-ts-mode meow orderless smartparens timeout
-             transient vertico wallpaper which-key ws-butler))
+   '(apheleia consult corfu csharp-mode dictionary diff-hl editorconfig
+              elixir-ts-mode exec-path-from-shell faceup ghostel
+              highlight-quoted less-css-mode lua-mode magit marginalia
+              markdown-ts-mode meow meow-tree-sitter orderless
+              smartparens timeout transient vertico wallpaper
+              which-key ws-butler))
  '(switch-to-buffer-in-dedicated-window 'pop)
  '(switch-to-buffer-obey-display-actions t)
  '(treesit-enabled-modes t))

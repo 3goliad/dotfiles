@@ -42,7 +42,7 @@
 
 
 ;; load a theme
-(load-theme 'modus-operandi)
+(load-theme 'modus-vivendi)
 
 ;; don't blink the cursor
 (blink-cursor-mode -1)
@@ -125,6 +125,17 @@
    (display-buffer-in-side-window)
    (side . bottom)
    (window-height . 20)
+   (window-parameters . ( ; (no-other-window . t)
+                         (no-delete-other-windows . t)))))
+
+;; Show org on the left side
+(add-to-list
+ 'display-buffer-alist
+ '((derived-mode . org-mode)
+   (display-buffer-in-side-window)
+   (side . left)
+   (slot . 1)
+   (window-width . 80)
    (window-parameters . ( ; (no-other-window . t)
                          (no-delete-other-windows . t)))))
 
@@ -222,7 +233,7 @@
 
 ;; Do not allow the cursor in the minibuffer prompt
 (setq minibuffer-prompt-properties
- '(read-only t cursor-intangible t face minibuffer-prompt))
+      '(read-only t cursor-intangible t face minibuffer-prompt))
 
 
 ;;;; Completion

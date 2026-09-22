@@ -120,6 +120,7 @@
   (add-hook 'ghostel-mode-hook
             (lambda ()
               (keymap-local-set "C-\\" 'other-window)))
+  (setq ghostel-shell "/opt/homebrew/bin/bash")
   )
 
 ;; elisp
@@ -181,7 +182,7 @@
  ;; Disable margin indicators to prevent line-height shifts caused by emoji
  ;; font rendering issues. This disables both `left-fringe' and `margin'
  ;; indicators.
- ; eglot-code-action-indications '(eldoc-hint)
+                                        ; eglot-code-action-indications '(eldoc-hint)
  )
 
 (with-eval-after-load 'eglot
@@ -208,10 +209,27 @@
 ;;   :config
 ;;   (setq flymake-wrap-around nil))
 
+;;;; Formatting
+
+(use-package apheleia
+  :ensure t
+  :config
+  (apheleia-global-mode +1)
+  (setf (alist-get 'python-mode apheleia-mode-alist) 'ruff)
+  (setf (alist-get 'python-ts-mode apheleia-mode-alist) 'ruff))
+
 ;;;; Keybinds
 
 (load (expand-file-name "lisp/keybinds" user-emacs-directory))
 (load (expand-file-name "lisp/meow" user-emacs-directory))
+
+;; (use-package evil
+;;   :init
+;;   (setq evil-want-C-d-scroll nil)
+;;   (setq evil-want-C-w-delete nil)
+;;   (setq evil-want-Y-yank-to-eol t)
+;;   (setq evil-shift-width 2)
+;;   (setq evil-undo-system 'undo-redo))
 
 ;;;; Python
 

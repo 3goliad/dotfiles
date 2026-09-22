@@ -1,13 +1,19 @@
 ;;; -*- lexical-binding: t -*-
 ;;; Code:
 
-(use-package meow 
+(use-package meow
+  :pin melpa
+  :ensure t)
+
+(use-package meow-tree-sitter
   :pin melpa
   :ensure t)
 
 (require 'meow)
 
 (defun meow-setup ()
+  (add-to-list 'meow-mode-state-list
+               '(ghostel-mode . insert))
   (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty)
   (meow-motion-define-key
    '("j" . meow-next)
@@ -45,7 +51,7 @@
    '("[" . meow-beginning-of-thing)
    '("]" . meow-end-of-thing)
    '("a" . meow-append)
-   '("A" . meow-open-below)
+   ;; '("A" . meow-open-below)
    '("b" . meow-back-word)
    '("B" . meow-back-symbol)
    '("c" . meow-change)
@@ -59,7 +65,7 @@
    '("h" . meow-left)
    '("H" . meow-left-expand)
    '("i" . meow-insert)
-   '("I" . meow-open-above)
+   ;; '("I" . meow-open-above)
    '("j" . meow-next)
    '("J" . meow-next-expand)
    '("k" . meow-prev)
@@ -68,23 +74,26 @@
    '("L" . meow-right-expand)
    '("m" . meow-join)
    '("n" . meow-search)
-   '("o" . meow-block)
-   '("O" . meow-to-block)
+   ;; '("o" . meow-block)
+   ;; '("O" . meow-to-block)
+   '("o" . meow-open-below)
+   '("O" . meow-open-above)
    '("p" . meow-yank)
-   ; '("q" . meow-quit)
+                                        ; '("q" . meow-quit)
    '("Q" . meow-quit)
-   '("r" . meow-replace)
-   '("R" . meow-swap-grab)
+   ;; '("r" . meow-replace)
+   '("r" . meow-change)
+   ;; '("R" . meow-swap-grab)
    '("s" . meow-kill)
    '("t" . meow-till)
    '("u" . meow-undo)
    '("U" . meow-undo-in-selection)
-   ; '("v" . meow-visit)
+                                        ; '("v" . meow-visit)
    '("v" . meow-line)
    '("w" . meow-mark-word)
    '("W" . meow-mark-symbol)
-   ; '("x" . meow-line)
-   ; '("X" . meow-goto-line)
+                                        ; '("x" . meow-line)
+                                        ; '("X" . meow-goto-line)
    '("y" . meow-save)
    '("Y" . meow-sync-grab)
    '("z" . meow-pop-selection)
@@ -96,3 +105,14 @@
 (meow-setup)
 
 (meow-global-mode 1)
+
+(defun meow-enter-ghostel-semi-char-mode ()
+  (goto-char (point-max))
+  (ghostel-semi-char-mode))
+
+(defun ghostel-meow-setup ()
+  (add-hook 'meow-normal-mode-hook 'ghostel-emacs-mode nil t)
+  (add-hook 'meow-insert-mode-hook 'meow-enter-ghostel-semi-char-mode nil t))
+
+(with-eval-after-load "ghostel"
+  (add-hook 'ghostel-mode-hook 'ghostel-meow-setup))
