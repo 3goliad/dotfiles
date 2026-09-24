@@ -12,7 +12,8 @@ acli = "latest"
 flux2 = "latest"
 uv = "latest"
 yamllint = "latest"
-ty = "latest"
+ty = "0.0.83"
+"pipx:rassumfrassum" = "latest"
 
 [settings]
 idiomatic_version_file_enable_tools = ["python", "node", "yarn"]

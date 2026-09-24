@@ -1,20 +1,49 @@
 ;;; -*- lexical-binding: t -*-
 ;;; Code:
 
-(use-package meow
-  :pin melpa
-  :ensure t)
-
 (use-package meow-tree-sitter
   :pin melpa
-  :ensure t)
+  :ensure t
+  :defer t)
 
-(require 'meow)
-
-(defun meow-setup ()
-  (add-to-list 'meow-mode-state-list
-               '(ghostel-mode . insert))
+(use-package meow
+  :pin melpa
+  :ensure t
+  :config
+  (require 'meow-tree-sitter)
   (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty)
+  (setq meow-char-thing-table
+        '((?\( . round )
+          (?\[ . square)
+          (?\{ . curly)
+          (?\' . string)
+          (?\" . string)
+          (?. . sentence)
+          (?b . buffer)
+          (?d . defun)
+          (?e . symbol)
+          (?l . line)
+          (?p . paragraph)
+          (?w . window)
+          ))
+
+  
+  (meow-tree-sitter-register-thing ?/ "comment")
+  (meow-tree-sitter-register-thing ?a "class")
+  (meow-tree-sitter-register-thing ?f "function")
+  (meow-tree-sitter-register-thing ?y "entry")
+  (meow-tree-sitter-register-thing ?, "parameter")
+
+  ;; forward navigations
+  (define-keymap :name "Next..."
+    :prefix 'meow-navigate-next-map
+    "d" 'flymake-goto-next-error)
+
+  ;; forward navigations
+  (define-keymap :name "Prev..."
+    :prefix 'meow-navigate-prev-map
+    "d" 'flymake-goto-prev-error)
+
   (meow-motion-define-key
    '("j" . meow-next)
    '("k" . meow-prev)
@@ -50,6 +79,12 @@
    '("." . meow-bounds-of-thing)
    '("[" . meow-beginning-of-thing)
    '("]" . meow-end-of-thing)
+   '("{" . meow-navigate-prev-map)
+   '("}" . meow-navigate-next-map)
+   ;; '("[" . meow-navigate-prev-map)
+   ;; '("]" . meow-navigate-next-map)
+   ;; '("{" . meow-beginning-of-thing)
+   ;; '("}" . meow-end-of-thing)
    '("a" . meow-append)
    ;; '("A" . meow-open-below)
    '("b" . meow-back-word)
@@ -60,8 +95,10 @@
    '("e" . meow-next-word)
    '("E" . meow-next-symbol)
    '("f" . meow-find)
-   '("g" . meow-cancel-selection)
-   '("G" . meow-grab)
+   ;; '("F" . meow-)
+   ;; '("g" . meow-cancel-selection)
+   ;; '("G" . meow-grab)
+   ;; '("g" . )
    '("h" . meow-left)
    '("H" . meow-left-expand)
    '("i" . meow-insert)
@@ -79,7 +116,8 @@
    '("o" . meow-open-below)
    '("O" . meow-open-above)
    '("p" . meow-yank)
-                                        ; '("q" . meow-quit)
+   ;; '("q" . meow-quit)
+   '("q" . meow-cancel-selection)
    '("Q" . meow-quit)
    ;; '("r" . meow-replace)
    '("r" . meow-change)
@@ -88,31 +126,33 @@
    '("t" . meow-till)
    '("u" . meow-undo)
    '("U" . meow-undo-in-selection)
-                                        ; '("v" . meow-visit)
+   ;; '("v" . meow-visit)
    '("v" . meow-line)
+   '("V" . meow-grab)
    '("w" . meow-mark-word)
    '("W" . meow-mark-symbol)
-                                        ; '("x" . meow-line)
-                                        ; '("X" . meow-goto-line)
+   ;; '("x" . meow-line)
+   ;; '("X" . meow-goto-line)
    '("y" . meow-save)
    '("Y" . meow-sync-grab)
    '("z" . meow-pop-selection)
    '("'" . repeat)
    '(":" . meow-goto-line)
    '("/" . meow-visit)
-   '("<escape>" . ignore)))
+   '("<escape>" . ignore))
 
-(meow-setup)
+  (add-to-list 'meow-mode-state-list
+               '(ghostel-mode . insert))
 
-(meow-global-mode 1)
+  (defun meow-enter-ghostel-semi-char-mode ()
+    (goto-char (point-max))
+    (ghostel-semi-char-mode))
 
-(defun meow-enter-ghostel-semi-char-mode ()
-  (goto-char (point-max))
-  (ghostel-semi-char-mode))
+  (defun ghostel-meow-setup ()
+    (add-hook 'meow-normal-mode-hook 'ghostel-emacs-mode nil t)
+    (add-hook 'meow-insert-mode-hook 'meow-enter-ghostel-semi-char-mode nil t))
 
-(defun ghostel-meow-setup ()
-  (add-hook 'meow-normal-mode-hook 'ghostel-emacs-mode nil t)
-  (add-hook 'meow-insert-mode-hook 'meow-enter-ghostel-semi-char-mode nil t))
+  (with-eval-after-load "ghostel"
+    (add-hook 'ghostel-mode-hook 'ghostel-meow-setup))
 
-(with-eval-after-load "ghostel"
-  (add-hook 'ghostel-mode-hook 'ghostel-meow-setup))
+  (meow-global-mode 1))

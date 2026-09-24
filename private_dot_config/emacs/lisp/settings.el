@@ -161,7 +161,7 @@
 ;; (meow-setup-indicator)
 (setopt project-mode-line t)
 
-(setq mode-line-collapse-minor-modes '(which-key-mode eldoc-mode whitespace-mode))
+(setq mode-line-collapse-minor-modes '(which-key-mode eldoc-mode whitespace-mode apheleia-mode))
 
 
 ;;;; External programs

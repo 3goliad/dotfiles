@@ -149,6 +149,8 @@
   (require 'exec-path-from-shell)
   (exec-path-from-shell-initialize))
 
+(setenv "TY_UV" "1")
+
 ;;;; Eldoc
 
 (use-package eldoc
@@ -189,34 +191,50 @@
   (setq eglot-autoshutdown t)
   (setq eglot-events-buffer-config '(:size 0 :format full))
   (setq eglot-extend-to-xref t)
-  (add-to-list 'eglot-server-programs
-               '('python-base-mode . ("ty" "server"))))
+  ;; (add-to-list 'eglot-server-programs
+  ;;              '('python-base-mode . ("ty" "server")))
+  )
 
-;;;; Flycheck
+;;;; Linting
 
-(use-package flycheck
-  :ensure t
-  :hook
-  ((python-ts-mode . flycheck-mode)
-   (yaml-ts-mode . flycheck-mode))
-  :config
-  (setq flycheck-python-ruff-executable "ruff"))
-
-;; (use-package flymake
-;;   :ensure nil
+;; (use-package flycheck
+;;   :ensure t
 ;;   :hook
-;;   ((yaml-ts-mode . flymake-mode))
+;;   ((after-init . global-flycheck-mode)
+;;    (after-init . global-flycheck-annotate-mode)
+;;    ;; (python-ts-mode . flycheck-mode)
+;;    ;; (yaml-ts-mode . flycheck-mode)
+;;    )
+;;   :custom
+;;   (flycheck-annotate-current-line-style 'below)
+;;   (flycheck-annotate-other-lines-style 'eol)
 ;;   :config
-;;   (setq flymake-wrap-around nil))
+;;   (global-flycheck-eglot-mode 1)
+;;   ;; (setq flycheck-python-ruff-executable "ruff")
+;;   )
+
+(use-package flymake
+  :ensure nil
+  :hook
+  ((yaml-ts-mode . flymake-mode))
+  :custom
+  (flymake-wrap-around nil)
+  (flymake-mode-line-lighter "Fly")
+  (flymake-show-diagnostics-at-end-of-line t)
+  :config
+  (setq flymake-wrap-around nil))
 
 ;;;; Formatting
 
 (use-package apheleia
   :ensure t
-  :config
-  (apheleia-global-mode +1)
-  (setf (alist-get 'python-mode apheleia-mode-alist) 'ruff)
-  (setf (alist-get 'python-ts-mode apheleia-mode-alist) 'ruff))
+  :hook
+  ((emacs-lisp-mode . apheleia-mode))
+  ;; :config
+  ;; (apheleia-global-mode +1)
+  ;; (setf (alist-get 'python-mode apheleia-mode-alist) 'ruff)
+  ;; (setf (alist-get 'python-ts-mode apheleia-mode-alist) 'ruff)
+  )
 
 ;;;; Keybinds
 

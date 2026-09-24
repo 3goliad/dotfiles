@@ -7,6 +7,9 @@ export PATH="$HOME/.local/bin:$PATH"
 export EDITOR=nvim
 export TERMINAL=ghostty
 export SHELL=/bin/bash
+
 {{- if eq .chezmoi.os "linux" -}}
 export _JAVA_AWT_WM_NONREPARENTING=1
-{{- end -}}
+{{- end }}
+# Force ty to remember that I use uv
+export TY_UV=1
