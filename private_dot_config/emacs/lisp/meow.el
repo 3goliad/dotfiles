@@ -34,12 +34,25 @@
   (meow-tree-sitter-register-thing ?y "entry")
   (meow-tree-sitter-register-thing ?, "parameter")
 
+  ;; LSP actions
+  ;; (define-keymap :name "LSP"
+  ;;   :prefix 'meow-lsp-map
+  ;;   "a" 'eglot-code-actions
+  ;;   )
+
+  ;; 
+  ;; going and doing
+  (define-keymap :name "Go..."
+    :prefix 'meow-go-map
+    "t" 'tab-next
+    "T" 'tab-previous)
+
   ;; forward navigations
   (define-keymap :name "Next..."
     :prefix 'meow-navigate-next-map
     "d" 'flymake-goto-next-error)
 
-  ;; forward navigations
+  ;; backward navigations
   (define-keymap :name "Prev..."
     :prefix 'meow-navigate-prev-map
     "d" 'flymake-goto-prev-error)
@@ -98,7 +111,7 @@
    ;; '("F" . meow-)
    ;; '("g" . meow-cancel-selection)
    ;; '("G" . meow-grab)
-   ;; '("g" . )
+   '("g" . meow-go-map)
    '("h" . meow-left)
    '("H" . meow-left-expand)
    '("i" . meow-insert)
