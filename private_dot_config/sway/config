@@ -19,9 +19,9 @@ smart_borders no_gaps
 # output * bg /home/jam/Pictures/wallpapers/The_Burghers_Of_Calais.jpg fill
 output * bg #0a0a0a solid_color
 # Scale factor of 1.175 simulates 1920x1280 on the 2256x1504 screen
-output eDP-1 scale 1 pos 0 0
-output "Samsung Electric Company LS24AG30x H4PX200409" scale 0.7 pos 2256 0 transform 270
-
+output eDP-1 scale 1 pos 3640 0
+output "Samsung Electric Company LS24AG30x H4PX200409" pos 0 0 transform 270
+output 'Dell Inc. DELL P2725DE D6SHBG4' pos 1080 200
 bindsym $mod+Return exec $term
 bindsym $mod+Shift+c kill
 bindsym $mod+p exec $menu
