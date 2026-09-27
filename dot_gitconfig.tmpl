@@ -1,9 +1,17 @@
 [credential "https://github.com"]
 	helper =
-	helper = !/opt/homebrew/bin/gh auth git-credential
+	helper = {{ if eq .chezmoi.os "darwin" -}}
+                   !/opt/homebrew/bin/gh auth git-credential
+                 {{- else -}}
+                   !gh auth git-credential
+                 {{- end }}
 [credential "https://gist.github.com"]
 	helper =
-	helper = !/opt/homebrew/bin/gh auth git-credential
+	helper = {{ if eq .chezmoi.os "darwin" -}}
+                   !/opt/homebrew/bin/gh auth git-credential
+                 {{- else -}}
+                   !gh auth git-credential
+                 {{- end }}
 [user]
 	name = Javier Maldonado
 	email = {{ if eq .chezmoi.os "darwin" -}}
