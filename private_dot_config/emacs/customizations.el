@@ -7,11 +7,11 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    '(apheleia consult corfu csharp-mode dictionary diff-hl editorconfig
-              elixir-ts-mode exec-path-from-shell faceup ghostel
-              highlight-quoted less-css-mode lua-mode magit marginalia
-              markdown-ts-mode meow meow-tree-sitter orderless
-              smartparens timeout transient vertico wallpaper
-              which-key ws-butler))
+              elixir-ts-mode exec-path-from-shell faceup
+              flexoki-themes ghostel highlight-quoted less-css-mode
+              lua-mode magit marginalia markdown-ts-mode meow
+              meow-tree-sitter orderless smartparens timeout transient
+              vertico wallpaper which-key ws-butler))
  '(switch-to-buffer-in-dedicated-window 'pop)
  '(switch-to-buffer-obey-display-actions t)
  '(treesit-enabled-modes t))

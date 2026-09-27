@@ -1,12 +1,5 @@
 ;;; -*- lexical-binding: t -*-
 
-(setq user-full-name "Javier Maldonado"
-      user-mail-address "javier.maldonado@gartner.com")
-
-;; always load newest byte code
-(setq load-prefer-newer t)
-
-
 ;;;; Projects and files
 
 
@@ -39,10 +32,6 @@
 
 
 ;;;; UI
-
-
-;; load a theme
-(load-theme 'modus-vivendi)
 
 ;; don't blink the cursor
 (blink-cursor-mode -1)
@@ -139,19 +128,6 @@
    (window-parameters . ( ; (no-other-window . t)
                          (no-delete-other-windows . t)))))
 
-;; Whitespace
-
-(global-whitespace-mode)
-(setq whitespace-style
-      '(face
-        trailing
-        space-before-tab
-        indentation
-        empty
-        space-after-tab
-        missing-newline-at-eof))
-
-
 ;; Modeline
 
 
@@ -161,7 +137,11 @@
 ;; (meow-setup-indicator)
 (setopt project-mode-line t)
 
-(setq mode-line-collapse-minor-modes '(which-key-mode eldoc-mode whitespace-mode apheleia-mode))
+(setq mode-line-collapse-minor-modes '(which-key-mode
+                                       eldoc-mode
+                                       whitespace-mode
+                                       apheleia-mode
+                                       smartparens-mode))
 
 
 ;;;; External programs

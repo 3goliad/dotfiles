@@ -1,5 +1,11 @@
 ;;; -*- lexical-binding: t -*-
 
+(setq user-full-name "Javier Maldonado"
+      user-mail-address
+      (if (eq system-type 'darwin)
+          "javier.maldonado@gartner.com"
+        "3goliad@gmail.com"))
+
 ;; Always load newest byte code
 (setq load-prefer-newer t)
 
@@ -13,6 +19,17 @@
 
 (setq use-package-verbose t)
 (setq package-install-upgrade-built-in t)
+
+;; Highlight extraneous whitespace
+(global-whitespace-mode)
+(setq whitespace-style
+      '(face
+        trailing
+        space-before-tab
+        indentation
+        empty
+        space-after-tab
+        missing-newline-at-eof))
 
 (load (expand-file-name "lisp/settings" user-emacs-directory))
 
@@ -88,7 +105,7 @@
   :hook ((org-mode . visual-line-mode))
   :custom
   (org-directory "~/Documents/org")
-  (org-agenda-files '("inbox.org" "personal.org"))
+  (org-agenda-files '("inbox.org"))
   :config
   (add-to-list 'org-export-backends 'md)
   (setq org-todo-keywords
@@ -120,8 +137,8 @@
   (add-hook 'ghostel-mode-hook
             (lambda ()
               (keymap-local-set "C-\\" 'other-window)))
-  (setq ghostel-shell "/opt/homebrew/bin/bash")
-  )
+  (when (eq system-type 'darwin)
+    (setq ghostel-shell "/opt/homebrew/bin/bash")))
 
 ;; elisp
 ;; (setopt elisp-fontify-semantically t)
@@ -145,6 +162,7 @@
 (use-package exec-path-from-shell
   :ensure t
   :defer t)
+
 (when (eq system-type 'darwin)
   (require 'exec-path-from-shell)
   (exec-path-from-shell-initialize))
@@ -161,6 +179,13 @@
   (eldoc-echo-area-use-multiline-p nil)
   (eldoc-echo-area-prefer-doc-buffer t)
   (eldoc-documentation-strategy 'eldoc-documentation-compose))
+
+;;;; Theme
+
+(use-package flexoki-themes
+  :ensure t
+  :config
+  (load-theme 'flexoki-themes-dark t))
 
 ;;;; Treesitter
 
