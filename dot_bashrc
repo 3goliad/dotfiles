@@ -176,3 +176,7 @@ function cheks () {
 
 alias bw="flatpak run --command=bw com.bitwarden.desktop"
 alias k='kubectl'
+
+if [[ -f "/Applications/Emacs.app/Contents/MacOS/Emacs" ]]; then
+    alias emacs="/Applications/Emacs.app/Contents/MacOS/Emacs";
+fi

@@ -33,6 +33,27 @@
 
 (load (expand-file-name "lisp/settings" user-emacs-directory))
 
+;; Display tabs nicely
+(setq tab-bar-close-button-show nil
+      tab-bar-new-button-show nil
+      tab-bar-tab-hints t
+      tab-bar-auto-width nil
+      tab-bar-separator " "
+      tab-bar-format '(tab-bar-format-tabs-groups
+                       tab-bar-separator
+                       tab-bar-format-add-tab))
+
+;; Don't show the buffer name in the tab, it should be in the modeline
+;; (defun tab-bar-tab-name-format-hints (name _tab i)
+;;   (if tab-bar-tab-hints
+;;       (concat (format "»%d«" i) "")
+;;     name))
+
+;; (defun tab-bar-tab-group-format-default (tab _i &optional current-p)
+;;   (propertize
+;;    (concat (funcall tab-bar-tab-group-function tab))
+;;    'face (if current-p 'tab-bar-tab-group-current 'tab-bar-tab-group-inactive)))
+
 ;; Maintain balanced parentheses
 (use-package smartparens
   :ensure t
@@ -139,6 +160,10 @@
               (keymap-local-set "C-\\" 'other-window)))
   (when (eq system-type 'darwin)
     (setq ghostel-shell "/opt/homebrew/bin/bash")))
+
+(use-package project-tab-groups
+  :ensure t
+  :hook after-init)
 
 ;; elisp
 ;; (setopt elisp-fontify-semantically t)
@@ -261,20 +286,61 @@
   ;; (setf (alist-get 'python-ts-mode apheleia-mode-alist) 'ruff)
   )
 
+;;;; Utility functions
+
+
+;; (defun personal/tab-group-from-project
+;;     "Call `tab-group` with the current project name as the group."
+;;   (interactive)
+;;   (when-let* ((proj (project-current))
+;;               (name (file-name-nondirectory
+;;                      (directory-file-name (project-root proj)))))
+;;     (tab-group (format "[%s]" name))))
+
+;; (defun personal/find-tab-by-group-name (tab-group-name)
+;;     "Find the first tab that belongs to a group named TAB-GROUP-NAME"
+;;   (seq-find
+;;    (lambda (tab) (equal tab-group-name (alist-get 'group tab)))
+;;    (funcall tab-bar-tabs-function)))
+
+;; (defun personal/select-or-create-tab-group (tab-group-name)
+;;   "Select or create the first tab in a group named TAB_GROUP_NAME.
+
+;; Returns non-nil if a new tab was created, and nil otherwise"
+;;   (if-let ((tab (personal/find-tab-by-group-name)))
+;;       (progn
+;;         (tab-bar-select-tab (1+ tab-bar--ta)))))
+
 ;;;; Keybinds
 
 (load (expand-file-name "lisp/keybinds" user-emacs-directory))
 (load (expand-file-name "lisp/meow" user-emacs-directory))
 
 ;; (use-package evil
+;;   :ensure t
 ;;   :init
 ;;   (setq evil-want-C-d-scroll nil)
 ;;   (setq evil-want-C-w-delete nil)
 ;;   (setq evil-want-Y-yank-to-eol t)
 ;;   (setq evil-shift-width 2)
-;;   (setq evil-undo-system 'undo-redo))
+;;   (setq evil-undo-system 'undo-redo)
+;;   :config
+;;   (evil-mode 1)
+;;   (evil-set-leader nil (kbd "SPC"))
+;;   (evil-define-key 'normal 'global (kbd "<leader>")))
 
-;;;; Python
+;; ;; (use-package evil-collection
+;;   :ensure t
+;;   :after (evil)
+;;   :config
+;;   (evil-collection-init '(calendar dired calc ediff )))
+
+;; (use-package evil-ghostel
+;;   :ensure nil
+;;   :after (ghostel evil)
+;;   :hook (ghostel-mode . evil-ghostel-mode))
+
+;; ;;;; Python
 
 (setq python-indent-guess-indent-offset-verbose nil)
 

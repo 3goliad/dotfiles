@@ -27,7 +27,7 @@
           (?w . window)
           ))
 
-  
+
   (meow-tree-sitter-register-thing ?/ "comment")
   (meow-tree-sitter-register-thing ?a "class")
   (meow-tree-sitter-register-thing ?f "function")
@@ -40,7 +40,7 @@
   ;;   "a" 'eglot-code-actions
   ;;   )
 
-  ;; 
+  ;;
   ;; going and doing
   (define-keymap :name "Go..."
     :prefix 'meow-go-map

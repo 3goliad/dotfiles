@@ -14,6 +14,7 @@ uv = "latest"
 yamllint = "latest"
 ty = "0.0.83"
 "pipx:rassumfrassum" = "latest"
+kustomize = "latest"
 
 [settings]
 idiomatic_version_file_enable_tools = ["python", "node", "yarn"]
