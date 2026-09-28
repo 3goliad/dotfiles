@@ -222,32 +222,32 @@
 
 ;;;; Linting
 
-;; (use-package flycheck
-;;   :ensure t
-;;   :hook
-;;   ((after-init . global-flycheck-mode)
-;;    (after-init . global-flycheck-annotate-mode)
-;;    ;; (python-ts-mode . flycheck-mode)
-;;    ;; (yaml-ts-mode . flycheck-mode)
-;;    )
-;;   :custom
-;;   (flycheck-annotate-current-line-style 'below)
-;;   (flycheck-annotate-other-lines-style 'eol)
-;;   :config
-;;   (global-flycheck-eglot-mode 1)
-;;   ;; (setq flycheck-python-ruff-executable "ruff")
-;;   )
-
-(use-package flymake
-  :ensure nil
+(use-package flycheck
+  :ensure t
   :hook
-  ((yaml-ts-mode . flymake-mode))
+  ((after-init . global-flycheck-mode)
+   (after-init . global-flycheck-annotate-mode)
+   ;; (python-ts-mode . flycheck-mode)
+   ;; (yaml-ts-mode . flycheck-mode)
+   )
   :custom
-  (flymake-wrap-around nil)
-  (flymake-mode-line-lighter "Fly")
-  (flymake-show-diagnostics-at-end-of-line t)
+  (flycheck-annotate-current-line-style 'below)
+  (flycheck-annotate-other-lines-style 'eol)
   :config
-  (setq flymake-wrap-around nil))
+  (global-flycheck-eglot-mode 1)
+  ;; (setq flycheck-python-ruff-executable "ruff")
+  )
+
+;; (use-package flymake
+;;   :ensure nil
+;;   :hook
+;;   ((yaml-ts-mode . flymake-mode))
+;;   :custom
+;;   (flymake-wrap-around nil)
+;;   (flymake-mode-line-lighter "Fly")
+;;   (flymake-show-diagnostics-at-end-of-line t)
+;;   :config
+;;   (setq flymake-wrap-around nil))
 
 ;;;; Formatting
 
