@@ -22,6 +22,7 @@
 
 ;; Highlight extraneous whitespace
 (global-whitespace-mode)
+(setq whitespace-global-modes '(not magit-status-mode))
 (setq whitespace-style
       '(face
         trailing
@@ -234,19 +235,14 @@
  eglot-sync-connect 0
  ;; Activate Eglot in cross-referenced non-project files
  eglot-extend-to-xref t
- ;; Disable margin indicators to prevent line-height shifts caused by emoji
- ;; font rendering issues. This disables both `left-fringe' and `margin'
- ;; indicators.
-                                        ; eglot-code-action-indications '(eldoc-hint)
- )
+ ;; Let ElDoc keep showing docs, don't mention the code action
+ eglot-code-action-indications '(left-fringe margin))
 
 (with-eval-after-load 'eglot
   (setq eglot-autoshutdown t)
   (setq eglot-events-buffer-config '(:size 0 :format full))
-  (setq eglot-extend-to-xref t)
-  ;; (add-to-list 'eglot-server-programs
-  ;;              '('python-base-mode . ("ty" "server")))
-  )
+  (setq eglot-extend-to-xref t))
+
 ;;;; Groovy and Jenkins
 (use-package groovy-mode
   :ensure t)
@@ -255,32 +251,32 @@
 
 ;;;; Linting
 
-(use-package flycheck
-  :ensure t
-  :hook
-  ((after-init . global-flycheck-mode)
-   (after-init . global-flycheck-annotate-mode)
-   ;; (python-ts-mode . flycheck-mode)
-   ;; (yaml-ts-mode . flycheck-mode)
-   )
-  :custom
-  (flycheck-annotate-current-line-style 'below)
-  (flycheck-annotate-other-lines-style 'eol)
-  :config
-  (global-flycheck-eglot-mode 1)
-  ;; (setq flycheck-python-ruff-executable "ruff")
-  )
-
-;; (use-package flymake
-;;   :ensure nil
+;; (use-package flycheck
+;;   :ensure t
 ;;   :hook
-;;   ((yaml-ts-mode . flymake-mode))
+;;   ((after-init . global-flycheck-mode)
+;;    (after-init . global-flycheck-annotate-mode)
+;;    ;; (python-ts-mode . flycheck-mode)
+;;    ;; (yaml-ts-mode . flycheck-mode)
+;;    )
 ;;   :custom
-;;   (flymake-wrap-around nil)
-;;   (flymake-mode-line-lighter "Fly")
-;;   (flymake-show-diagnostics-at-end-of-line t)
+;;   (flycheck-annotate-current-line-style 'below)
+;;   (flycheck-annotate-other-lines-style 'eol)
 ;;   :config
-;;   (setq flymake-wrap-around nil))
+;;   (global-flycheck-eglot-mode 1)
+;;   ;; (setq flycheck-python-ruff-executable "ruff")
+;;   )
+
+(use-package flymake
+  :ensure nil
+  :hook
+  (yaml-ts-mode emacs-lisp-mode)
+  :custom
+  (flymake-wrap-around nil)
+  (flymake-mode-line-lighter "Fly")
+  ;; (flymake-show-diagnostics-at-end-of-line t)
+  :config
+  (setq flymake-wrap-around nil))
 
 ;;;; Formatting
 
@@ -290,8 +286,6 @@
   ((emacs-lisp-mode . apheleia-mode))
   ;; :config
   ;; (apheleia-global-mode +1)
-  ;; (setf (alist-get 'python-mode apheleia-mode-alist) 'ruff)
-  ;; (setf (alist-get 'python-ts-mode apheleia-mode-alist) 'ruff)
   )
 
 ;;;; Utility functions
@@ -323,51 +317,20 @@
 
 (load (expand-file-name "lisp/keybinds" user-emacs-directory))
 ;; (load (expand-file-name "lisp/meow" user-emacs-directory))
+(load (expand-file-name "lisp/evil" user-emacs-directory))
 
-(use-package evil
-  :ensure t
-  :init
-  (setq evil-want-C-d-scroll nil)
-  (setq evil-want-C-w-delete nil)
-  (setq evil-want-Y-yank-to-eol t)
-  (setq evil-shift-width 2)
-  (setq evil-undo-system 'undo-redo)
-  (setq evil-want-keybinding nil)
-  (setq evil-want-integration t)
-  :config
-  (evil-mode 1)
-  ;; (evil-set-leader nil (kbd "SPC"))
-  ;; (evil-define-key 'normal 'global (kbd "<leader>"))
-  )
+;;;; Elisp
 
-(use-package evil-keypad
-  :ensure t
-  :after (evil)
-  :config
-  (evil-keypad-global-mode 1))
-
-(use-package evil-collection
-  :ensure t
-  :after (evil)
-  :config
-  (evil-collection-init))
-
-;; (use-package evil-collection-magit
-;;   :ensure nil
-;;   :after (magit evil)
-;;   :config
-;;   (evil-collection-magit-setup))
-
-;; (use-package evil-ghostel
-;;   :ensure t
-;;   :after (ghostel evil)
-;;   :hook (ghostel-mode . evil-ghostel-mode))
+(add-hook 'emacs-lisp-mode-hook
+          (lambda ()
+            (remove-hook 'flymake-diagnostic-functions
+                         'elisp-flymake-checkdoc t)))
 
 ;; ;;;; Python
 
 (setq python-indent-guess-indent-offset-verbose nil)
 
-;; format with Ruff on save
+;; Use Ty and Ruff via Eglot
 (add-hook 'python-base-mode-hook
           (lambda ()
             (eglot-ensure)

@@ -14,6 +14,8 @@
               meow meow-tree-sitter orderless project-tab-groups
               smartparens timeout transient treesit-langs vertico
               wallpaper which-key ws-butler))
+ '(safe-local-variable-directories
+   '("/Users/jmaldona/.local/share/chezmoi/private_dot_config/emacs/"))
  '(switch-to-buffer-in-dedicated-window 'pop)
  '(switch-to-buffer-obey-display-actions t)
  '(treesit-enabled-modes t))

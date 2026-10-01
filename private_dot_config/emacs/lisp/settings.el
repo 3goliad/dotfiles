@@ -85,10 +85,12 @@
  window-sides-slots '(2 1 2 2)
  fit-window-to-buffer-horizontally t
  window-resize-pixelwise t)
-;; display *info* buffers on the right side
+
+
+;; display *Help* buffers on the right side in the upper slot
 (add-to-list
  'display-buffer-alist
- '("\\(?:Preview:\\)?\\*info"
+ '("\\*Help\\*"
    (display-buffer-in-side-window)
    (side . right)
    (slot . 0)
@@ -96,10 +98,21 @@
    (window-parameters . ( ; (no-other-window . t)
                          (no-delete-other-windows . t)))))
 
-;; display *Help* buffers in the existing window, or make a new one
+;; display *eldoc* buffers on the right side in the upper slot
 (add-to-list
  'display-buffer-alist
- '("\\*Help\\*"
+ '("\\*eldoc\\*"
+   (display-buffer-in-side-window)
+   (side . right)
+   (slot . 0)
+   (window-width . 80)
+   (window-parameters . ( ; (no-other-window . t)
+                         (no-delete-other-windows . t)))))
+
+;; display *info* buffers on the right side in the lower slot
+(add-to-list
+ 'display-buffer-alist
+ '("\\(?:Preview:\\)?\\*info"
    (display-buffer-in-side-window)
    (side . right)
    (slot . 1)
@@ -141,7 +154,8 @@
                                        eldoc-mode
                                        whitespace-mode
                                        apheleia-mode
-                                       smartparens-mode))
+                                       smartparens-mode
+                                       evil-collection-unimpaired-mode))
 
 
 ;;;; External programs

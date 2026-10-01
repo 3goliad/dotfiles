@@ -41,10 +41,6 @@
 (keymap-global-rebind "C-x b" 'switch-to-buffer 'consult-buffer)
 (keymap-global-rebind "M-y" 'yank-pop 'consult-yank-pop)
 
-;;;; Replaced Keybinds
-
-(keymap-set help-map "C-i" 'consult-info)
-
 ;;;; Leader Keybinds
 
 (keymap-global-set "C-c SPC" 'project-find-file)
@@ -90,3 +86,11 @@
   )
 
 (keymap-global-set "C-c w" 'leader-window-map)
+
+;; Searching
+(define-keymap :name "Search"
+  :prefix 'leader-search-map
+  "i" 'consult-info
+  "r" 'consult-ripgrep)
+
+(keymap-global-set "C-c s" 'leader-search-map)
