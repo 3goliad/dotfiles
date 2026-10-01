@@ -5,7 +5,7 @@ argocd = "latest"
 helm = "latest"
 kubectl = "1.35"
 node = "26"
-python = "3.11"
+python = "3.14"
 stern = "latest"
 ruff = "latest"
 acli = "latest"
@@ -15,6 +15,7 @@ yamllint = "latest"
 ty = "0.0.83"
 "pipx:rassumfrassum" = "latest"
 kustomize = "latest"
+shfmt = "latest"
 
 [settings]
 idiomatic_version_file_enable_tools = ["python", "node", "yarn"]
