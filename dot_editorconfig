@@ -1,0 +1,7 @@
+[*.sh]
+indent_style = space
+indent_size = 4
+
+simplify           = true
+binary_next_line   = true
+case_indent        = true
