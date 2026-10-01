@@ -57,3 +57,7 @@
 ;; spell-checker dictionaries and subprocess sorting.
 (when (and (eq system-type 'darwin) (not (getenv "LANG")))
   (setenv "LANG" "en_US.UTF-8"))
+
+;; Trust my own config files (used by Flycheck/Flymake)
+(add-to-list 'trusted-content (expand-file-name "init.el" user-emacs-directory))
+(add-to-list 'trusted-content (expand-file-name "lisp/" user-emacs-directory))

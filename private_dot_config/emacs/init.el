@@ -138,7 +138,7 @@
 ;; Great Git UI
 (use-package magit
   :ensure t
-  :pin melpa-stable
+  :pin melpa
   :custom
   (magit-define-global-key-bindings nil)
   :config
@@ -218,6 +218,9 @@
 (setopt treesit-font-lock-level 4)
 (setopt treesit-auto-install-grammar 'ask)
 
+;; (use-package treesit-langs
+;;   :ensure t)
+
 ;;;; Eglot
 
 (setq
@@ -244,6 +247,11 @@
   ;; (add-to-list 'eglot-server-programs
   ;;              '('python-base-mode . ("ty" "server")))
   )
+;;;; Groovy and Jenkins
+(use-package groovy-mode
+  :ensure t)
+(use-package jenkinsfile-mode
+  :ensure t)
 
 ;;;; Linting
 
@@ -314,29 +322,44 @@
 ;;;; Keybinds
 
 (load (expand-file-name "lisp/keybinds" user-emacs-directory))
-(load (expand-file-name "lisp/meow" user-emacs-directory))
+;; (load (expand-file-name "lisp/meow" user-emacs-directory))
 
-;; (use-package evil
-;;   :ensure t
-;;   :init
-;;   (setq evil-want-C-d-scroll nil)
-;;   (setq evil-want-C-w-delete nil)
-;;   (setq evil-want-Y-yank-to-eol t)
-;;   (setq evil-shift-width 2)
-;;   (setq evil-undo-system 'undo-redo)
-;;   :config
-;;   (evil-mode 1)
-;;   (evil-set-leader nil (kbd "SPC"))
-;;   (evil-define-key 'normal 'global (kbd "<leader>")))
+(use-package evil
+  :ensure t
+  :init
+  (setq evil-want-C-d-scroll nil)
+  (setq evil-want-C-w-delete nil)
+  (setq evil-want-Y-yank-to-eol t)
+  (setq evil-shift-width 2)
+  (setq evil-undo-system 'undo-redo)
+  (setq evil-want-keybinding nil)
+  (setq evil-want-integration t)
+  :config
+  (evil-mode 1)
+  ;; (evil-set-leader nil (kbd "SPC"))
+  ;; (evil-define-key 'normal 'global (kbd "<leader>"))
+  )
 
-;; ;; (use-package evil-collection
-;;   :ensure t
-;;   :after (evil)
+(use-package evil-keypad
+  :ensure t
+  :after (evil)
+  :config
+  (evil-keypad-global-mode 1))
+
+(use-package evil-collection
+  :ensure t
+  :after (evil)
+  :config
+  (evil-collection-init))
+
+;; (use-package evil-collection-magit
+;;   :ensure nil
+;;   :after (magit evil)
 ;;   :config
-;;   (evil-collection-init '(calendar dired calc ediff )))
+;;   (evil-collection-magit-setup))
 
 ;; (use-package evil-ghostel
-;;   :ensure nil
+;;   :ensure t
 ;;   :after (ghostel evil)
 ;;   :hook (ghostel-mode . evil-ghostel-mode))
 
@@ -353,3 +376,4 @@
 ;; config changes made through the customize UI will be stored here
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 (load custom-file)
+(put 'upcase-region 'disabled nil)
