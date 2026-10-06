@@ -7,9 +7,10 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    '(apheleia consult corfu csharp-mode dictionary diff-hl editorconfig
-              elixir-ts-mode evil evil-collection evil-ghostel
-              evil-keypad exec-path-from-shell faceup flexoki-themes
-              ghostel groovy-mode highlight-quoted jenkinsfile-mode
+              elixir-ts-mode embark embark-consult evil
+              evil-collection evil-ghostel evil-keypad
+              exec-path-from-shell faceup flexoki-themes ghostel
+              groovy-mode highlight-quoted jenkinsfile-mode
               less-css-mode lua-mode magit marginalia markdown-ts-mode
               meow meow-tree-sitter orderless project-tab-groups
               smartparens timeout transient treesit-langs vertico

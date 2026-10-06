@@ -17,6 +17,9 @@
   (keymap-unset evil-motion-state-map "C-f")
   (keymap-unset evil-motion-state-map "C-o")
   (keymap-unset evil-motion-state-map "C-y")
+  (keymap-unset evil-normal-state-map "C-.")
+  (keymap-unset evil-normal-state-map "M-.")
+
   ;; (evil-set-leader nil (kbd "SPC"))
   ;; (evil-define-key 'normal 'global (kbd "<leader>"))
   )
@@ -32,6 +35,9 @@
   :after (evil)
   :config
   (delq 'evil-ghostel evil-collection-mode-list)
+  (setq evil-collection-binding-overrides
+        '((find-usages :state normal :key "grr")
+          (find-definition :state normal :key "grd")))
   (evil-collection-init))
 
 ;; (use-package evil-collection-magit

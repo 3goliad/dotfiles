@@ -35,6 +35,8 @@
 (keymap-global-unbind "C-x C-M-0" 'global-text-scale-adjust)
 (keymap-global-unbind "C-x C-M-=" 'global-text-scale-adjust)
 (keymap-global-unbind "C-x v" vc-prefix-map)
+;; (keymap-global-unbind "C-x p" project-prefix-map)
+(keymap-global-unbind "C-x C-p" 'mark-page)
 (keymap-global-unbind "C-\\" 'toggle-input-method)
 
 (keymap-global-rebind "C-x C-b" 'list-buffers 'ibuffer)
@@ -56,13 +58,13 @@
 (keymap-global-set "C-c b" 'leader-buffers-map)
 
 ;; controlling projects
-(keymap-global-unbind "C-x p p" 'project-switch-project)
 
-(define-keymap :name "Projects"
-  :prefix 'leader-projects-map
-  "p" 'project-switch-project)
+;; (define-keymap :name "Projects"
+;;   :prefix 'leader-projects-map
+;;   :parent project-prefix-map
+;;   "g" 'consult-ripgrep)
 
-(keymap-global-set "C-c p" 'leader-projects-map)
+;; (keymap-global-set "C-c p" 'leader-projects-map)
 
 ;; controlling Git
 (define-keymap :name "Git"
@@ -88,9 +90,16 @@
 (keymap-global-set "C-c w" 'leader-window-map)
 
 ;; Searching
-(define-keymap :name "Search"
-  :prefix 'leader-search-map
-  "i" 'consult-info
-  "r" 'consult-ripgrep)
+;; (define-keymap :name "Search"
+;;   :prefix 'leader-search-map
+;;   "i" 'consult-info
+;;   "r" 'consult-ripgrep)
 
-(keymap-global-set "C-c s" 'leader-search-map)
+;; (keymap-global-set "C-c s" 'leader-search-map)
+
+;; Information Management
+(define-keymap :name "Info"
+  :prefix 'leader-info-map
+  "a" 'org-cycle-agenda-files)
+
+(keymap-global-set "C-c i" 'leader-info-map)

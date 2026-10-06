@@ -44,17 +44,6 @@
                        tab-bar-separator
                        tab-bar-format-add-tab))
 
-;; Don't show the buffer name in the tab, it should be in the modeline
-;; (defun tab-bar-tab-name-format-hints (name _tab i)
-;;   (if tab-bar-tab-hints
-;;       (concat (format "»%d«" i) "")
-;;     name))
-
-;; (defun tab-bar-tab-group-format-default (tab _i &optional current-p)
-;;   (propertize
-;;    (concat (funcall tab-bar-tab-group-function tab))
-;;    'face (if current-p 'tab-bar-tab-group-current 'tab-bar-tab-group-inactive)))
-
 ;; Maintain balanced parentheses
 (use-package smartparens
   :ensure t
@@ -101,7 +90,27 @@
 ;; Cool completing commands, replacing some default ones
 (use-package consult
   :ensure t
-  :pin melpa-stable)
+  :pin melpa-stable
+  :config
+  (keymap-substitute project-prefix-map #'project-find-regexp #'consult-ripgrep)
+  (cl-nsubstitute-if
+   '(consult-ripgrep "Find regexp")
+   (pcase-lambda (`(,cmd _)) (eq cmd #'project-find-regexp))
+   project-switch-commands))
+
+(use-package embark
+  :ensure t
+  :bind (("C-." . embark-act)
+         ("M-." . embark-dwim))
+  :config
+  (add-to-list 'display-buffer-alist
+               '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
+                 nil
+                 (window-parameters (mode-line-format . none)))))
+
+(use-package embark-consult
+  :ensure t
+  :defer t)
 
 ;; Code completion
 (use-package corfu
@@ -162,21 +171,14 @@
   (when (eq system-type 'darwin)
     (setq ghostel-shell "/opt/homebrew/bin/bash")))
 
+(use-package project
+  :ensure nil
+  :config
+  (setq project-switch-commands 'project-find-file))
+
 (use-package project-tab-groups
   :ensure t
   :hook after-init)
-
-;; elisp
-;; (setopt elisp-fontify-semantically t)
-
-;; (font-lock-add-keywords 'emacs-lisp-mode
-;;                         `((,(rx (and (group (or "`" "'" "#'"))
-;;                                      (? (* whitespace)
-;;                                         (group (+ (or (syntax word)
-;;                                                       (syntax symbol))))))))
-;;                           (1 'font-lock-keyword-face)
-;;                           (2 'font-lock-constant-face nil t))
-;;                         :append)
 
 (use-package highlight-quoted
   :ensure t
@@ -192,8 +194,6 @@
 (when (eq system-type 'darwin)
   (require 'exec-path-from-shell)
   (exec-path-from-shell-initialize))
-
-(setenv "TY_UV" "1")
 
 ;;;; Eldoc
 
@@ -251,22 +251,6 @@
 
 ;;;; Linting
 
-;; (use-package flycheck
-;;   :ensure t
-;;   :hook
-;;   ((after-init . global-flycheck-mode)
-;;    (after-init . global-flycheck-annotate-mode)
-;;    ;; (python-ts-mode . flycheck-mode)
-;;    ;; (yaml-ts-mode . flycheck-mode)
-;;    )
-;;   :custom
-;;   (flycheck-annotate-current-line-style 'below)
-;;   (flycheck-annotate-other-lines-style 'eol)
-;;   :config
-;;   (global-flycheck-eglot-mode 1)
-;;   ;; (setq flycheck-python-ruff-executable "ruff")
-;;   )
-
 (use-package flymake
   :ensure nil
   :hook
@@ -288,30 +272,6 @@
   ;; (apheleia-global-mode +1)
   )
 
-;;;; Utility functions
-
-
-;; (defun personal/tab-group-from-project
-;;     "Call `tab-group` with the current project name as the group."
-;;   (interactive)
-;;   (when-let* ((proj (project-current))
-;;               (name (file-name-nondirectory
-;;                      (directory-file-name (project-root proj)))))
-;;     (tab-group (format "[%s]" name))))
-
-;; (defun personal/find-tab-by-group-name (tab-group-name)
-;;     "Find the first tab that belongs to a group named TAB-GROUP-NAME"
-;;   (seq-find
-;;    (lambda (tab) (equal tab-group-name (alist-get 'group tab)))
-;;    (funcall tab-bar-tabs-function)))
-
-;; (defun personal/select-or-create-tab-group (tab-group-name)
-;;   "Select or create the first tab in a group named TAB_GROUP_NAME.
-
-;; Returns non-nil if a new tab was created, and nil otherwise"
-;;   (if-let ((tab (personal/find-tab-by-group-name)))
-;;       (progn
-;;         (tab-bar-select-tab (1+ tab-bar--ta)))))
 
 ;;;; Keybinds
 
@@ -329,6 +289,9 @@
 ;; ;;;; Python
 
 (setq python-indent-guess-indent-offset-verbose nil)
+
+;; make sure Ty uses uv
+(setenv "TY_UV" "1")
 
 ;; Use Ty and Ruff via Eglot
 (add-hook 'python-base-mode-hook
