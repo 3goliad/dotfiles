@@ -25,8 +25,6 @@
 ;; revert buffers automatically when underlying files are changed externally
 (global-auto-revert-mode t)
 
-
-
 (recentf-mode)
 (savehist-mode)
 
@@ -203,15 +201,6 @@
 
 ;; Search more things with apropos
 (setq apropos-do-all t)
-
-
-;;;; Syntax & Highlighting
-
-
-;; enable treesitter
-(setopt treesit-enabled-modes t)
-(setopt treesit-font-lock-level 4)
-(setopt treesit-auto-install-grammar 'ask)
 
 
 ;;;; Vertico
