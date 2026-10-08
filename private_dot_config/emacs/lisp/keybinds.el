@@ -35,7 +35,6 @@
 (keymap-global-unbind "C-x C-M-0" 'global-text-scale-adjust)
 (keymap-global-unbind "C-x C-M-=" 'global-text-scale-adjust)
 (keymap-global-unbind "C-x v" vc-prefix-map)
-;; (keymap-global-unbind "C-x p" project-prefix-map)
 (keymap-global-unbind "C-x C-p" 'mark-page)
 (keymap-global-unbind "C-\\" 'toggle-input-method)
 
@@ -59,6 +58,8 @@
 
 ;; controlling projects
 
+(keymap-global-unbind "C-x p" project-prefix-map)
+(keymap-global-set "C-c p" project-prefix-map)
 ;; (define-keymap :name "Projects"
 ;;   :prefix 'leader-projects-map
 ;;   :parent project-prefix-map
