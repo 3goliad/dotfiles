@@ -140,7 +140,7 @@
   :config
   (add-to-list 'org-export-backends 'md)
   (setq org-todo-keywords
-        '((sequence "TODO(t)"  "STARTED(s!)" "|" "DONE(d!)")))
+        '((sequence "TODO(t)"  "STARTED(s!)" "WAIT(w!)" "|" "DONE(d!)")))
   (setq org-clock-persist 'history)
   (org-clock-persistence-insinuate)
   (setq org-log-into-drawer t))
