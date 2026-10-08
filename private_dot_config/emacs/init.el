@@ -299,6 +299,18 @@
             (eglot-ensure)
             (add-hook 'after-save-hook 'eglot-format nil t)))
 
+;;;; HCL/Terraform
+(use-package terraform-ts-mode
+  :ensure t
+  :defer t
+  :vc (:url "https://codeberg.org/ccbash-oss/terraform-ts-mode"
+            :rev "7a4e5ab5fa005340af1e41455a7950bc5cd56653")
+  :config
+  '(terraform . ("https://github.com/tree-sitter-grammars/tree-sitter-hcl"
+                 :rev "main"
+                 :source-dir "dialects/terraform/src")))
+
+
 ;; config changes made through the customize UI will be stored here
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 (load custom-file)

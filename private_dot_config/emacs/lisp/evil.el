@@ -20,6 +20,8 @@
   (keymap-unset evil-normal-state-map "C-.")
   (keymap-unset evil-normal-state-map "M-.")
 
+  (evil-define-key 'normal 'global "gra" 'eglot-code-actions)
+
   ;; (evil-set-leader nil (kbd "SPC"))
   ;; (evil-define-key 'normal 'global (kbd "<leader>"))
   )

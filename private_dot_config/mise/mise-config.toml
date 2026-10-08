@@ -16,6 +16,8 @@ ty = "0.0.83"
 "pipx:rassumfrassum" = "latest"
 kustomize = "latest"
 shfmt = "latest"
+terraform-ls = "latest"
+terraform = "1.5.7"
 
 [settings]
 idiomatic_version_file_enable_tools = ["python", "node", "yarn"]
