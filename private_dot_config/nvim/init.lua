@@ -58,6 +58,8 @@ nmap_leader("td", function()
   })
 end, "[T]oggle [D]iagnostics (virtual text)")
 
+-- nmap_leader("xs")
+
 -- Custom LSP configs
 vim.lsp.enable("typescript_lsp")
 
@@ -99,7 +101,7 @@ require("mini.bufremove").setup()
 nmap_leader("bk", MiniBufremove.delete, "[B]uffer [K]ill")
 
 require("mini.files").setup()
-nmap_leader("ff", function()
+nmap_leader("xf", function()
   MiniFiles.open(vim.api.nvim_buf_get_name(0), false)
 end, "Browse at this [f]ile")
 nmap_leader("fl", MiniFiles.open, "Open [l]ast file browser")
@@ -141,8 +143,8 @@ miniclue.setup({
   clues = {
     { mode = "n", keys = "<Leader>b", desc = "[B]uffer" },
     { mode = "n", keys = "<Leader>s", desc = "[S]earch" },
-    { mode = "n", keys = "<Leader>g", desc = "[G]it" },
-    { mode = "n", keys = "<Leader>f", desc = "[F]ile" },
+    { mode = "n", keys = "<Leader>v", desc = "[G]it" },
+    { mode = "n", keys = "<Leader>x", desc = "[X]" },
     { mode = "n", keys = "<Leader>t", desc = "[T]oggle" },
     { mode = "n", keys = "<Leader>i", desc = "[I]nspect" },
     miniclue.gen_clues.square_brackets(),
@@ -192,7 +194,7 @@ require("mini.pick").setup({
   },
 })
 nmap_leader(" ", MiniPick.builtin.files, "[ ] Search files")
-nmap_leader("sg", MiniPick.builtin.grep_live, "Live [g]rep search")
+nmap_leader("pg", MiniPick.builtin.grep_live, "Live [g]rep search")
 nmap_leader("sb", function()
   MiniExtra.pickers.buf_lines({ scope = "current" })
 end, "Search [b]uffer")
@@ -232,9 +234,9 @@ vim.keymap.set("t", "<Esc><Esc>", "<C-\\><C-n>", {
 })
 
 -- Fugitive
-nmap_leader("gg", "<cmd>tab Git<CR>", "Open Fu[g]itive")
-nmap_leader("gB", "<cmd>Git blame<CR>", "Git [b]lame buffer")
-nmap_leader("gL", "<cmd>vertical Git log --oneline %<CR>", "Git [l]og buffer")
+nmap_leader("vv", "<cmd>tab Git<CR>", "Open Fu[g]itive")
+nmap_leader("vB", "<cmd>Git blame<CR>", "Git [b]lame buffer")
+nmap_leader("vL", "<cmd>vertical Git log --oneline %<CR>", "Git [l]og buffer")
 
 -- Codediff
 require("codediff").setup({
