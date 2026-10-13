@@ -21,3 +21,6 @@ opentofu = "1.11.3"
 
 [settings]
 idiomatic_version_file_enable_tools = ["python", "node", "yarn"]
+
+[settings.pypi]
+registry_url = "https://artifactory.cloudservicesdev.aws.gartner.com/artifactory/api/pypi/pypi/simple/{}/"
