@@ -13,8 +13,8 @@
               groovy-mode highlight-quoted jenkinsfile-mode
               less-css-mode lua-mode magit marginalia markdown-ts-mode
               meow meow-tree-sitter orderless project-tab-groups
-              smartparens terraform-ts-mode timeout transient
-              treesit-langs vertico wallpaper which-key ws-butler))
+              smartparens timeout transient treesit-langs vertico
+              wallpaper which-key ws-butler))
  '(package-vc-selected-packages
    '((terraform-ts-mode :url
                         "https://codeberg.org/ccbash-oss/terraform-ts-mode")))
