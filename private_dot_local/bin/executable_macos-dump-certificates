@@ -1,0 +1,22 @@
+#!/bin/bash
+
+set -euo pipefail
+
+SSL_DIR="$HOME/.local/etc/ssl"
+SSL_CERT_BUNDLE="$SSL_DIR/cert.pem"
+SSL_CERTS_DIR="$SSL_DIR/certs"
+SSL_CORPORATE_CA_BUNDLE="$SSL_DIR/certs/corporate-ca.pem"
+
+mkdir -p "$SSL_DIR"
+security find-certificate -a -p \
+         "/System/Library/Keychains/SystemRootCertificates.keychain" \
+         > "$SSL_CERT_BUNDLE"
+
+mkdir -p "$SSL_DIR/certs"
+security find-certificate -a -p \
+         "/Library/Keychains/System.keychain" \
+         > "$SSL_CORPORATE_CA_BUNDLE"
+
+cat "$SSL_CORPORATE_CA_BUNDLE" >> "$SSL_CERT_BUNDLE"
+
+echo "Updated local certificate bundles!"
