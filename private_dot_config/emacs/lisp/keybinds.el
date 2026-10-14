@@ -4,7 +4,6 @@
 
 (defun global-map-p (key fun)
   (eq (keymap-global-lookup key) fun))
-
 (defun keymap-global-unbind (key fun)
   (if (global-map-p key fun)
       (keymap-global-unset key)
@@ -38,6 +37,15 @@
 (keymap-global-unbind "C-x C-p" 'mark-page)
 (keymap-global-unbind "C-\\" 'toggle-input-method)
 
+;; Remove default MacOS compatibility bindings, they're confusing
+(when (eq system-type 'darwin)
+  (dolist (key '("s-&" "s-'" "s-," "s-+" "s--" "s-0" "s-=" "s-:" "s-?" "s-C"
+                 "s-D" "s-E" "s-F" "s-H" "s-L" "s-M" "s-S" "s-^" "s-`" "s-a"
+                 "s-c" "s-d" "s-e" "s-f" "s-g" "s-h" "s-j" "s-k" "s-l" "s-m"
+                 "s-n" "s-o" "s-p" "s-q" "s-s" "s-t" "s-u" "s-v" "s-w" "s-x"
+                 "s-y" "s-z" "s-|" "s-~"))
+    (keymap-global-unset key)))
+
 (keymap-global-rebind "C-x C-b" 'list-buffers 'ibuffer)
 (keymap-global-rebind "C-x b" 'switch-to-buffer 'consult-buffer)
 (keymap-global-rebind "M-y" 'yank-pop 'consult-yank-pop)
@@ -52,7 +60,8 @@
   :prefix 'leader-buffers-map
   "b" 'consult-buffer
   "s" 'save-buffer
-  "S" 'save-some-buffers)
+  "S" 'save-some-buffers
+  "k" 'kill-current-buffer)
 
 (keymap-global-set "C-c b" 'leader-buffers-map)
 
