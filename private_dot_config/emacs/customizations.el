@@ -19,7 +19,8 @@
    '((terraform-ts-mode :url
                         "https://codeberg.org/ccbash-oss/terraform-ts-mode")))
  '(safe-local-variable-directories
-   '("/Users/jmaldona/.local/share/chezmoi/private_dot_config/emacs/"))
+   '("/home/jam/.local/share/chezmoi/private_dot_config/emacs/"
+     "/Users/jmaldona/.local/share/chezmoi/private_dot_config/emacs/"))
  '(switch-to-buffer-in-dedicated-window 'pop)
  '(switch-to-buffer-obey-display-actions t)
  '(treesit-enabled-modes t))
