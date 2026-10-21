@@ -32,6 +32,9 @@
         space-after-tab
         missing-newline-at-eof))
 
+;; Add a final newline to files when saving
+(setq-default require-final-newline t)
+
 (load (expand-file-name "lisp/settings" user-emacs-directory))
 
 ;; Display tabs nicely
@@ -64,8 +67,16 @@
 (use-package vertico
   :ensure t
   :pin melpa-stable
-  :init
+  :config
   (vertico-mode))
+
+;; Show vertico in a child frame instead of the minibuffer
+(use-package vertico-posframe
+  :ensure t
+  :vc (:url "https://github.com/tumashu/vertico-posframe"
+            :rev "bc0d9caf16ecf48605a3f156b8cc559c51959b15")
+  :config
+  (vertico-posframe-mode))
 
 ;; Use the `orderless' completion style.
 (use-package orderless
@@ -286,7 +297,7 @@
             (remove-hook 'flymake-diagnostic-functions
                          'elisp-flymake-checkdoc t)))
 
-;; ;;;; Python
+;;;; Python
 
 (setq python-indent-guess-indent-offset-verbose nil)
 
@@ -298,6 +309,77 @@
           (lambda ()
             (eglot-ensure)
             (add-hook 'after-save-hook 'eglot-format nil t)))
+
+;;;; YAML
+(defvar-local yamllint-flymake--process nil
+  "The currently running yamllint process, if any")
+
+(defun yamllint-flymake--parse-output (source proc report-fn)
+  "Parse yamllint output into a list of Flymake diagnostics"
+  (with-current-buffer (process-buffer proc)
+    (goto-char (point-min))
+    (let ((pattern (rx bol (1+ (not ":")) ":" ; filename (always "stdin")
+                       (group (1+ digit)) ":" ; line
+                       (group (1+ digit)) ":" ; column
+                       (1+ blank) "[" (group (1+ alpha)) "]"; type
+                       (1+ blank) (group (1+ nonl)) ; message
+                       eol))
+          diags)
+      (while (search-forward-regexp pattern nil t)
+        (let* ((diag-region (flymake-diag-region
+                             source
+                             (string-to-number (match-string 1))
+                             (string-to-number (match-string 2))))
+               (beg (car diag-region))
+               (end (cdr diag-region))
+               (type (if (string= (match-string 3) "warning")
+                         :warning
+                       :error))
+               (message (match-string 4)))
+          (push (flymake-make-diagnostic source beg end type message)
+                diags)))
+      (funcall report-fn diags))))
+
+(defun yamllint-flymake-backend (report-fn &rest _args)
+  "Flymake backend for yamllint."
+
+  (let ((yamllint (executable-find "yamllint"))
+        (params '("-f" "parsable" "-"))
+        (source (current-buffer)))
+    (when (not yamllint)
+      (error "Unable to find yamllint command"))
+
+    (when (process-live-p yamllint-flymake--process)
+      (flymake-log :debug "Killing earlier yamllint process %s"
+                   yamllint-flymake--process)
+      (kill-process yamllint-flymake--process))
+
+    (save-restriction
+      (widen)
+      (setq
+       yamllint-flymake--process
+       (make-process
+        :name "yamllint-flymake"
+        :noquery t
+        :connection-type 'pipe
+        :buffer (generate-new-buffer " *yamllint-flymake*")
+        :command `(,yamllint ,@params)
+        :sentinel
+        (lambda (proc _event)
+          (when (and (eq 'exit (process-status proc)) (buffer-live-p source))
+            (unwind-protect
+                (if (with-current-buffer source
+                      (eq proc yamllint-flymake--process))
+                    (yamllint-flymake--parse-output source proc report-fn)
+                  (flymake-log :debug "Canceling obsolete check %s" proc))
+              (kill-buffer (process-buffer proc)))))))
+      (process-send-region yamllint-flymake--process (point-min) (point-max))
+      (process-send-eof yamllint-flymake--process))))
+
+(add-hook 'yaml-ts-mode-hook
+          (lambda ()
+            (remove-hook 'flymake-diagnostic-functions #'yaml-ts-mode-flymake t)
+            (add-hook 'flymake-diagnostic-functions #'yamllint-flymake-backend nil t)))
 
 ;;;; HCL/Terraform/OpenTofu
 (load (expand-file-name "lisp/hcl-ts-mode" user-emacs-directory))

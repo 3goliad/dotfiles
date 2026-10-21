@@ -69,6 +69,8 @@
 
 (keymap-global-unbind "C-x p" project-prefix-map)
 (keymap-global-set "C-c p" project-prefix-map)
+(keymap-set project-prefix-map "a" 'project-remember-project)
+(keymap-set project-prefix-map "u" 'project-remember-projects-under)
 ;; (define-keymap :name "Projects"
 ;;   :prefix 'leader-projects-map
 ;;   :parent project-prefix-map

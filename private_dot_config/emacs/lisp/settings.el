@@ -171,9 +171,6 @@
 (setq-default indent-tabs-mode nil)
 (setq-default tab-width 8)
 
-;; final newlines
-(setq require-final-newline 'ask)
-
 ;; delete selection if text is typed
 (delete-selection-mode t)
 
