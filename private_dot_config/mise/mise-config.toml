@@ -18,6 +18,9 @@ kustomize = "latest"
 shfmt = "latest"
 opentofu = "1.11.3"
 "aqua:opentofu/tofu-ls" = "latest"
+tfctl = "latest"
+"aqua:floci-io/floci-cli" = "latest"
+k3d = "latest"
 
 [settings]
 idiomatic_version_file_enable_tools = ["python", "node", "yarn"]
