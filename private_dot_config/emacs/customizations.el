@@ -28,4 +28,4 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:inherit nil :weight regular :height 160 :width normal :foundry "nil" :family "Menlo")))))
+ '(default ((t (:inherit nil :extend nil :stipple nil :background "#100f0f" :foreground "#fffcf0" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight regular :height 180 :width normal :foundry "nil" :family "Iosevka Custom Slab")))))
