@@ -21,6 +21,7 @@ opentofu = "1.11.3"
 tfctl = "latest"
 "aqua:floci-io/floci-cli" = "latest"
 k3d = "latest"
+yq = "latest"
 
 [settings]
 idiomatic_version_file_enable_tools = ["python", "node", "yarn"]
