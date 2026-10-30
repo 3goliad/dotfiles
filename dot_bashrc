@@ -123,7 +123,10 @@ function change_eks () {
     fi
 
     export KUBECONFIG="$merged_kubeconfig"
-    kubectl config use-context "$1"
+    if ! kubectl config use-context "$1"; then
+        echo "Could not change EKS context" 2>&1
+        return 1
+    fi
 
     local user=$(kubectl config view -o jsonpath='{.contexts[?(@.name == "'$1'")].context.user}')
 
