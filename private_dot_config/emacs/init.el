@@ -277,12 +277,22 @@
 
 (use-package apheleia
   :ensure t
+  :defer t
   :hook
   ((emacs-lisp-mode . apheleia-mode))
   ;; :config
   ;; (apheleia-global-mode +1)
   )
 
+;;;; conf-mode
+(use-package conf-mode
+  :ensure nil
+  :defer t
+  :config
+  ;; conf-mode maps conf-space-keywords to both C-c SPC and C-c C-s,
+  ;; but we need C-c SPC for our leader map
+  (when (keymap-lookup conf-mode-map "C-c SPC")
+    (keymap-unset conf-mode-map "C-c SPC")))
 
 ;;;; Keybinds
 
