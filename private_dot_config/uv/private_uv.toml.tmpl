@@ -1,6 +1,9 @@
+system-certs = true
+{{ if eq .chezmoi.os "darwin" -}}
 publish-url = "https://artifactory.cloudservicesdev.aws.gartner.com/artifactory/api/pypi/pypi"
 
 [[index]]
   default = true
   name = "jfrog-pypi"
   url = "https://artifactory.cloudservicesdev.aws.gartner.com/artifactory/api/pypi/pypi/simple"
+{{- end }}
