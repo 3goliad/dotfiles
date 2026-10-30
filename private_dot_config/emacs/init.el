@@ -20,6 +20,17 @@
 (setq use-package-verbose t)
 (setq package-install-upgrade-built-in t)
 
+;; Fonts and display
+(set-face-attribute
+ 'default nil
+ :family "Iosevka Custom"
+ :height 200
+ :weight (if (eq system-type 'darwin) 'light 'regular))
+
+(set-face-attribute
+ 'bold nil
+ :weight (if (eq system-type 'darwin) 'semibold 'bold))
+
 ;; Highlight extraneous whitespace
 (global-whitespace-mode)
 (setq whitespace-global-modes '(not magit-status-mode))
