@@ -46,6 +46,8 @@
 ;; Add a final newline to files when saving
 (setq-default require-final-newline t)
 
+(setq auth-sources '("~/.authinfo"))
+
 (load (expand-file-name "lisp/settings" user-emacs-directory))
 
 ;; Display tabs nicely
@@ -175,6 +177,11 @@
   (magit-define-global-key-bindings nil)
   :config
   (setq magit-view-git-manual-method 'man))
+
+(use-package forge
+  :ensure t
+  :pin melpa
+  :after magit)
 
 ;; Show VC changes in gutter
 (use-package diff-hl

@@ -9,7 +9,7 @@
    '(apheleia consult corfu csharp-mode dictionary diff-hl editorconfig
               elixir-ts-mode embark embark-consult evil
               evil-collection evil-ghostel evil-keypad
-              exec-path-from-shell faceup flexoki-themes ghostel
+              exec-path-from-shell faceup flexoki-themes forge ghostel
               groovy-mode highlight-quoted jenkinsfile-mode
               less-css-mode lua-mode magit marginalia markdown-ts-mode
               meow meow-tree-sitter orderless project-tab-groups
