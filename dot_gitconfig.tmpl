@@ -20,6 +20,13 @@
                   3goliad@gmail.com
                 {{- end }}
 
+[github]
+    user = {{ if eq .chezmoi.os "darwin" -}}
+             jmaldona_gartner
+           {{- else -}}
+             3goliad
+           {{- end }}
+
 [help]
     autocorrect = 15
 
