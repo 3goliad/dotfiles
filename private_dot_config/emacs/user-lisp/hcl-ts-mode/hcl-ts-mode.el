@@ -42,7 +42,6 @@
 
     ;; Strings
     (modify-syntax-entry ?\" "\"" table)
-    (modify-syntax-entry ?\' "\"" table)
     (modify-syntax-entry ?\\ "\\" table) ; escape
 
     ;; Punctuation
