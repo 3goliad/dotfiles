@@ -1,0 +1,20 @@
+[settings.pypi]
+registry_url = "https://artifactory.cloudservicesdev.aws.gartner.com/artifactory/api/pypi/pypi/simple/{}/"
+
+[tools]
+"pipx:pre-commit" = "4.6.0"
+argocd = "latest"
+helm = "latest"
+kubectl = "1.35"
+stern = "latest"
+flux2 = "latest"
+kustomize = "latest"
+yamllint = "latest"
+opentofu = "1.11.3"
+"aqua:opentofu/tofu-ls" = "latest"
+tfctl = "latest"
+"aqua:floci-io/floci-cli" = "latest"
+k3d = "latest"
+yq = "latest"
+"npm:@github/copilot" = "latest"
+kubeconform = "latest"

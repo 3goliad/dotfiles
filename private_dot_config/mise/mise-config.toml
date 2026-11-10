@@ -1,29 +1,15 @@
 [tools]
-"pipx:pre-commit" = "4.6.0"
-argo = "latest"
-argocd = "latest"
-helm = "latest"
-kubectl = "1.35"
 node = "26"
-python = "3.14"
-stern = "latest"
-ruff = "latest"
-acli = "latest"
-flux2 = "latest"
-uv = "latest"
-yamllint = "latest"
-ty = "0.0.83"
-"pipx:rassumfrassum" = "latest"
-kustomize = "latest"
 shfmt = "latest"
-opentofu = "1.11.3"
-"aqua:opentofu/tofu-ls" = "latest"
-tfctl = "latest"
-"aqua:floci-io/floci-cli" = "latest"
-k3d = "latest"
-yq = "latest"
-"npm:@github/copilot" = "latest"
-kubeconform = "latest"
+
+# python tools
+python = "3.14"
+ruff = "latest"
+uv = "latest"
+ty = "0.0.83"
+
+# multi-lsp for emacs
+"pipx:rassumfrassum" = "latest"
 
 [settings]
 idiomatic_version_file_enable_tools = ["python", "node", "yarn"]
