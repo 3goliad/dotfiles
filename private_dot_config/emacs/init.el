@@ -176,7 +176,8 @@
   :custom
   (magit-define-global-key-bindings nil)
   :config
-  (setq magit-view-git-manual-method 'man))
+  (setq magit-view-git-manual-method 'man)
+  (require 'forge))
 
 (use-package forge
   :ensure t
