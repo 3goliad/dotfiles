@@ -411,13 +411,10 @@
             (add-hook 'flymake-diagnostic-functions #'yamllint-flymake-backend nil t)))
 
 ;;;; HCL/Terraform/OpenTofu
-(load (expand-file-name "lisp/hcl-ts-mode" user-emacs-directory))
-(load (expand-file-name "lisp/opentofu-mode" user-emacs-directory))
-(add-hook 'opentofu-mode-hook
-          (lambda ()
-            (eglot-ensure)
-            (add-hook 'after-save-hook 'eglot-format nil t)))
-(add-to-list 'auto-mode-alist '("\\.tf\\(vars\\)?\\'" . opentofu-mode))
+(use-package opentofu-mode
+  :hook (opentofu-mode . (lambda ()
+                           (eglot-ensure)
+                           (add-hook 'after-save-hook #'eglot-format nil t))))
 
 ;; config changes made through the customize UI will be stored here
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))

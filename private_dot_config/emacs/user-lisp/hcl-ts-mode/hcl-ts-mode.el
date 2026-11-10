@@ -1,7 +1,14 @@
 ;;; hcl-ts-mode.el --- tree-sitter support for HCL  -*- lexical-binding: t; -*-
 
+;; Package-Requires: ((emacs "31.1"))
+;; Keywords: languages, hcl, terraform, tree-sitter
+;; Version: 0.1
+
 ;;; Commentary:
-;;
+
+;; Tree-sitter based major mode for HashiCorp Configuration Language
+;; (HCL).  It is intended to be derived by tool-specific modes such as
+;; `opentofu-mode'.
 
 ;;; Code:
 
@@ -18,7 +25,7 @@
 (defcustom hcl-ts-indent-offset 2
   "Number of spaces for each indentation step in `hcl-ts-mode'."
   :type 'natnum
-  :safe 'nanump
+  :safe 'natnump
   :group 'hcl)
 
 (defvar hcl-ts--syntax-table
@@ -41,7 +48,7 @@
     ;; Punctuation
     (modify-syntax-entry ?= "." table)
     table)
-  "Syntax table for `hcl-ts-mode'")
+  "Syntax table for `hcl-ts-mode'.")
 
 (defvar hcl-ts-mode--indent-rules
   `((hcl
@@ -53,7 +60,7 @@
      ((node-is "object") parent-bol hcl-ts-indent-offset)
      ((node-is "tuple") parent-bol hcl-ts-indent-offset)
      ((node-is "block") parent-bol hcl-ts-indent-offset)))
-  "Indent rules for `hcl-ts-mode'")
+  "Indent rules for `hcl-ts-mode'.")
 
 (defvar hcl-ts-mode--font-lock-settings
   (treesit-font-lock-rules
@@ -142,7 +149,7 @@
   "Generic major mode for editing HashiCorp Configuration Language files.
 
 This is a generic major mode intended to be inherited by tool-specific
-implementations. The only implementation currently provided is `opentofu-mode'."
+implementations.  The only implementation currently provided is `opentofu-mode'."
   :group 'hcl-ts
   :syntax-table hcl-ts--syntax-table
   (when (and (treesit-ensure-installed 'hcl)
@@ -168,3 +175,6 @@ implementations. The only implementation currently provided is `opentofu-mode'."
 
 
 (add-to-list 'auto-mode-alist '("\\.hcl\\'" . hcl-mode))
+
+(provide 'hcl-ts-mode)
+;;; hcl-ts-mode.el ends here
