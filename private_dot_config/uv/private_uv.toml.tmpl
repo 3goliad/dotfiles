@@ -1,5 +1,5 @@
 system-certs = true
-{{ if eq .chezmoi.os "darwin" -}}
+{{ if .work -}}
 publish-url = "https://artifactory.cloudservicesdev.aws.gartner.com/artifactory/api/pypi/pypi"
 
 [[index]]
