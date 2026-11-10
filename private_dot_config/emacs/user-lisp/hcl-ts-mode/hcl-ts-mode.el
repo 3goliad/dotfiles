@@ -41,9 +41,9 @@
     (modify-syntax-entry ?* ". 23" table)
 
     ;; Strings
-    (modify-syntax-entry ?\" "\"")
-    (modify-syntax-entry ?\' "\"")
-    (modify-syntax-entry ?\\ "\\") ; escape
+    (modify-syntax-entry ?\" "\"" table)
+    (modify-syntax-entry ?\' "\"" table)
+    (modify-syntax-entry ?\\ "\\" table) ; escape
 
     ;; Punctuation
     (modify-syntax-entry ?= "." table)
