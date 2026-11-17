@@ -2,3 +2,8 @@ personal
 README.md
 nvim-pack-lock.json
 .github
+{{ if not .work -}}
+.local/bin/aims-sync
+.local/bin/aws-profiles
+.local/bin/eks-kubeconfigs
+{{ end -}}

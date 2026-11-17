@@ -1,0 +1,48 @@
+#!/usr/bin/env -S uv run --script
+# -*- mode: python; -*-
+#
+# /// script
+# requires-python = ">=3.11"
+# dependencies = []
+# ///
+"""Cache the full AIMS organization response in ~/.local/var/aims/orgs.json."""
+
+import json
+import os
+import sys
+import tempfile
+from pathlib import Path
+from urllib.error import URLError
+from urllib.request import urlopen
+
+AIMS_URL = "https://dashboard.aims.aws.gartner.com/api/v2/getOrgs"
+AIMS_DIR = Path.home() / ".local" / "var" / "aims"
+
+
+def main():
+    print("Fetching AIMS organizations...", flush=True)
+    with urlopen(AIMS_URL, timeout=30) as response:
+        data = json.load(response)
+    if not isinstance(data, list) or not data:
+        raise ValueError("AIMS returned an empty or invalid organization list")
+    if any(not isinstance(org, dict) for org in data):
+        raise ValueError("AIMS returned an invalid organization record")
+
+    AIMS_DIR.mkdir(parents=True, exist_ok=True, mode=0o700)
+    destination = AIMS_DIR / "orgs.json"
+    fd, temporary = tempfile.mkstemp(dir=AIMS_DIR, prefix=".orgs.")
+    try:
+        with os.fdopen(fd, "w") as output:
+            json.dump(data, output, indent=2, ensure_ascii=False)
+            output.write("\n")
+        os.replace(temporary, destination)
+    finally:
+        Path(temporary).unlink(missing_ok=True)
+    print(f"Cached {len(data)} complete organization records in {destination}")
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except (OSError, URLError, ValueError) as error:
+        sys.exit(f"ERROR: AIMS sync failed: {error}")

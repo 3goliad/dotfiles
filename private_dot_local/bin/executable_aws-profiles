@@ -1,0 +1,126 @@
+#!/usr/bin/env -S uv run --script
+# -*- mode: python; -*-
+#
+# /// script
+# requires-python = ">=3.11"
+# dependencies = []
+# ///
+"""Regenerate gc1 AWS profiles from the local AIMS organization cache."""
+
+import argparse
+import configparser
+import io
+import json
+import os
+import shutil
+import subprocess
+import sys
+import tempfile
+import time
+from pathlib import Path
+
+AWS_CONFIG = Path(os.environ.get("AWS_CONFIG_FILE", Path.home() / ".aws" / "config"))
+AIMS_DATA = Path.home() / ".local" / "var" / "aims" / "orgs.json"
+MAX_AGE = 3600
+ENV_KEYWORDS = {"dev", "qa", "np", "sb", "prod", "sandbox"}
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--force", action="store_true", help="sync AIMS even when its cache is fresh"
+    )
+    args = parser.parse_args()
+
+    if (
+        args.force
+        or not AIMS_DATA.exists()
+        or time.time() - AIMS_DATA.stat().st_mtime > MAX_AGE
+    ):
+        subprocess.run([str(Path(__file__).with_name("aims-sync"))], check=True)
+
+    with AIMS_DATA.open() as source:
+        orgs = json.load(source)
+    if not isinstance(orgs, list) or not orgs:
+        raise ValueError(f"Empty or invalid organization list in {AIMS_DATA}")
+
+    profiles = {}
+    for org in orgs:
+        if not isinstance(org, dict) or not isinstance(org.get("Name"), str):
+            raise ValueError(f"Invalid organization record in {AIMS_DATA}")
+        name = org["Name"]
+        if not name.startswith("gc1-") or "--" in name:
+            continue
+        if not ENV_KEYWORDS.intersection(name.split("-")):
+            continue
+        account_id = org.get("Id")
+        if (
+            not isinstance(account_id, str)
+            or len(account_id) != 12
+            or not account_id.isascii()
+            or not account_id.isdecimal()
+        ):
+            raise ValueError(f"Invalid AWS account ID for {name}")
+        if any(character in name for character in "\r\n[]"):
+            raise ValueError(f"Invalid AWS profile name: {name!r}")
+        if name in profiles:
+            raise ValueError(f"Duplicate AWS profile name: {name}")
+        profiles[name] = account_id
+    if not profiles:
+        raise ValueError("No matching gc1 accounts in the AIMS cache")
+
+    original = AWS_CONFIG.read_text()
+    config = configparser.ConfigParser(interpolation=None)
+    config.read_string(original)
+    sessions = [
+        section.removeprefix("sso-session ")
+        for section in config.sections()
+        if section.startswith("sso-session ")
+    ]
+    if len(sessions) != 1:
+        raise ValueError(f"Expected exactly one sso-session block in {AWS_CONFIG}")
+
+    changed = False
+    for name, account_id in sorted(profiles.items()):
+        section = f"profile {name}"
+        if not config.has_section(section):
+            config.add_section(section)
+            changed = True
+        settings = {
+            "sso_session": sessions[0],
+            "sso_account_id": account_id,
+            "sso_role_name": "Gartner-CCOE-Admin",
+            "region": "us-east-1",
+        }
+        for key, value in settings.items():
+            if config.get(section, key, fallback=None) != value:
+                config.set(section, key, value)
+                changed = True
+
+    if changed:
+        output = io.StringIO()
+        config.write(output)
+        destination = AWS_CONFIG.resolve()
+        backup = AWS_CONFIG.with_name(f"{AWS_CONFIG.name}.aims-backup")
+        shutil.copy2(AWS_CONFIG, backup)
+        backup.chmod(0o600)
+        fd, temporary = tempfile.mkstemp(dir=destination.parent, prefix=".aws-config.")
+        try:
+            with os.fdopen(fd, "w") as target:
+                target.write(output.getvalue())
+            os.replace(temporary, destination)
+        finally:
+            Path(temporary).unlink(missing_ok=True)
+        print(f"Updated {len(profiles)} AIMS profiles in {AWS_CONFIG}; backup: {backup}")
+    else:
+        print(f"All {len(profiles)} AIMS profiles are up to date in {AWS_CONFIG}")
+
+    stamp = AWS_CONFIG.with_name(f"{AWS_CONFIG.name}.aims-updated")
+    stamp.touch(mode=0o600)
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except (OSError, ValueError, configparser.Error, subprocess.CalledProcessError) as error:
+        sys.exit(f"ERROR: AWS profile regeneration failed: {error}")
