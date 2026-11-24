@@ -1,0 +1,19 @@
+# don't deploy linux scripts on non-linux machines
+{{ if ne .chezmoi.os "linux" }}
+gnome-light-dark-mode
+sway-input
+xdg-desktop-entries-list
+{{ end }}
+
+# don't deploy macos scripts on non-macos machines
+{{ if ne .chezmoi.os "darwin" }}
+emacs
+macos-dump-certificates
+{{ end }}
+
+# don't deploy work-specific scripts on my home machine
+{{ if not .work }}
+aims-sync
+aws-profiles
+eks-kubeconfigs
+{{ end }}
