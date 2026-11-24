@@ -192,8 +192,20 @@
 (defun taskspaces-show-task ()
   "Open the active task buffer and show the task heading."
   (interactive)
-  (taskspaces--visit-task
-   (taskspaces--task-file (taskspaces--require-active))))
+  (if taskspaces-active
+      (taskspaces--visit-task
+       (taskspaces--task-file taskspaces-active))
+    (taskspaces-switch-task)))
+
+(defun taskspaces--unblock-task-file (file)
+  "Clear WAIT and BLOCKER on task FILE and return it to TODO."
+  (with-current-buffer (find-file-noselect file)
+    (taskspaces--goto-task-root)
+    (when (equal (org-get-todo-state) "WAIT")
+      (org-entry-delete nil "BLOCKER")
+      (org-todo "TODO")
+      (taskspaces--save-task)
+      t)))
 
 ;;;###autoload
 (defun taskspaces-block-task ()
@@ -224,10 +236,7 @@
   (save-excursion
     (save-restriction
       (widen)
-      (taskspaces--goto-task-root)
-      (org-entry-delete nil "BLOCKER")
-      (org-todo "TODO")
-      (taskspaces--save-task)
+      (taskspaces--unblock-task-file buffer-file-name)
       (let ((issue (org-entry-get nil "ISSUE")))
         (when (equal taskspaces-active issue)
           (org-todo "ACTIVE")
@@ -453,8 +462,9 @@
          (issue (file-name-base file)))
     (with-current-buffer (find-file-noselect file)
       (taskspaces--goto-task-root)
-      (when (equal (org-get-todo-state) "WAIT")
-        (user-error "%s is blocked; unblock it before switching" issue)))
+      (when (equal (org-get-todo-state) "DONE")
+        (user-error "%s is done; archive it instead" issue)))
+    (taskspaces--unblock-task-file file)
     (taskspaces--leave)
     (taskspaces--activate issue)
     (message "%s" (taskspaces--task-summary issue))))

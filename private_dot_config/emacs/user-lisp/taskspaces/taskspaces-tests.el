@@ -1,6 +1,7 @@
 ;;; taskspaces-tests.el --- ERT tests for taskspaces -*- lexical-binding: t -*-
 
 (require 'ert)
+(require 'cl-lib)
 (require 'taskspaces)
 
 (ert-deftest taskspaces-test-public-functions-use-prefix ()
@@ -57,10 +58,34 @@
   (should-not (fboundp 'taskspaces-park-task))
   (should-not (fboundp 'taskspaces--task-handoff-fields)))
 
-(ert-deftest taskspaces-test-show-task-requires-active-task ()
-  "Showing a task requires an active task."
+(ert-deftest taskspaces-test-show-task-switches-without-active-task ()
+  "Showing a task invokes the switcher when no task is active."
   (let ((taskspaces-active nil))
-    (should-error (taskspaces-show-task) :type 'user-error)))
+    (cl-letf (((symbol-function 'taskspaces-switch-task) (lambda () 'switched)))
+      (should (eq (taskspaces-show-task) 'switched)))))
+
+(ert-deftest taskspaces-test-switching-unblocks-task ()
+  "Switching to a WAIT task clears its blocker and makes it TODO."
+  (let* ((org-todo-keywords
+          '((sequence "TODO(t)" "ACTIVE(a!)" "WAIT(w!)" "|" "DONE(d!)")))
+         (directory (make-temp-file "taskspaces-" t))
+         (file (expand-file-name "ABC-123.org" directory))
+         (taskspaces-task-directory (file-name-as-directory directory)))
+    (unwind-protect
+        (progn
+          (with-temp-file file
+            (insert "* WAIT Test task\n"
+                    ":PROPERTIES:\n"
+                    ":ID: test-id\n"
+                    ":ISSUE: ABC-123\n"
+                    ":BLOCKER: Waiting for review\n"
+                    ":END:\n"))
+          (taskspaces--unblock-task-file file)
+          (with-current-buffer (find-file-noselect file)
+            (taskspaces--goto-task-root)
+            (should (equal (org-get-todo-state) "TODO"))
+            (should-not (org-entry-get nil "BLOCKER"))))
+      (delete-directory directory t))))
 
 (provide 'taskspaces-tests)
 ;;; taskspaces-tests.el ends here

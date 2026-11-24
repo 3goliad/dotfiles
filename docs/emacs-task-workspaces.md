@@ -40,8 +40,9 @@ Use the existing Org TODO states, but give the active state a useful distinction
 | `DONE` | No more work is required. |
 
 Only one task should be `ACTIVE` at a time. Switching tasks closes the clock on
-the previous task and, when switching to a task that is not `WAIT` or `DONE`,
-sets it to `ACTIVE` and starts a new clock.
+the previous task and, when switching to a task that is not `DONE`, sets it to
+`ACTIVE` and starts a new clock. Switching to `WAIT` automatically clears its
+blocker and returns it to `TODO` before activation.
 
 `WAIT` means the task cannot currently be usefully resumed. An optional
 `BLOCKER` property contains a short description visible in task overviews:
