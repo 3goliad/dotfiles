@@ -118,16 +118,6 @@
    (window-parameters . ( ; (no-other-window . t)
                          (no-delete-other-windows . t)))))
 
-;; Show terminals at the bottom
-(add-to-list
- 'display-buffer-alist
- '("\\*ghostel\\*"
-   (display-buffer-in-side-window)
-   (side . bottom)
-   (window-height . 20)
-   (window-parameters . ( ; (no-other-window . t)
-                         (no-delete-other-windows . t)))))
-
 ;; Show org on the left side
 (add-to-list
  'display-buffer-alist
