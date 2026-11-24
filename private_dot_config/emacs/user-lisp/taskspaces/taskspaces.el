@@ -598,8 +598,12 @@ The legacy worktree directory is used only when explicitly customized."
 
 (defun taskspaces--checkout-roots ()
   (let ((worktrees (taskspaces--taskspace-root)))
-    (seq-remove (lambda (root) (string-prefix-p worktrees (expand-file-name root)))
-                (project-known-project-roots))))
+    (seq-remove
+     (lambda (root)
+       (string-prefix-p worktrees (expand-file-name root)))
+     (mapcar (lambda (root)
+               (file-name-as-directory (expand-file-name root)))
+             (project-known-project-roots)))))
 
 ;;;###autoload
 (defun taskspaces-switch-project (checkout)
@@ -610,7 +614,7 @@ With no active task, visit CHECKOUT itself."
           (if taskspaces-active
               (format "Project for %s: " taskspaces-active)
             "Project: ")
-          (mapcar #'abbreviate-file-name (taskspaces--checkout-roots))
+          (taskspaces--checkout-roots)
           nil t)))
   (let ((checkout (file-name-as-directory (expand-file-name checkout))))
     (project-switch-project

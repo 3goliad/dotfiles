@@ -241,32 +241,17 @@ No blocker or clock entry is required until the task is first activated.
 
 ## Perspective integration
 
-The existing implementation should be compared with `perspective.el` and
-`persp-mode.el` before further taskspace code is written.
+`perspective.el` and `persp-mode.el` were evaluated as possible integrations.
+They do not provide enough benefit here to justify replacing taskspaces' existing
+window configuration table or adopting their keymaps and buffer-membership models.
 
-These packages may already provide useful primitives:
-
-- named workspaces/perspectives;
-- preserving window and buffer state;
-- switching away and restoring state;
-- killing or destroying a perspective;
-- configuration persistence behavior.
-
-The taskspaces package should remain a thin task lifecycle layer over whichever
-perspective package proves suitable, rather than maintaining a second
-perspective implementation. If neither package maps cleanly to the required
-task ownership rules, the existing Emacs window/buffer model should remain
-unchanged rather than adopting a partially fitting dependency.
-
-Likely package-boundary decisions:
+Taskspaces retains its small, direct live-layout implementation:
 
 - task ownership and blocker/state transitions remain in taskspaces;
-- perspective names correspond to stable task IDs;
-- task buffers and worktrees may inform ownership, but perspective membership
-  should not become the source of truth;
-- archive is the only operation that should deliberately destroy perspective
-  state;
-- Org clocks and task files remain independent of the perspective package.
+- window configurations remain keyed by stable issue identifier;
+- task and shared buffer filtering remains taskspaces' source of truth;
+- archive is the only operation that deliberately destroys layout state;
+- Org clocks and task files remain independent of window state.
 
 ## Worktrees
 

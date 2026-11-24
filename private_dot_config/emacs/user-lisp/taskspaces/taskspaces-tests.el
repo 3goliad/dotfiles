@@ -44,6 +44,21 @@
                    (taskspaces--worktree-path
                     "ABC-123" "/tmp/checkouts/team/repo")))))
 
+(ert-deftest taskspaces-test-no-task-switch-project-uses-checkout ()
+  "Switching projects with no active task forwards the regular checkout."
+  (let ((taskspaces-active nil)
+        (taskspaces-taskspace-directory "/tmp/taskspaces/")
+        (taskspaces-worktree-directory nil)
+        switched-to)
+    (cl-letf (((symbol-function 'project-known-project-roots)
+               (lambda () '("~/Work/team/repo")))
+              ((symbol-function 'project-switch-project)
+               (lambda (directory)
+                 (setq switched-to directory))))
+      (taskspaces-switch-project "~/Work/team/repo")
+      (should (equal (expand-file-name "~/Work/team/repo/")
+                     switched-to)))))
+
 (ert-deftest taskspaces-test-taskspace-contains-task-org-symlink ()
   "Each taskspace links to the task's Org record at task.org."
   (let* ((task-directory (make-temp-file "taskspaces-org-" t))

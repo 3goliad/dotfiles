@@ -19,6 +19,8 @@ This is a [chezmoi](https://www.chezmoi.io/) source directory (`~/.local/share/c
 - **Shell env** (`PATH`, `EDITOR`, etc.) in `dot_profile.tmpl` is mirrored in two other places: `dot_zshenv` and `private_dot_config/environment.d/10-dot_profile.conf` (systemd user env). Keep all three in sync. `mise` is activated from `dot_zshrc`.
 - **Neovim** (`private_dot_config/nvim`): `init.lua` loads `lua/config/*` modules and uses the built-in `vim.pack.add` (plugin versions pinned in `nvim-pack-lock.json`); LSP configs under `lsp/`, per-filetype overrides under `after/ftplugin/`.
 - **Emacs** (`private_dot_config/emacs`): `init.el` plus modules in `lisp/`; `customizations.el` is the Customize output file.
+- **Emacs startup directory**: This machine uses `~/.config/emacs`; never create or modify `~/.emacs.d`. Even an empty `.emacs.d` directory causes Emacs to ignore `~/.config/emacs/init.el`. Run Emacs package operations or set `package-user-dir` only under `~/.config/emacs/elpa`.
+- **Emacs packages**: Never install, refresh, update, or remove packages manually with `package-install`, `package-refresh-contents`, or the package manager. Package installation belongs exclusively in `use-package` declarations in `init.el`/`lisp/`; do not replace or work around a package requirement outside that mechanism.
 - Linux-desktop configs (sway, waybar, dunst, fuzzel, ghostty) and macOS-oriented ones (colima) coexist; the root `.chezmoiignore` excludes repo-only files (`README.md`, `.github`, `personal`, `nvim-pack-lock.json`) from deployment — add new repo-only files there.
 
 ## Conventions
