@@ -206,9 +206,6 @@
   :config
   (setq project-switch-commands 'project-find-file))
 
-(use-package project-tab-groups
-  :ensure t
-  :hook after-init)
 
 (use-package highlight-quoted
   :ensure t

@@ -12,7 +12,7 @@
               exec-path-from-shell faceup flexoki-themes forge ghostel
               groovy-mode highlight-quoted jenkinsfile-mode
               less-css-mode lua-mode magit marginalia markdown-ts-mode
-              meow meow-tree-sitter orderless project-tab-groups
+              meow meow-tree-sitter orderless
               smartparens timeout transient treesit-langs vertico
               vertico-posframe wallpaper which-key ws-butler))
  '(package-vc-selected-packages
