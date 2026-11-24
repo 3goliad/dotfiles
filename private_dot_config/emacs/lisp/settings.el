@@ -119,17 +119,17 @@
                          (no-delete-other-windows . t)))))
 
 ;; Show org on the left side
-(add-to-list
- 'display-buffer-alist
- '((derived-mode . org-mode)
-   (display-buffer-in-side-window)
-   (side . left)
-   (slot . 1)
-   (window-width . 80)
-   (window-parameters . ( ; (no-other-window . t)
-                         (no-delete-other-windows . t)))))
+;; (add-to-list
+;;  'display-buffer-alist
+;;  '((derived-mode . org-mode)
+;;    (display-buffer-in-side-window)
+;;    (side . left)
+;;    (slot . 1)
+;;    (window-width . 80)
+;;    (window-parameters . ( ; (no-other-window . t)
+;;                          (no-delete-other-windows . t)))))
 
-;; Modeline
+;; ;; Modeline
 
 
 (line-number-mode t)

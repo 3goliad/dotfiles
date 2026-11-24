@@ -50,10 +50,11 @@
 (keymap-global-rebind "C-x b" 'switch-to-buffer 'consult-buffer)
 (keymap-global-rebind "M-y" 'yank-pop 'consult-yank-pop)
 
+(keymap-global-set "C-\\" 'taskspaces-terminal)
+
 ;;;; Leader Keybinds
 
 (keymap-global-set "C-c SPC" 'project-find-file)
-(keymap-global-set "C-\\" 'ghostel)
 
 ;; controlling buffers
 (define-keymap :name "Buffers"
@@ -109,9 +110,17 @@
 
 ;; (keymap-global-set "C-c s" 'leader-search-map)
 
-;; Information Management
-(define-keymap :name "Info"
-  :prefix 'leader-info-map
-  "a" 'org-cycle-agenda-files)
+;; Task Management
+(define-keymap :name "Tasks"
+  :prefix 'leader-task-map
+  "t" 'taskspaces-show-task
+  "a" 'taskspaces-agenda
+  "q" 'taskspaces-close-task
+  "s" 'taskspaces-switch-task
+  "n" 'taskspaces-new-task
+  "f" 'taskspaces-finish-task
+  "x" 'taskspaces-archive-task
+  "b" 'taskspaces-block-task
+  "u" 'taskspaces-unblock-task)
 
-(keymap-global-set "C-c i" 'leader-info-map)
+(keymap-global-set "C-c t" 'leader-task-map)

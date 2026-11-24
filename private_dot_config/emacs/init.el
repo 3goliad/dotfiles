@@ -164,7 +164,7 @@
   :config
   (add-to-list 'org-export-backends 'md)
   (setq org-todo-keywords
-        '((sequence "TODO(t)"  "STARTED(s!)" "WAIT(w!)" "|" "DONE(d!)")))
+        '((sequence "TODO(t)" "ACTIVE(a!)" "WAIT(w!)" "|" "DONE(d!)")))
   (setq org-clock-persist 'history)
   (org-clock-persistence-insinuate)
   (setq org-log-into-drawer t))
@@ -197,7 +197,7 @@
   :config
   (add-hook 'ghostel-mode-hook
             (lambda ()
-              (keymap-local-set "C-\\" 'other-window)))
+              (keymap-local-set "C-\\" 'taskspaces-terminal)))
   (when (eq system-type 'darwin)
     (setq ghostel-shell "/opt/homebrew/bin/bash")))
 
@@ -206,6 +206,11 @@
   :config
   (setq project-switch-commands 'project-find-file))
 
+(use-package taskspaces
+  :ensure nil
+  :defer t
+  :after org
+  :bind ([remap project-switch-project] . taskspaces-switch-project))
 
 (use-package highlight-quoted
   :ensure t

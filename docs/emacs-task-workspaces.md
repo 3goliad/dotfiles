@@ -1,260 +1,309 @@
 # Proposal: Emacs task workspaces
 
-Use Emacs as the entrypoint for tracking, parking, and resuming development
-tasks. A task represents an issue spanning multiple repositories, not a single
-project. The goal is to switch among 6-10 tasks without rebuilding the environment
-or reconstructing the previous train of thought.
+Use Emacs as the entrypoint for tracking, pausing, and resuming development
+tasks. A task represents independent issue-spanning work across one or more
+repositories. The goal is to switch among 6-10 tasks without rebuilding the
+environment or reconstructing the previous train of thought.
 
-File-per-task Org tracking and single-task workspaces ("taskspaces") are
-implemented. Browser integration, Kubernetes context scoping, restart recovery,
-and automatic unblock detection remain proposals, not current behavior.
+Org is the source of truth for task records, state, blockers, and time
+spent. The taskspace package manages the live Emacs state associated with one
+active task.
 
-## Task record
+## Concepts
 
-Keep Org as the source of truth, with one file per issue in `~/Work/org/`.
-Separate files let an agent read and update one task without having to navigate
-a shared heading tree or consume unrelated task context. Locating them under
-`~/Work` also makes permissions easier to grant alongside the repositories.
-Separate files reduce unrelated context; they are not an access-control boundary.
+### Task
 
-Each active task has an issue identifier,
-status, issue and PR links, repository worktree paths, and references to its
-workspace and Copilot sessions. Record the intended Kubernetes context and
-namespace explicitly.
+A task is an independent unit of work with a stable issue identifier and an
+Org record. The record contains:
 
-Keep a short handoff alongside those references:
-
-- Where I stopped.
-- What I am waiting for, if anything.
-- The next concrete action, when known.
-
-Capture first; fill in the handoff as you work or park the task. Keep caveats in
-Notes and schedule a recheck when useful.
-
-Carry unfinished tasks across sprint boundaries; archive completed tasks.
-
-## Workspace
-
-See [Taskspaces](#taskspaces) for the implemented design. At most one task is
-active at a time, so switching is explicit and always parks the previous task.
-
-Use a separate Git worktree for each task/repository pair so switching tasks
-does not require checking out branches or disturbing unfinished changes.
-Task-specific terminals retain their working directories and can host Copilot
-sessions. Browser tabs remain in Chrome, grouped by issue identifier, with
-important links also saved in Org.
-
-## Daily workflow (planned)
-
-1. Invoke an Emacs task picker showing active, paused, and waiting tasks,
-   including rechecks that are due.
-2. Select a task and read its handoff. Focus its existing workspace, or offer to
-   recreate missing pieces from the saved references.
-3. Work normally across its repositories, terminals, and browser tabs.
-4. Park the task by updating its status and short handoff, then select another
-   task. Leave the parked workspace alive.
-
-A due recheck is not proof that a task is unblocked. Initially, confirm external
-conditions manually rather than duplicating PR and deployment status in Org.
-
-## Boundaries and first increment
-
-Switching tasks must not automatically check out branches, merge changes, or
-deploy anything. Cluster access must be scoped to task-specific commands or
-shells rather than changing a shared global context.
-
-Live workspaces preserve running state while Emacs and their processes remain
-alive. Recovery after a restart is a separate concern: saved references can
-reopen files and resume saved Copilot conversations, but cannot restore arbitrary
-running processes.
-
-Try the implemented tracking with two tasks before adding workspace automation.
-Keep browser navigation manual through saved links. Defer browser automation,
-external-status polling, and elaborate restart recovery until the basic workflow
-proves useful. Workspace packages, additional resource properties, and terminal
-integration are still to be decided.
-
-## First draft: task tracking
+- a stable Org ID and issue identifier;
+- a TODO state;
+- an optional blocker message;
+- issue and PR links;
+- repository and worktree paths;
+- Notes;
+- Org clock entries recording time worked.
 
 Task records live in `~/Work/org/`, one file per issue, such as `ABC-123.org`.
-This is separate from the existing personal Org directory. Files contain a
-top-level TODO heading, stable Org ID, issue identifier, Handoff, Resources, and
-Notes. Files are created when needed, not during Emacs startup.
+Completed and blocked tasks remain in the active directory until they are
+archived.
 
-Records use ordinary Org syntax:
+### Task state
+
+Use the existing Org TODO states, but give the active state a useful distinction:
+
+| State | Meaning |
+| --- | --- |
+| `TODO` | The task is ready to be started. |
+| `ACTIVE` | It is the active task and should have an open Org clock. |
+| `WAIT` | External work is blocking useful progress. |
+| `DONE` | No more work is required. |
+
+Only one task should be `ACTIVE` at a time. Switching tasks closes the clock on
+the previous task and, when switching to a task that is not `WAIT` or `DONE`,
+sets it to `ACTIVE` and starts a new clock.
+
+`WAIT` means the task cannot currently be usefully resumed. An optional
+`BLOCKER` property contains a short description visible in task overviews:
 
 ```org
-#+title: ABC-123 Controller upgrade
-#+filetags: :work:
+:PROPERTIES:
+:ID:       <generated Org ID>
+:ISSUE:    ABC-123
+:BLOCKER:  Waiting for the API PR to merge
+:END:
+```
 
-* WAIT Controller upgrade
+The blocker property is cleared when a task leaves `WAIT`. Blocking a task can
+be done with or without a taskspace being active.
+
+### Org clock log
+
+Org clocking is the task time log. Clocking in on the `ACTIVE` heading creates
+an entry in the task's CLOCK drawer:
+
+```org
+* ACTIVE Controller upgrade
 :PROPERTIES:
 :ID:       <generated Org ID>
 :ISSUE:    ABC-123
 :END:
 
-** Handoff
-Stopped: App PR merged.
-Waiting for: GitOps PR approval.
-Next: Merge GitOps PR, then verify the deployed image digest.
+:LOGBOOK:
+CLOCK: [2026-11-24 Tue 13:30]--[2026-11-24 Tue 13:45] =>  0:15
+CLOCK: [2026-11-24 Tue 15:00]--
+:END:
+```
+
+Clock entries record actual working periods. A switch or close operation
+clock-out is enough to end the period; it should not generate a "went to lunch"
+or other artificial log message. If the user opens the task file later, they
+can add progress and Notes normally.
+
+The user may leave `Notes`, Resources, and plain Org text in the task file at
+any time.
+
+### Taskspace
+
+A taskspace is the live editor state associated with a task: worktrees, buffers,
+terminals, and window layout. At most one task is active.
+
+With no active task, Emacs behaves as a plain editor over regular checkouts.
+Switching to another task:
+
+1. stops the clock for the old task;
+2. preserves the old taskspace and saves modified buffers when requested;
+3. optionally changes the old task to `WAIT` and records `BLOCKER`;
+4. starts or restores the destination taskspace;
+5. sets the destination task to `ACTIVE`; and
+6. starts its Org clock.
+
+Switching away without a blocker leaves the previous task as `TODO` or its
+previous actionable state and records no explanatory log message.
+
+Taskspaces are session state. Live workspaces preserve running processes while
+Emacs remains alive. Recovery after an Emacs restart is a separate concern.
+
+## Task overview
+
+An overview is available at all times, whether or not a taskspace is active.
+It shows tasks grouped by state and includes a short blocker description for
+tasks in `WAIT`.
+
+The overview supports:
+
+- switching to a task;
+- opening a task record;
+- blocking or unblocking a task;
+- marking a task `DONE`; and
+- archiving a task.
+
+Selecting a task from the overview switches taskspaces. Opening a task record
+alone should not change the active task.
+
+### Archiving
+
+Archiving is available for `DONE` tasks. It means:
+
+- the task no longer appears in the overview;
+- the task record is moved to `~/Work/org/archive/`; and
+- its taskspace is destroyed.
+
+Destroying a taskspace removes:
+
+- associated Git worktrees;
+- owned live buffers and terminals;
+- saved window/layout state; and
+- task ownership metadata.
+
+Archiving must refuse to overwrite an existing archive file and must confirm
+destruction of worktrees and live state.
+
+Worktrees are never removed automatically during ordinary task switches.
+
+## Org and custom-code boundaries
+
+### Well supported by Org
+
+Org already provides most of the task record:
+
+- one file per task;
+- stable Org IDs;
+- TODO states;
+- heading properties;
+- notes and resources;
+- custom agenda views;
+- clock in, clock out, clock persistence, and CLOCK drawers;
+- moving completed files to an archive subdirectory.
+
+Org custom agenda commands can show TODO groups. A custom agenda
+prefix-format or column view can display `BLOCKER`, because it is an ordinary
+Org property.
+
+Org state history and clock entries should remain in the task file rather than
+being duplicated in custom data structures.
+
+### Custom taskspaces code
+
+Custom Elisp is required for behavior outside the task file:
+
+- choosing and activating a task;
+- maintaining one global active-task value;
+- preserving and restoring window configurations;
+- assigning buffers to taskspaces;
+- filtering ordinary buffer switching;
+- saving modified buffers and offering to park them;
+- clocking in and clocking out in the task lifecycle;
+- setting and clearing task state/properties during switches;
+- removing worktrees and owned live state during archive;
+- detecting or recreating missing worktrees.
+
+This package should coordinate Org rather than replace it. Org remains the
+source of truth for task state, blockers, notes, and time.
+
+## Task record format
+
+```org
+#+title: ABC-123 Controller upgrade
+#+filetags: :work:
+
+* ACTIVE Controller upgrade
+:PROPERTIES:
+:ID:       <generated Org ID>
+:ISSUE:    ABC-123
+:END:
 
 ** Resources
 - Issue: https://example.com/ABC-123
+- Worktree: /path/to/worktree (branch ABC-123-controller-upgrade)
 
 ** Notes
 Healthy pods might still be running the old image.
+
+** Log
+:LOGBOOK:
+CLOCK: [2026-11-24 Tue 13:30]--[2026-11-24 Tue 13:45] =>  0:15
+:END:
 ```
 
-Only the top-level heading needs a TODO state. Handoff, Resources, and Notes
-are sections, not additional tasks. The ID is stable when the file is moved or
-its heading is renamed; ISSUE connects it to the external issue identifier.
+The top-level heading is the task heading. `BLOCKER` belongs in properties only
+while the heading state is `WAIT`; when leaving `WAIT`, custom code should remove
+or blank it rather than leave stale blocker text.
 
-The task commands are available under `C-c i t`. Press that prefix and pause to
-see the available keys through which-key, or invoke the command with `M-x`.
+Capturing a task starts it in `TODO`, with blank Resources and Notes sections.
+No blocker or clock entry is required until the task is first activated.
 
-| Key after `C-c i t` | Command | Action |
-| --- | --- | --- |
-| `n` | `work-task-new` | Capture a new task with an identifier, title, and optional URL. |
-| `r` | `work-task-open` | Choose an unarchived task and open its handoff without changing its state. |
-| `a` | `work-task-agenda` | Show today's and overdue rechecks, work in progress, ready tasks, and waiting tasks. |
-| `p` | `work-task-park` | Update the handoff, choose a state, optionally schedule a recheck, and save. |
-| `t` | `work-task-state` | Change the task's state from anywhere in its file and save. |
-| `s` | `work-task-schedule` | Schedule a recheck on the task heading and save. |
-| `f` | `work-task-finish` | Mark the task DONE and save, leaving the file available. |
-| `x` | `work-task-archive` | Confirm moving a DONE task file into `~/Work/org/archive/`. |
+## Commands and actions
 
-New task uses the `w` template, also available through `M-x org-capture`.
-It is a plain capture of a complete file, including file metadata and the task
-heading. A small helper chooses the filename and prevents duplicates; Org
-handles prompting, editing, and finalization. No additional Org packages are
-required.
+### Tasks
 
-After answering the prompts, edit the complete record in the capture buffer.
-Use `C-c C-c` to finalize, save, and visit the new file, or `C-c C-k` to abort
-without creating a task file, provided it has not been manually saved during
-capture. The identifier determines the filename and may contain letters,
-numbers, hyphens, and underscores; existing files and unsaved task content are
-never overwritten.
-Capture starts with `Stopped: Not started.` and blank `Waiting for` and `Next`
-lines. No next action is prompted for or required; leave it blank until you know
-what to do next. The title and Stopped field are checked when finalizing; a
-task captured as WAIT also needs a waiting condition. These can be corrected in
-the capture buffer. A validation error leaves capture open.
+| Command | Action |
+| --- | --- |
+| `taskspaces-new-task` | Capture a new task. |
+| `taskspaces-show-task` | Open the active task file in the current taskspace. |
+| `taskspaces-agenda` | Show the task overview. |
+| `taskspaces-switch-task` | Switch taskspaces and clock states. |
+| `taskspaces-block-task` | Set `WAIT` and optionally set `BLOCKER`. |
+| `taskspaces-unblock-task` | Clear `BLOCKER` and return to `TODO` or `ACTIVE`. |
+| `taskspaces-finish-task` | Mark the task `DONE` and clock out. |
+| `taskspaces-archive-task` | Confirm archiving and destroy the taskspace. |
 
-Use `TODO` for not-yet-started work, `STARTED` for work begun and still
-actionable, `WAIT` for external blockers, and `DONE` for completed work.
-Selecting a task does not mark it STARTED; use the state command when beginning.
-The resume picker includes DONE files until they are archived.
+### Workspaces
 
-In the dashboard, use `RET` on a task to visit its record before running the
-park, state, schedule, finish, or archive commands. These commands operate on
-the current task file, not on whichever task was most recently selected.
-State, schedule, and finish operations target the top-level task even when point
-is inside Notes or a narrowed subsection. Timestamp-only Org state logs are
-included when the commands save, rather than leaving a pending log unsaved.
+| Command | Action |
+| --- | --- |
+| `taskspaces-switch-project` | Open or create the active task's worktree for a project. |
+| `taskspaces-terminal` | Summon or dismiss a task terminal; a prefix creates another. |
 
-The park command edits only the three single-line Handoff fields: `Stopped`,
-`Waiting for`, and `Next`. Keep those labels and the `Handoff`
-heading intact. Put longer explanations, history, and agent findings in Notes;
-put PR links, worktree paths, and session references in Resources.
-Stopped must be nonempty; WAIT also requires a waiting condition. Next is
-optional even when parking: fill it in if the action is clear, or leave it blank.
-Prompts use existing values as editable defaults. Existing `Watch out` lines
-are left untouched but are no longer required or prompted for; move any useful
-caveats to Notes when convenient.
+`C-c p p` (`project-switch-project`) is remapped to
+`taskspaces-switch-project`.
 
-A recheck is an Org scheduled date/time, not a deadline or proof of being
-unblocked. Date prompts support input such as `+1d` or an explicit time like
-`14:30`. In Org date input, `+15m` means 15 months, not 15 minutes; use an
-explicit clock time for short reconciliation waits. The dashboard shows today's
-scheduled checks, including upcoming times, and overdue checks. Scheduling does
-not implement a notification or external-status watcher.
-Declining to set a date while parking preserves any existing schedule.
-Use `C-u C-c i t s` to remove a recheck. The dedicated dashboard excludes personal
-tasks and archived files; the normal Org agenda can still include both personal
-and active work records.
+## Perspective integration
 
-Archiving moves the whole completed file into `~/Work/org/archive/`, refuses
-to overwrite another file, and updates its Org ID location. Org scans the active
-directory's `.org` files nonrecursively, so this subdirectory stays out of the
-active agenda. Unfinished tasks remain in place across sprint boundaries.
+The existing implementation should be compared with `perspective.el` and
+`persp-mode.el` before further taskspace code is written.
 
-For agents, provide the exact task file path and ask them to preserve the
-structure and update the handoff and Notes. Task records remain outside this
-dotfiles repository. No browser control, status polling, or cluster context
-changes are implemented yet.
+These packages may already provide useful primitives:
 
-## Taskspaces
+- named workspaces/perspectives;
+- preserving window and buffer state;
+- switching away and restoring state;
+- killing or destroying a perspective;
+- configuration persistence behavior.
 
-A taskspace is the live editor state of the single active task: its worktrees,
-terminals, agents, and window layout. With no active task, Emacs behaves as a
-plain editor over your regular checkouts. The active issue is shown in the
-mode line.
+The taskspaces package should remain a thin task lifecycle layer over whichever
+perspective package proves suitable, rather than maintaining a second
+perspective implementation. If neither package maps cleanly to the required
+task ownership rules, the existing Emacs window/buffer model should remain
+unchanged rather than adopting a partially fitting dependency.
 
-Commands are under `C-c i w`:
+Likely package-boundary decisions:
 
-| Key after `C-c i w` | Command | Action |
-| --- | --- | --- |
-| `s` | `taskspace-switch` | Choose a task, park the active one, then show the new task's layout. |
-| `c` | `taskspace-clear` | Park the active task and return to the no-task layout. |
-| `o` | `taskspace-open-task` | Show the active task's handoff. |
-| `p` | `taskspace-project` | Pick a repository; visit or create the task's worktree, or the regular checkout with no task. |
-| `t` | `taskspace-terminal` | Summon or dismiss the task's terminal (also `C-\`); `C-u` creates another. |
-| `a` | `taskspace-agent` | Show or start the task's agent-shell (`C-u` starts another). |
-| `b` | `taskspace-switch-to-any-buffer` | Choose among all buffers, including other tasks'. |
+- task ownership and blocker/state transitions remain in taskspaces;
+- perspective names correspond to stable task IDs;
+- task buffers and worktrees may inform ownership, but perspective membership
+  should not become the source of truth;
+- archive is the only operation that should deliberately destroy perspective
+  state;
+- Org clocks and task files remain independent of the perspective package.
 
-`C-c p p` (`project-switch-project`) is remapped to `taskspace-project`.
+## Worktrees
 
-**Switching.** Leaving a task always runs `work-task-park`, so you are prompted
-for its state and handoff; quitting the prompt cancels the switch. You are then
-offered to save that task's modified files. Its buffers and processes stay
-alive but hidden, and its window layout is remembered for the session. The
-first visit to a task shows its handoff beside a Dired view of its worktree
-directory; later visits restore its layout, and the handoff summary is echoed.
+Each task gets `~/Work/worktrees/<ISSUE>/`, mirroring paths under `~/Work`, for
+example `~/Work/worktrees/EKS-6171/bb/FLUX/base-governance`.
 
-**Buffer ownership.** A buffer belongs to a task when its file or directory is
-under that task's worktree directory, or when it is an application buffer
-(`taskspace-application-modes`: ghostel, agent-shell, shells, compilation)
-started while the task was active. Application buffers started with no task
-are shared. Org task records and other buffers are shared. `consult-buffer`,
-`other-buffer`, and window buffer history only offer shared buffers and the
-active task's buffers; in `consult-buffer`, narrow with `o SPC` to see the rest.
+A missing worktree is created after prompting for a branch, defaulting to
+`<ISSUE>-<title-slug>`. A new branch starts from the remote's default branch,
+fetched first, without tracking it. An existing local branch is reused after
+confirmation.
 
-**Worktrees.** Each task gets `~/Work/worktrees/<ISSUE>/`, mirroring paths under
-`~/Work`, e.g. `~/Work/worktrees/EKS-6171/bb/FLUX/base-governance`. The project
-picker lists known projects (add them with `C-c p a` or `C-c p u`) other than
-task worktrees. A missing worktree is created after prompting for a branch,
-defaulting to `<ISSUE>-<title-slug>`. A new branch starts from the remote's
-default branch (`main`, `develop`, ...), fetched first, without tracking it; an
-existing local branch is reused after confirmation. The worktree path and
-branch are appended to the task's Resources. Worktrees are never removed
-automatically.
+The worktree path and branch are appended to the task's Resources. Worktrees
+are not removed by ordinary switching or close actions.
 
-**Terminals and agents.** The task terminal starts in the current task worktree,
-or otherwise in the task directory, and opens in an ordinary window at the
-bottom that can be split or resized. Dismissing quits that window; the
-terminal keeps running. With no task, `C-\` toggles a shared terminal.
-`taskspace-agent` starts agent-shell in the task directory so it can see all of
-the task's worktrees; it reports an error until agent-shell is installed.
+## Layouts and buffers
 
-Layouts are not saved across Emacs restarts, and no task is active after a
-restart.
+A buffer belongs to a task when:
 
-## Activation
+- its file or directory is under that task's worktree directory; or
+- it is a task application buffer started while the task was active.
 
-The implementation is the `taskspaces` package in
-`private_dot_config/emacs/user-lisp/taskspaces/taskspaces.el`. Emacs
-byte-compiles `user-lisp/` and scrapes its autoloads at startup; `init.el`
-configures it with `use-package`. Commands and the `C-c i t` and `C-c i w`
-prefixes are autoloaded, so they work before Org or the package is loaded.
-Loading Org also loads the package, so the `w` capture template, `W` agenda
-command, and task agenda files are available from `org-capture` and
-`org-agenda`. Deploy it and its keybindings with:
+Application buffers started with no task are shared. Org task records and other
+buffers are shared.
 
-```sh
-chezmoi apply ~/.config/emacs
-```
+Buffer switching should normally offer shared buffers and buffers belonging to
+the active task. Consult integration may offer a way to override this
+restriction.
 
-Restart Emacs, then use `C-c i t n` to create the first task. Existing personal
-Org files are neither moved nor replaced. The documentation directory is
-excluded from chezmoi deployment.
+Layouts are not required to survive Emacs restarts. No task should remain active
+after a restart unless the user explicitly resumes it.
+
+## Boundaries
+
+Switching tasks must not automatically check out branches, merge changes,
+deploy anything, or change a shared Kubernetes context. Cluster access should
+be scoped to task-specific commands or shells if that integration is later
+implemented.
+
+Browser automation and external status polling are out of scope. Issue links
+remain in Org, and external blockers are confirmed manually rather than
+inferred from GitHub or Kubernetes.
