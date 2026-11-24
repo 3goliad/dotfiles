@@ -40,8 +40,18 @@
 (defvar taskspaces--layouts (make-hash-table :test #'equal)
   "Window configurations keyed by issue, or by nil when no task is active.")
 
-(defcustom taskspaces-worktree-directory (expand-file-name "~/Work/worktrees/")
-  "Directory containing one subdirectory of worktrees per task."
+(defconst taskspaces--default-taskspace-directory
+  (expand-file-name "~/Work/taskspaces/")
+  "The default directory for task workspaces.")
+(defcustom taskspaces-taskspace-directory taskspaces--default-taskspace-directory
+  "Directory containing one task directory per task."
+  :type 'directory)
+(defconst taskspaces--default-worktree-directory
+  (expand-file-name "~/Work/worktrees/")
+  "The former default directory for task worktrees.")
+(defcustom taskspaces-worktree-directory taskspaces--default-taskspace-directory
+  "Deprecated alias for the former task worktree directory.
+When customized, it remains available as a compatibility root."
   :type 'directory)
 (defcustom taskspaces-checkout-directory (expand-file-name "~/Work/")
   "Directory whose layout task worktree paths mirror."
@@ -340,12 +350,40 @@
 (defun taskspaces--task-file (issue)
   (expand-file-name (concat issue ".org") taskspaces-task-directory))
 
+(defun taskspaces--taskspace-root ()
+  "Return the directory containing task workspaces.
+The legacy worktree directory is used only when explicitly customized."
+  (if (and (equal (expand-file-name taskspaces-taskspace-directory)
+                  taskspaces--default-taskspace-directory)
+           taskspaces-worktree-directory
+           (not (equal (expand-file-name taskspaces-worktree-directory)
+                       taskspaces--default-taskspace-directory))
+           (not (equal (expand-file-name taskspaces-worktree-directory)
+                       taskspaces--default-worktree-directory)))
+      (file-name-as-directory (expand-file-name taskspaces-worktree-directory))
+    (file-name-as-directory (expand-file-name taskspaces-taskspace-directory))))
+
 (defun taskspaces--task-directory (issue)
-  (file-name-as-directory (expand-file-name issue taskspaces-worktree-directory)))
+  (file-name-as-directory (expand-file-name issue (taskspaces--taskspace-root))))
+
+(defun taskspaces--ensure-taskspace (issue)
+  "Create ISSUE's taskspace directory and link its Org task record."
+  (let* ((directory (taskspaces--task-directory issue))
+         (link (expand-file-name "task.org" directory))
+         (target (taskspaces--task-file issue)))
+    (make-directory directory t)
+    (when (and (not (file-equal-p link target))
+               (or (file-exists-p link) (file-symlink-p link)))
+      (if (file-symlink-p link)
+          (delete-file link)
+        (user-error "Taskspace path already contains a regular task.org: %s" link)))
+    (unless (file-equal-p link target)
+      (make-symbolic-link target link t))
+    (directory-file-name directory)))
 
 (defun taskspaces--directory-owner (directory)
   (when directory
-    (let ((root (expand-file-name taskspaces-worktree-directory))
+    (let ((root (taskspaces--taskspace-root))
           (directory (expand-file-name directory)))
       (when (string-prefix-p root directory)
         (car (split-string (substring directory (length root)) "/" t))))))
@@ -399,7 +437,7 @@
   (dolist (window (window-list nil 'no-minibuf))
     (unless (eq window (selected-window))
       (ignore-errors (delete-window window))))
-  (let ((directory (taskspaces--task-directory issue)))
+  (let ((directory (taskspaces--ensure-taskspace issue)))
     (switch-to-buffer (if (file-directory-p directory)
                           (dired-noselect directory)
                         (get-scratch-buffer-create))
@@ -409,6 +447,8 @@
 (defun taskspaces--activate (issue)
   (puthash taskspaces-active (current-window-configuration) taskspaces--layouts)
   (setq taskspaces-active issue)
+  (when issue
+    (taskspaces--ensure-taskspace issue))
   (let ((layout (gethash issue taskspaces--layouts)))
     (cond ((and layout (frame-live-p (window-configuration-frame layout)))
            (set-window-configuration layout))
@@ -557,7 +597,7 @@
     (message "Created worktree %s" (abbreviate-file-name target))))
 
 (defun taskspaces--checkout-roots ()
-  (let ((worktrees (expand-file-name taskspaces-worktree-directory)))
+  (let ((worktrees (taskspaces--taskspace-root)))
     (seq-remove (lambda (root) (string-prefix-p worktrees (expand-file-name root)))
                 (project-known-project-roots))))
 
@@ -605,8 +645,7 @@ With no active task, visit CHECKOUT itself."
                       taskspaces-active))
           (project-root project)
         (let ((directory (taskspaces--task-directory taskspaces-active)))
-          (make-directory directory t)
-          directory)))))
+          (taskspaces--ensure-taskspace taskspaces-active))))))
 
 ;;;###autoload
 (defun taskspaces-terminal (&optional new)

@@ -17,15 +17,15 @@
 
 (ert-deftest taskspaces-test-directory-owner ()
   "Worktree ownership is derived from the issue directory."
-  (let ((taskspaces-worktree-directory "/tmp/taskspaces-worktrees/")
+  (let ((taskspaces-taskspace-directory "/tmp/taskspaces/")
         (taskspaces-active "ABC-123"))
     (should (equal "ABC-123"
                    (taskspaces--directory-owner
-                    "/tmp/taskspaces-worktrees/ABC-123/repo")))
+                    "/tmp/taskspaces/ABC-123/repo")))
     (should-not (taskspaces--directory-owner
-                 "/tmp/taskspaces-worktrees-other/ABC-123/repo"))
+                 "/tmp/taskspaces-other/ABC-123/repo"))
     (with-temp-buffer
-      (setq default-directory "/tmp/taskspaces-worktrees/ABC-123/repo/")
+      (setq default-directory "/tmp/taskspaces/ABC-123/repo/")
       (should (equal "ABC-123"
                      (taskspaces--buffer-owner (current-buffer)))))))
 
@@ -38,10 +38,31 @@
 (ert-deftest taskspaces-test-worktree-path-mirrors-checkout ()
   "Task worktree paths mirror checkout paths below the checkout root."
   (let ((taskspaces-checkout-directory "/tmp/checkouts/")
-        (taskspaces-worktree-directory "/tmp/worktrees/"))
-    (should (equal "/tmp/worktrees/ABC-123/team/repo/"
+        (taskspaces-taskspace-directory "/tmp/taskspaces/")
+        (taskspaces-worktree-directory nil))
+    (should (equal "/tmp/taskspaces/ABC-123/team/repo/"
                    (taskspaces--worktree-path
                     "ABC-123" "/tmp/checkouts/team/repo")))))
+
+(ert-deftest taskspaces-test-taskspace-contains-task-org-symlink ()
+  "Each taskspace links to the task's Org record at task.org."
+  (let* ((task-directory (make-temp-file "taskspaces-org-" t))
+         (taskspace-directory (make-temp-file "taskspaces-root-" t))
+         (taskspaces-task-directory (file-name-as-directory task-directory))
+         (taskspaces-taskspace-directory (file-name-as-directory
+                                          taskspace-directory))
+         (taskspaces-worktree-directory nil)
+         (task-file (expand-file-name "ABC-123.org" task-directory))
+         (link (expand-file-name "ABC-123/task.org" taskspace-directory)))
+    (unwind-protect
+        (progn
+          (with-temp-file task-file
+            (insert "* TODO Test task\n"))
+          (taskspaces--ensure-taskspace "ABC-123")
+          (should (file-symlink-p link))
+          (should (file-equal-p link task-file)))
+      (delete-directory taskspace-directory t)
+      (delete-directory task-directory t))))
 
 (ert-deftest taskspaces-test-no-agent-shell-api ()
   "Agent-shell functionality is not part of the taskspaces API."

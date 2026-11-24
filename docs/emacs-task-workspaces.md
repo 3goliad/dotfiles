@@ -270,8 +270,16 @@ Likely package-boundary decisions:
 
 ## Worktrees
 
-Each task gets `~/Work/worktrees/<ISSUE>/`, mirroring paths under `~/Work`, for
-example `~/Work/worktrees/EKS-6171/bb/FLUX/base-governance`.
+Each task gets `~/Work/taskspaces/<ISSUE>/`. The task directory contains a
+`task.org` symlink to `~/Work/org/<ISSUE>.org` and worktrees mirroring paths
+under `~/Work`. For example:
+
+- `~/Work/taskspaces/EKS-6171/task.org`
+- `~/Work/taskspaces/EKS-6171/bb/FLUX/base-governance`
+
+This mirrors `~/Work/bb/FLUX/base-governance` and keeps the task record and all
+of its repositories together. The task terminal opens at the task directory,
+while project switching opens the corresponding repository worktree.
 
 A missing worktree is created after prompting for a branch, defaulting to
 `<ISSUE>-<title-slug>`. A new branch starts from the remote's default branch,
