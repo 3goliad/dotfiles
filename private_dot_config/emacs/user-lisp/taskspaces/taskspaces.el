@@ -157,17 +157,47 @@ When customized, it remains available as a compatibility root."
   (interactive)
   (org-capture nil "w"))
 
+(defun taskspaces--task-title-from-file (file)
+  "Return the top-level task heading title from task Org FILE."
+  (with-current-buffer (find-file-noselect file)
+    (save-excursion
+      (save-restriction
+        (widen)
+        (goto-char (point-min))
+        (if (and (re-search-forward org-heading-regexp nil t)
+                 (= (org-outline-level) 1))
+            (let ((title (string-trim
+                          (org-get-heading t t t t))))
+              (if (string-empty-p title)
+                  (file-name-base file)
+                title))
+          (file-name-base file))))))
+
 (defun taskspaces--read-task-file (prompt &optional exclude)
   "Read an unarchived task file name with PROMPT, omitting file EXCLUDE."
-  (let ((files (when (file-directory-p taskspaces-task-directory)
-                 (directory-files taskspaces-task-directory nil "\\.org\\'"))))
+  (let* ((files (when (file-directory-p taskspaces-task-directory)
+                  (directory-files taskspaces-task-directory nil "\\.org\\'")))
+         (candidates
+          (mapcar
+           (lambda (filename)
+             (let* ((file (expand-file-name filename taskspaces-task-directory))
+                    (issue (file-name-base file))
+                    (title (taskspaces--task-title-from-file file)))
+               (cons (format "%s (%s)" title issue) file)))
+           files)))
     (when exclude
-      (setq files (delete (file-name-nondirectory exclude) files)))
-    (unless files
+      (setq candidates
+            (seq-remove
+             (lambda (candidate)
+               (equal (cdr candidate) exclude))
+             candidates)))
+    (unless candidates
       (user-error (if exclude "No other task files"
                     "No task files yet; use M-x taskspaces-new-task")))
-    (expand-file-name (completing-read prompt files nil t)
-                      taskspaces-task-directory)))
+    (let* ((choice (completing-read prompt candidates nil t))
+           (file (cdr (assoc choice candidates))))
+      (or file
+          (user-error "Unknown task: %s" choice)))))
 
 (defun taskspaces--visit-task (file)
   "Visit task FILE and show the task heading."

@@ -223,7 +223,7 @@ No blocker or clock entry is required until the task is first activated.
 | `taskspaces-new-task` | Capture a new task. |
 | `taskspaces-show-task` | Open the active task file in the current taskspace. |
 | `taskspaces-agenda` | Show the task overview. |
-| `taskspaces-switch-task` | Switch taskspaces and clock states. |
+| `taskspaces-switch-task` | Switch taskspaces and clock states; candidates show task titles with issue IDs. |
 | `taskspaces-block-task` | Set `WAIT` and optionally set `BLOCKER`. |
 | `taskspaces-unblock-task` | Clear `BLOCKER` and return to `TODO` or `ACTIVE`. |
 | `taskspaces-finish-task` | Mark the task `DONE` and clock out. |

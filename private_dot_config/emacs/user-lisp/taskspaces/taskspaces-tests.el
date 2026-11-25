@@ -100,6 +100,29 @@
     (cl-letf (((symbol-function 'taskspaces-switch-task) (lambda () 'switched)))
       (should (eq (taskspaces-show-task) 'switched)))))
 
+(ert-deftest taskspaces-test-switcher-shows-task-title ()
+  "Task switcher candidates show the heading title and issue identifier."
+  (let* ((directory (make-temp-file "taskspaces-" t))
+         (taskspaces-task-directory (file-name-as-directory directory))
+         (file (expand-file-name "ABC-123.org" directory)))
+    (unwind-protect
+        (progn
+          (with-temp-file file
+            (insert "* TODO Upgrade Controller API\n"
+                    ":PROPERTIES:\n"
+                    ":ID: test-id\n"
+                    ":ISSUE: ABC-123\n"
+                    ":END:\n"))
+          (cl-letf (((symbol-function 'completing-read)
+                     (lambda (_prompt candidates &rest _)
+                       (should (assoc "Upgrade Controller API (ABC-123)"
+                                      candidates))
+                       "Upgrade Controller API (ABC-123)")))
+            (should (equal file
+                           (taskspaces--read-task-file
+                            "Switch to task: ")))))
+      (delete-directory directory t))))
+
 (ert-deftest taskspaces-test-switching-unblocks-task ()
   "Switching to a WAIT task clears its blocker and makes it TODO."
   (let* ((org-todo-keywords
