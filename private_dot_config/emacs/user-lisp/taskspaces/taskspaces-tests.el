@@ -180,6 +180,123 @@
       (delete-directory taskspace-directory t)
       (delete-directory directory t))))
 
+(ert-deftest taskspaces-test-child-capture-template ()
+  "Capturing a child includes stable and display parent references."
+  (let* ((directory (make-temp-file "taskspaces-" t))
+         (taskspaces-task-directory (file-name-as-directory directory)))
+    (unwind-protect
+        (cl-letf (((symbol-function 'org-capture-get)
+                   (lambda (property &optional _)
+                     (pcase property
+                       (:taskspaces-parent-issue "ABC-123")
+                       (:taskspaces-parent-id "parent-id")
+                       (_ nil))))
+                  ((symbol-function 'read-string)
+                   (lambda (_prompt &optional _initial)
+                     "ABC-123-DEV")))
+          (let ((template (taskspaces--capture-template)))
+            (should (string-match-p ":PARENT: ABC-123" template))
+            (should (string-match-p ":PARENT-ID: parent-id" template))))
+      (delete-directory directory t))))
+
+(ert-deftest taskspaces-test-child-capture-sets-parent-plist ()
+  "Capturing a child from a task sets parent capture metadata."
+  (let* ((directory (make-temp-file "taskspaces-" t))
+         (taskspaces-task-directory (file-name-as-directory directory))
+         (file (expand-file-name "ABC-123.org" directory))
+         (captured nil)
+         (plist nil))
+    (unwind-protect
+        (progn
+          (with-temp-file file
+            (insert "* TODO Upgrade cert-manager\n"
+                    ":PROPERTIES:\n"
+                    ":ID: parent-id\n"
+                    ":ISSUE: ABC-123\n"
+                    ":END:\n"))
+          (with-current-buffer (find-file-noselect file)
+            (cl-letf (((symbol-function 'org-capture-put)
+                       (lambda (key value)
+                         (push (cons key value) plist)))
+                      ((symbol-function 'org-capture)
+                       (lambda (_template key)
+                         (setq captured key))))
+              (taskspaces-new-child-task)
+              (should (equal "c" captured))
+              (should (equal "ABC-123"
+                             (cdr (assoc :taskspaces-parent-issue plist))))
+              (should (equal "parent-id"
+                             (cdr (assoc :taskspaces-parent-id plist)))))))
+      (delete-directory directory t))))
+
+(ert-deftest taskspaces-test-child-discovery-and-labels ()
+  "Children are derived from PARENT metadata and labeled in the switcher."
+  (let* ((directory (make-temp-file "taskspaces-" t))
+         (taskspaces-task-directory (file-name-as-directory directory))
+         (parent-file (expand-file-name "ABC-123.org" directory))
+         (child-file (expand-file-name "ABC-123-DEV.org" directory)))
+    (unwind-protect
+        (progn
+          (with-temp-file parent-file
+            (insert "* TODO Upgrade cert-manager\n"
+                    ":PROPERTIES:\n"
+                    ":ID: parent-id\n"
+                    ":ISSUE: ABC-123\n"
+                    ":END:\n"))
+          (with-temp-file child-file
+            (insert "* TODO Upgrade DEV clusters\n"
+                    ":PROPERTIES:\n"
+                    ":ID: child-id\n"
+                    ":ISSUE: ABC-123-DEV\n"
+                    ":PARENT: ABC-123\n"
+                    ":PARENT-ID: parent-id\n"
+                    ":END:\n"))
+          (should (equal '("ABC-123-DEV")
+                         (mapcar (lambda (record)
+                                   (plist-get record :issue))
+                                 (taskspaces--children-of-task
+                                  "ABC-123" "parent-id"))))
+          (should (taskspaces--task-is-parent-p "ABC-123" "parent-id"))
+          (should (string-match-p "\\[parent\\]"
+                                  (taskspaces--task-candidate-label
+                                   parent-file)))
+          (should (string-match-p "child of ABC-123"
+                                  (taskspaces--task-candidate-label
+                                   child-file))))
+      (delete-directory directory t))))
+
+(ert-deftest taskspaces-test-parent-children-section ()
+  "Opening a parent refreshes a derived Children section."
+  (let* ((directory (make-temp-file "taskspaces-" t))
+         (taskspaces-task-directory (file-name-as-directory directory))
+         (parent-file (expand-file-name "ABC-123.org" directory))
+         (child-file (expand-file-name "ABC-123-DEV.org" directory)))
+    (unwind-protect
+        (progn
+          (with-temp-file parent-file
+            (insert "* TODO Upgrade cert-manager\n"
+                    ":PROPERTIES:\n"
+                    ":ID: parent-id\n"
+                    ":ISSUE: ABC-123\n"
+                    ":END:\n"))
+          (with-temp-file child-file
+            (insert "* TODO Upgrade DEV clusters\n"
+                    ":PROPERTIES:\n"
+                    ":ID: child-id\n"
+                    ":ISSUE: ABC-123-DEV\n"
+                    ":PARENT: ABC-123\n"
+                    ":PARENT-ID: parent-id\n"
+                    ":END:\n"))
+          (taskspaces--refresh-parent-children "ABC-123" "parent-id")
+          (with-current-buffer (find-file-noselect parent-file)
+            (should (save-excursion
+                      (goto-char (point-min))
+                      (re-search-forward "^\\*\\* Children[ \t]*$" nil t)))
+            (should (save-excursion
+                      (goto-char (point-min))
+                      (re-search-forward "id:child-id" nil t)))))
+      (delete-directory directory t))))
+
 (ert-deftest taskspaces-test-switching-unblocks-task ()
   "Switching to a WAIT task clears its blocker and makes it TODO."
   (let* ((org-todo-keywords

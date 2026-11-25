@@ -28,6 +28,22 @@ Task records live in `~/Work/org/`, one file per issue, such as `ABC-123.org`.
 Completed and blocked tasks remain in the active directory until they are
 archived.
 
+### Linked parent tasks
+
+Tasks can be linked into a parent/child relationship. Child task records use
+`PARENT` and `PARENT-ID` properties to identify the task that created or owns
+the relationship. A task is a parent when child task records link to it; parent
+status is derived rather than stored as a separate task type.
+
+Parent and child tasks remain independent Org records. They have separate TODO
+states, blockers, notes, clocks, and taskspaces. Parent status does not change
+the lifecycle or state of its taskspace, and child completion does not
+automatically change the parent.
+
+Parent task records can present their linked children in an Org section and in
+agenda views. Parent and child entries are also normal tasks in the switcher,
+with relationship context in their labels.
+
 ### Task state
 
 Use the existing Org TODO states, but give the active state a useful distinction:
@@ -221,6 +237,7 @@ No blocker or clock entry is required until the task is first activated.
 | Command | Action |
 | --- | --- |
 | `taskspaces-new-task` | Capture a new task. |
+| `taskspaces-new-child-task` | Capture a task linked to the current or selected parent. |
 | `taskspaces-show-task` | Open the active task file in the current taskspace. |
 | `taskspaces-agenda` | Show the task overview. |
 | `taskspaces-switch-task` | Switch taskspaces and clock states; candidates show task titles with issue IDs. |

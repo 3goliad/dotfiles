@@ -118,6 +118,7 @@
   "q" 'taskspaces-close-task
   "s" 'taskspaces-switch-task
   "n" 'taskspaces-new-task
+  "c" 'taskspaces-new-child-task
   "f" 'taskspaces-finish-task
   "x" 'taskspaces-archive-task
   "b" 'taskspaces-block-task

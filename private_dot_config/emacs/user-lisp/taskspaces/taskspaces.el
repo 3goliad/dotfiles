@@ -105,10 +105,19 @@ When customized, it remains available as a compatibility root."
   (org-back-to-heading t))
 
 (defun taskspaces--capture-template ()
-  (let* ((issue (taskspaces--required-task-value (read-string "Issue identifier: ")
-                                     "Issue identifier"))
+  (let* ((parent-issue (org-capture-get :taskspaces-parent-issue))
+         (parent-id (org-capture-get :taskspaces-parent-id))
+         (issue (taskspaces--required-task-value (read-string "Issue identifier: ")
+                                                "Issue identifier"))
          (file (expand-file-name (concat issue ".org") taskspaces-task-directory))
-         (buffer (get-file-buffer file)))
+         (buffer (get-file-buffer file))
+         (parent-properties
+          (if parent-issue
+              (concat "\n:PARENT: " parent-issue
+                      (if parent-id
+                          (concat "\n:PARENT-ID: " parent-id)
+                        ""))
+            "")))
     (unless (string-match-p "\\`[[:alnum:]][[:alnum:]_-]*\\'" issue)
       (user-error "Issue identifier may contain only letters, numbers, - and _"))
     (when (or (file-exists-p file)
@@ -120,7 +129,7 @@ When customized, it remains available as a compatibility root."
     (org-capture-put :taskspaces-task-file file)
     (concat "#+title: " issue " %^{Task title}\n#+filetags: :work:\n\n"
             "* TODO %\\1\n:PROPERTIES:\n:ID: %(org-id-new)\n:ISSUE: "
-            issue "\n:END:\n\n"
+            issue parent-properties "\n:END:\n\n"
             "** Resources\n- Issue: %^{Issue URL (optional)}\n\n"
             "** Notes\n")))
 
@@ -139,12 +148,28 @@ When customized, it remains available as a compatibility root."
           (widen)
           (taskspaces--goto-task-root)
           (taskspaces--required-task-value (org-get-heading t t t t) "Task title")
-          (org-id-add-location (org-id-get-create) buffer-file-name))))))
+          (let ((parent-issue (org-capture-get :taskspaces-parent-issue))
+                (parent-id (org-capture-get :taskspaces-parent-id)))
+            (when parent-issue
+              (org-entry-put nil "PARENT" parent-issue)
+              (when parent-id
+                (org-entry-put nil "PARENT-ID" parent-id)))
+            (org-id-add-location (org-id-get-create) buffer-file-name)
+            (when parent-issue
+              (taskspaces--refresh-parent-children parent-issue parent-id))))))))
 
 (with-eval-after-load 'org-capture
   (add-to-list
    'org-capture-templates
    '("w" "Work task" plain
+     (file taskspaces--capture-target)
+     (function taskspaces--capture-template)
+     :unnarrowed t
+     :jump-to-captured t
+     :prepare-finalize taskspaces--prepare-capture-finalize))
+  (add-to-list
+   'org-capture-templates
+   '("c" "Linked child task" plain
      (file taskspaces--capture-target)
      (function taskspaces--capture-template)
      :unnarrowed t
@@ -156,6 +181,39 @@ When customized, it remains available as a compatibility root."
   "Capture a new task; finalize with C-c C-c or abort with C-c C-k."
   (interactive)
   (org-capture nil "w"))
+
+(defun taskspaces--current-task-reference ()
+  "Return the current task issue and Org ID, or prompt for a parent task."
+  (save-excursion
+    (save-restriction
+      (widen)
+      (if (and (derived-mode-p 'org-mode)
+               buffer-file-name
+               (file-equal-p (file-name-directory buffer-file-name)
+                             taskspaces-task-directory))
+          (progn
+            (taskspaces--goto-task-root)
+            (cons (org-entry-get nil "ISSUE")
+                  (org-entry-get nil "ID")))
+        (let* ((file (taskspaces--read-task-file "Add child to task: "))
+               (issue (file-name-base file)))
+          (with-current-buffer (find-file-noselect file)
+            (taskspaces--goto-task-root)
+            (cons issue (org-entry-get nil "ID"))))))))
+
+;;;###autoload
+(defun taskspaces-new-child-task ()
+  "Capture a new task linked to the current or selected parent task."
+  (interactive)
+  (let* ((parent (taskspaces--current-task-reference))
+         (parent-issue (car parent))
+         (parent-id (cdr parent)))
+    (unless parent-issue
+      (user-error "Parent task has no ISSUE property"))
+    (org-capture-put :taskspaces-parent-issue parent-issue)
+    (when parent-id
+      (org-capture-put :taskspaces-parent-id parent-id))
+    (org-capture nil "c")))
 
 (defun taskspaces--task-title-from-file (file)
   "Return the top-level task heading title from task Org FILE."
@@ -173,6 +231,126 @@ When customized, it remains available as a compatibility root."
                 title))
           (file-name-base file))))))
 
+(defun taskspaces--task-record-from-file (file)
+  "Return task metadata from Org task FILE."
+  (with-current-buffer (find-file-noselect file)
+    (save-excursion
+      (save-restriction
+        (widen)
+        (goto-char (point-min))
+        (if (and (re-search-forward org-heading-regexp nil t)
+                 (= (org-outline-level) 1))
+            (list :file file
+                  :issue (org-entry-get nil "ISSUE")
+                  :id (org-entry-get nil "ID")
+                  :title (string-trim (org-get-heading t t t t))
+                  :state (org-get-todo-state)
+                  :parent (org-entry-get nil "PARENT")
+                  :parent-id (org-entry-get nil "PARENT-ID"))
+          (list :file file
+                :issue (file-name-base file)
+                :title (file-name-base file)))))))
+
+(defun taskspaces--children-of-task (issue &optional id)
+  "Return task records whose PARENT links identify ISSUE or ID."
+  (let ((children nil))
+    (dolist (filename (when (file-directory-p taskspaces-task-directory)
+                        (directory-files taskspaces-task-directory nil "\\.org\\'")))
+      (let* ((file (expand-file-name filename taskspaces-task-directory))
+             (record (taskspaces--task-record-from-file file))
+             (parent (plist-get record :parent))
+             (parent-id (plist-get record :parent-id)))
+        (when (and (or (and issue (equal parent issue))
+                       (and id (equal parent-id id)))
+                   (not (equal (plist-get record :issue) issue)))
+          (push record children))))
+    (sort children
+          (lambda (left right)
+            (string< (or (plist-get left :issue) "")
+                     (or (plist-get right :issue) ""))))))
+
+(defun taskspaces--task-is-parent-p (issue &optional id)
+  "Return non-nil if ISSUE or ID has linked child tasks."
+  (not (null (taskspaces--children-of-task issue id))))
+
+(defun taskspaces--task-candidate-label (file)
+  "Return the switcher label for task FILE."
+  (let* ((record (taskspaces--task-record-from-file file))
+         (issue (plist-get record :issue))
+         (title (plist-get record :title))
+         (parent (plist-get record :parent))
+         (parent-id (plist-get record :parent-id))
+         (id (plist-get record :id))
+         (label (format "%s (%s)"
+                        (if (and title (not (string-empty-p title)))
+                            title
+                          issue)
+                        issue)))
+    (cond
+     (parent (format "%s [child of %s]" label parent))
+     ((taskspaces--task-is-parent-p issue id)
+      (format "%s [parent]" label))
+     (t label))))
+
+(defun taskspaces--refresh-parent-children (issue &optional id)
+  "Refresh the Children section in parent ISSUE, when it is in the active task directory."
+  (let ((file (taskspaces--task-file issue)))
+    (when (file-exists-p file)
+      (let ((children (taskspaces--children-of-task issue id)))
+        (with-current-buffer (find-file-noselect file)
+          (save-excursion
+            (save-restriction
+              (widen)
+              (goto-char (point-min))
+              (taskspaces--goto-task-root)
+              (let* ((root-end (save-excursion (org-end-of-subtree t t)))
+                     (section-start
+                      (save-excursion
+                        (goto-char (point-min))
+                        (when (re-search-forward
+                               "^\\*\\* Children[ \t]*$" root-end t)
+                          (line-beginning-position)))))
+                (when section-start
+                  (goto-char section-start)
+                  (let ((section-end (save-excursion
+                                       (org-end-of-subtree t t))))
+                    (delete-region section-start section-end)))
+                (when children
+                  (goto-char (save-excursion
+                               (org-end-of-subtree t t)))
+                  (insert "\n** Children\n")
+                  (dolist (child children)
+                    (let* ((child-id (plist-get child :id))
+                           (child-issue (plist-get child :issue))
+                           (child-title (plist-get child :title))
+                           (child-state (plist-get child :state))
+                           (link (if child-id
+                                     (format "id:%s" child-id)
+                                   (format "file:%s"
+                                           (plist-get child :file)))))
+                      (insert (format "- [[%s][%s %s]] (%s)\n"
+                                      link child-issue child-title child-state))))))
+              (taskspaces--save-task))))))))
+
+(defun taskspaces--agenda-prefix ()
+  "Return a parent or child label for the Org agenda entry at point."
+  (let* ((marker (or (get-text-property (point) 'org-hd-marker)
+                     (get-text-property (point) 'org-marker)))
+         (buffer (and marker (marker-buffer marker))))
+    (if (and buffer marker)
+        (with-current-buffer buffer
+          (save-excursion
+            (goto-char marker)
+            (let* ((issue (org-entry-get nil "ISSUE"))
+                   (id (org-entry-get nil "ID"))
+                   (parent (org-entry-get nil "PARENT"))
+                   (parent-id (org-entry-get nil "PARENT-ID")))
+              (cond
+               (parent (format "[child of %s] " parent))
+               ((taskspaces--task-is-parent-p issue id) "[parent] ")
+               (t "")))))
+      "")))
+
 (defun taskspaces--read-task-file (prompt &optional exclude)
   "Read an unarchived task file name with PROMPT, omitting file EXCLUDE."
   (let* ((files (when (file-directory-p taskspaces-task-directory)
@@ -181,9 +359,8 @@ When customized, it remains available as a compatibility root."
           (mapcar
            (lambda (filename)
              (let* ((file (expand-file-name filename taskspaces-task-directory))
-                    (issue (file-name-base file))
-                    (title (taskspaces--task-title-from-file file)))
-               (cons (format "%s (%s)" title issue) file)))
+                      (issue (file-name-base file)))
+                (cons (taskspaces--task-candidate-label file) file)))
            files)))
     (when exclude
       (setq candidates
@@ -215,6 +392,9 @@ When customized, it remains available as a compatibility root."
   (find-file file)
   (widen)
   (taskspaces--goto-task-root)
+  (let ((issue (org-entry-get nil "ISSUE"))
+        (id (org-entry-get nil "ID")))
+    (taskspaces--refresh-parent-children issue id))
   (org-fold-show-context)
   (org-fold-show-subtree))
 
@@ -276,7 +456,11 @@ When customized, it remains available as a compatibility root."
               (org-entry-delete nil "BLOCKER")
             (org-entry-put nil "BLOCKER" blocker))))
       (taskspaces--save-task)
-      (let ((issue (org-entry-get nil "ISSUE")))
+      (let ((issue (org-entry-get nil "ISSUE"))
+            (parent (org-entry-get nil "PARENT"))
+            (parent-id (org-entry-get nil "PARENT-ID")))
+        (when parent
+          (taskspaces--refresh-parent-children parent parent-id))
         (when (equal taskspaces-active issue)
           (taskspaces--activate nil))))))
 
@@ -288,11 +472,15 @@ When customized, it remains available as a compatibility root."
     (save-restriction
       (widen)
       (taskspaces--unblock-task-file buffer-file-name)
-      (let ((issue (org-entry-get nil "ISSUE")))
+      (let ((issue (org-entry-get nil "ISSUE"))
+            (parent (org-entry-get nil "PARENT"))
+            (parent-id (org-entry-get nil "PARENT-ID")))
         (when (equal taskspaces-active issue)
           (org-todo "ACTIVE")
           (taskspaces--save-task)
-          (org-clock-in nil))))))
+          (org-clock-in nil))
+        (when parent
+          (taskspaces--refresh-parent-children parent parent-id))))))
 
 ;;;###autoload
 (defun taskspaces-finish-task ()
@@ -306,7 +494,11 @@ When customized, it remains available as a compatibility root."
         (org-clock-out nil t))
       (org-todo "DONE")
       (org-entry-delete nil "BLOCKER")
-      (taskspaces--save-task)))
+      (taskspaces--save-task)
+      (let ((parent (org-entry-get nil "PARENT"))
+            (parent-id (org-entry-get nil "PARENT-ID")))
+        (when parent
+          (taskspaces--refresh-parent-children parent parent-id)))))
   (message "Task done; use M-x taskspaces-archive-task when ready to archive"))
 
 ;;;###autoload
@@ -322,7 +514,9 @@ When customized, it remains available as a compatibility root."
            (file (expand-file-name (file-name-nondirectory buffer-file-name)
                                    directory))
            (id (org-entry-get nil "ID"))
-           (issue (org-entry-get nil "ISSUE")))
+           (issue (org-entry-get nil "ISSUE"))
+           (parent (org-entry-get nil "PARENT"))
+           (parent-id (org-entry-get nil "PARENT-ID")))
       (when (or (file-exists-p file) (get-file-buffer file))
         (user-error "Archived task already exists: %s" file))
       (when (y-or-n-p "Archive this completed task file and destroy its taskspace? ")
@@ -332,6 +526,8 @@ When customized, it remains available as a compatibility root."
         (set-visited-file-name file nil t)
         (save-buffer)
         (when id (org-id-add-location id file))
+        (when parent
+          (taskspaces--refresh-parent-children parent parent-id))
         (when issue
           (let ((task-directory (taskspaces--task-directory issue)))
             (when (file-directory-p task-directory)
@@ -364,7 +560,9 @@ When customized, it remains available as a compatibility root."
      ((todo "ACTIVE" ((org-agenda-overriding-header "Active")))
       (todo "TODO" ((org-agenda-overriding-header "Ready to begin")))
       (todo "WAIT" ((org-agenda-overriding-header "Waiting"))))
-     ((org-agenda-files (list taskspaces-task-directory))))))
+     ((org-agenda-files (list taskspaces-task-directory))
+      (org-agenda-prefix-format
+       '((todo . " %(taskspaces--agenda-prefix)")))))))
 
 ;;;###autoload
 (defun taskspaces-agenda ()
@@ -501,6 +699,10 @@ The legacy worktree directory is used only when explicitly customized."
       (unless (equal (org-get-todo-state) "WAIT")
         (org-todo "ACTIVE")
         (taskspaces--save-task)
+        (let ((parent (org-entry-get nil "PARENT"))
+              (parent-id (org-entry-get nil "PARENT-ID")))
+          (when parent
+            (taskspaces--refresh-parent-children parent parent-id)))
         (org-clock-in nil))))
   (force-mode-line-update t))
 
@@ -518,7 +720,11 @@ The legacy worktree directory is used only when explicitly customized."
               (taskspaces-block-task))
              ((equal (org-get-todo-state) "ACTIVE")
               (org-todo "TODO")
-              (taskspaces--save-task))))
+               (taskspaces--save-task)
+               (let ((parent (org-entry-get nil "PARENT"))
+                     (parent-id (org-entry-get nil "PARENT-ID")))
+                 (when parent
+                   (taskspaces--refresh-parent-children parent parent-id))))))
         (message "Task file %s no longer exists; not clocking out" file)))
     (save-some-buffers
      nil (lambda () (equal (taskspaces--buffer-owner (current-buffer)) issue)))))
