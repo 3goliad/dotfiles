@@ -194,8 +194,19 @@ When customized, it remains available as a compatibility root."
     (unless candidates
       (user-error (if exclude "No other task files"
                     "No task files yet; use M-x taskspaces-new-task")))
-    (let* ((choice (completing-read prompt candidates nil t))
-           (file (cdr (assoc choice candidates))))
+    (let* ((choice (string-trim (completing-read prompt candidates nil t)))
+           (file (or (cdr (assoc choice candidates))
+                     (seq-find
+                      (lambda (candidate)
+                        (equal (file-name-base (cdr candidate)) choice))
+                      candidates)
+                     (seq-find
+                      (lambda (candidate)
+                        (equal (cdr candidate)
+                               (expand-file-name choice taskspaces-task-directory)))
+                      candidates))))
+      (when file
+        (setq file (if (stringp file) file (cdr file))))
       (or file
           (user-error "Unknown task: %s" choice)))))
 

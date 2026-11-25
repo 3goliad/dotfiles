@@ -123,6 +123,63 @@
                             "Switch to task: ")))))
       (delete-directory directory t))))
 
+(ert-deftest taskspaces-test-switcher-can-return-issue-id ()
+  "The switcher still resolves an issue identifier selected by a completion UI."
+  (let* ((directory (make-temp-file "taskspaces-" t))
+         (taskspaces-task-directory (file-name-as-directory directory))
+         (file (expand-file-name "ABC-123.org" directory)))
+    (unwind-protect
+        (progn
+          (with-temp-file file
+            (insert "* TODO Upgrade Controller API\n"
+                    ":PROPERTIES:\n"
+                    ":ID: test-id\n"
+                    ":ISSUE: ABC-123\n"
+                    ":END:\n"))
+          (cl-letf (((symbol-function 'completing-read)
+                     (lambda (&rest _) "ABC-123")))
+            (should (equal file
+                           (taskspaces--read-task-file
+                            "Switch to task: ")))))
+      (delete-directory directory t))))
+
+(ert-deftest taskspaces-test-activation-marks-task-active ()
+  "Activating a task sets both the active issue and ACTIVE Org state."
+  (let* ((org-todo-keywords
+          '((sequence "TODO(t)" "ACTIVE(a!)" "WAIT(w!)" "|" "DONE(d!)")))
+         (directory (make-temp-file "taskspaces-" t))
+         (taskspace-directory (make-temp-file "taskspaces-root-" t))
+         (taskspaces-task-directory (file-name-as-directory directory))
+         (taskspaces-taskspace-directory (file-name-as-directory
+                                          taskspace-directory))
+         (taskspaces-worktree-directory nil)
+         (taskspaces-active nil)
+         (taskspaces--layouts (make-hash-table :test #'equal))
+         (file (expand-file-name "ABC-123.org" directory)))
+    (unwind-protect
+        (progn
+          (with-temp-file file
+            (insert "* TODO Upgrade Controller API\n"
+                    ":PROPERTIES:\n"
+                    ":ID: test-id\n"
+                    ":ISSUE: ABC-123\n"
+                    ":END:\n"))
+          (cl-letf (((symbol-function 'taskspaces--ensure-taskspace)
+                     (lambda (_issue) directory))
+                    ((symbol-function 'taskspaces--fresh-layout)
+                     (lambda (_issue) nil))
+                    ((symbol-function 'taskspaces--hide-foreign-windows)
+                     (lambda () nil))
+                    ((symbol-function 'org-clock-in)
+                     (lambda (&rest _) t)))
+            (taskspaces--activate "ABC-123")
+            (should (equal "ABC-123" taskspaces-active))
+            (with-current-buffer (find-file-noselect file)
+              (taskspaces--goto-task-root)
+              (should (equal "ACTIVE" (org-get-todo-state))))))
+      (delete-directory taskspace-directory t)
+      (delete-directory directory t))))
+
 (ert-deftest taskspaces-test-switching-unblocks-task ()
   "Switching to a WAIT task clears its blocker and makes it TODO."
   (let* ((org-todo-keywords
