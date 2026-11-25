@@ -1,295 +1,123 @@
-# Proposal: Emacs task workspaces
+# Emacs task workspaces
 
-Use Emacs as the entrypoint for tracking, pausing, and resuming development
-tasks. A task represents independent issue-spanning work across one or more
-repositories. The goal is to switch among 6-10 tasks without rebuilding the
-environment or reconstructing the previous train of thought.
+Use Emacs to switch among independent development tasks. A task represents
+work spanning one or more repositories and 6-10 taskspaces.
 
-Org is the source of truth for task records, state, blockers, and time
-spent. The taskspace package manages the live Emacs state associated with one
-active task.
+## Org is the source of truth
 
-## Concepts
+Active work tasks live as TODO headings in `~/Work/org/tasks.org`, one regular
+Org file. Capture creates a heading with:
 
-### Task
-
-A task is an independent unit of work with a stable issue identifier and an
-Org record. The record contains:
-
-- a stable Org ID and issue identifier;
+- a stable Org `ID`;
+- a `:work:` tag;
+- an optional `ISSUE` property;
 - a TODO state;
-- an optional blocker message;
-- issue and PR links;
-- repository and worktree paths;
-- Notes;
-- Org clock entries recording time worked.
+- a blocker property while blocked;
+- notes and clock entries.
 
-Task records live in `~/Work/org/`, one file per issue, such as `ABC-123.org`.
-Completed and blocked tasks remain in the active directory until they are
-archived.
+The file is configured with the usual Org archive location:
 
-### Linked parent tasks
+```org
+#+title: Work Tasks
+#+filetags: :work:
+#+ARCHIVE: ~/Work/org/tasks.org_archive::
 
-Tasks can be linked into a parent/child relationship. Child task records use
-`PARENT` and `PARENT-ID` properties to identify the task that created or owns
-the relationship. A task is a parent when child task records link to it; parent
-status is derived rather than stored as a separate task type.
+* Tasks
+** TODO Upgrade controller
+:PROPERTIES:
+:ID:       11111111-1111-1111-1111-111111111111
+:ISSUE:    ABC-123
+:END:
+*** TODO Prepare production plan
+:PROPERTIES:
+:ID:       22222222-2222-2222-2222-222222222222
+:ISSUE:    ABC-123-PRODUCTION
+:END:
+```
 
-Parent and child tasks remain independent Org records. They have separate TODO
-states, blockers, notes, clocks, and taskspaces. Parent status does not change
-the lifecycle or state of its taskspace, and child completion does not
-automatically change the parent.
+Child tasks are ordinary nested Org subheadings. They have their own stable ID
+and can be selected independently.
 
-Parent task records can present their linked children in an Org section and in
-agenda views. Parent and child entries are also normal tasks in the switcher,
-with relationship context in their labels.
+## TODO states
 
-### Task state
-
-Use the existing Org TODO states, but give the active state a useful distinction:
+There is no separate `ACTIVE` TODO state. The Org TODO states are:
 
 | State | Meaning |
 | --- | --- |
-| `TODO` | The task is ready to be started. |
-| `ACTIVE` | It is the active task and should have an open Org clock. |
-| `WAIT` | External work is blocking useful progress. |
-| `DONE` | No more work is required. |
+| `TODO` | Ready to resume |
+| `WAIT` | External work prevents useful progress |
+| `DONE` | No more work is required |
 
-Only one task should be `ACTIVE` at a time. Switching tasks closes the clock on
-the previous task and, when switching to a task that is not `DONE`, sets it to
-`ACTIVE` and starts a new clock. Switching to `WAIT` automatically clears its
-blocker and returns it to `TODO` before activation.
+A task can be marked `WAIT` with an optional `BLOCKER` property. Clocking into a
+WAIT task clears `BLOCKER` and changes it to `TODO`.
 
-`WAIT` means the task cannot currently be usefully resumed. An optional
-`BLOCKER` property contains a short description visible in task overviews:
+## The running Org clock is active-task state
 
-```org
-:PROPERTIES:
-:ID:       <generated Org ID>
-:ISSUE:    ABC-123
-:BLOCKER:  Waiting for the API PR to merge
-:END:
-```
+There is at most one running Org clock. It is the active-task mechanism:
 
-The blocker property is cleared when a task leaves `WAIT`. Blocking a task can
-be done with or without a taskspace being active.
+- clocking into a task clocks out the previous task;
+- clocking out closes the taskspace;
+- canceling or suspending the clock closes the taskspace;
+- clocking into a personal or otherwise unrecognized heading produces no
+  taskspace;
+- no running clock means no active task.
 
-### Org clock log
+The taskspaces package synchronizes live state from the running clock. It does
+not maintain an independent ACTIVE state or set TODO keywords when a task is
+selected.
 
-Org clocking is the task time log. Clocking in on the `ACTIVE` heading creates
-an entry in the task's CLOCK drawer:
+The existing Org agenda already highlights the running clock. The custom work
+agenda adds an explicit `[ACTIVE]` prefix for the clocked heading.
 
-```org
-* ACTIVE Controller upgrade
-:PROPERTIES:
-:ID:       <generated Org ID>
-:ISSUE:    ABC-123
-:END:
+Clock persistence is ordinary Org clock behavior. At startup, the taskspaces
+package may restore a live taskspace if Org restores the matching work-task
+clock.
 
-:LOGBOOK:
-CLOCK: [2026-11-24 Tue 13:30]--[2026-11-24 Tue 13:45] =>  0:15
-CLOCK: [2026-11-24 Tue 15:00]--
-:END:
-```
+## Task switcher
 
-Clock entries record actual working periods. A switch or close operation
-clock-out is enough to end the period; it should not generate a "went to lunch"
-or other artificial log message. If the user opens the task file later, they
-can add progress and Notes normally.
+`taskspaces-switch-task` finds TODO headings in `tasks.org` that:
 
-The user may leave `Notes`, Resources, and plain Org text in the task file at
-any time.
+- inherit or carry the `:work:` tag;
+- have a non-empty `ID`;
+- are in `TODO` or `WAIT` state.
 
-### Taskspace
+The candidates show issue, title, hierarchy, state, and blocker text. Selecting
+a task clocks it in. Selecting `DONE` or an archived heading is not allowed.
 
-A taskspace is the live editor state associated with a task: worktrees, buffers,
-terminals, and window layout. At most one task is active.
+`taskspaces-show-task` opens the clocked heading. With no active task, it opens
+the task switcher.
 
-With no active task, Emacs behaves as a plain editor over regular checkouts.
-Switching to another task:
+## Capture
 
-1. stops the clock for the old task;
-2. preserves the old taskspace and saves modified buffers when requested;
-3. optionally changes the old task to `WAIT` and records `BLOCKER`;
-4. starts or restores the destination taskspace;
-5. sets the destination task to `ACTIVE`; and
-6. starts its Org clock.
+`taskspaces-new-task` captures a top-level task beneath the `Tasks` heading.
+`taskspaces-new-child-task` captures beneath the current task or a selected
+task. Captured headings receive a generated Org ID and `:work:` tag.
 
-Switching away without a blocker leaves the previous task as `TODO` or its
-previous actionable state and records no explanatory log message.
-
-Taskspaces are session state. Live workspaces preserve running processes while
-Emacs remains alive. Recovery after an Emacs restart is a separate concern.
-
-## Task overview
-
-An overview is available at all times, whether or not a taskspace is active.
-It shows tasks grouped by state and includes a short blocker description for
-tasks in `WAIT`.
-
-The overview supports:
-
-- switching to a task;
-- opening a task record;
-- blocking or unblocking a task;
-- marking a task `DONE`; and
-- archiving a task.
-
-Selecting a task from the overview switches taskspaces. Opening a task record
-alone should not change the active task.
-
-### Archiving
-
-Archiving is available for `DONE` tasks. It means:
-
-- the task no longer appears in the overview;
-- the task record is moved to `~/Work/org/archive/`; and
-- its taskspace is destroyed.
-
-Destroying a taskspace removes:
-
-- associated Git worktrees;
-- owned live buffers and terminals;
-- saved window/layout state; and
-- task ownership metadata.
-
-Archiving must refuse to overwrite an existing archive file and must confirm
-destruction of worktrees and live state.
-
-Worktrees are never removed automatically during ordinary task switches.
-
-## Org and custom-code boundaries
-
-### Well supported by Org
-
-Org already provides most of the task record:
-
-- one file per task;
-- stable Org IDs;
-- TODO states;
-- heading properties;
-- notes and resources;
-- custom agenda views;
-- clock in, clock out, clock persistence, and CLOCK drawers;
-- moving completed files to an archive subdirectory.
-
-Org custom agenda commands can show TODO groups. A custom agenda
-prefix-format or column view can display `BLOCKER`, because it is an ordinary
-Org property.
-
-Org state history and clock entries should remain in the task file rather than
-being duplicated in custom data structures.
-
-### Custom taskspaces code
-
-Custom Elisp is required for behavior outside the task file:
-
-- choosing and activating a task;
-- maintaining one global active-task value;
-- preserving and restoring window configurations;
-- assigning buffers to taskspaces;
-- filtering ordinary buffer switching;
-- saving modified buffers and offering to park them;
-- clocking in and clocking out in the task lifecycle;
-- setting and clearing task state/properties during switches;
-- removing worktrees and owned live state during archive;
-- detecting or recreating missing worktrees.
-
-This package should coordinate Org rather than replace it. Org remains the
-source of truth for task state, blockers, notes, and time.
-
-## Task record format
-
-```org
-#+title: ABC-123 Controller upgrade
-#+filetags: :work:
-
-* ACTIVE Controller upgrade
-:PROPERTIES:
-:ID:       <generated Org ID>
-:ISSUE:    ABC-123
-:END:
-
-** Resources
-- Issue: https://example.com/ABC-123
-- Worktree: /path/to/worktree (branch ABC-123-controller-upgrade)
-
-** Notes
-Healthy pods might still be running the old image.
-
-** Log
-:LOGBOOK:
-CLOCK: [2026-11-24 Tue 13:30]--[2026-11-24 Tue 13:45] =>  0:15
-:END:
-```
-
-The top-level heading is the task heading. `BLOCKER` belongs in properties only
-while the heading state is `WAIT`; when leaving `WAIT`, custom code should remove
-or blank it rather than leave stale blocker text.
-
-Capturing a task starts it in `TODO`, with blank Resources and Notes sections.
-No blocker or clock entry is required until the task is first activated.
-
-## Commands and actions
-
-### Tasks
-
-| Command | Action |
-| --- | --- |
-| `taskspaces-new-task` | Capture a new task. |
-| `taskspaces-new-child-task` | Capture a task linked to the current or selected parent. |
-| `taskspaces-show-task` | Open the active task file in the current taskspace. |
-| `taskspaces-agenda` | Show the task overview. |
-| `taskspaces-switch-task` | Switch taskspaces and clock states; candidates show task titles with issue IDs. |
-| `taskspaces-block-task` | Set `WAIT` and optionally set `BLOCKER`. |
-| `taskspaces-unblock-task` | Clear `BLOCKER` and return to `TODO` or `ACTIVE`. |
-| `taskspaces-finish-task` | Mark the task `DONE` and clock out. |
-| `taskspaces-archive-task` | Confirm archiving and destroy the taskspace. |
-
-### Workspaces
-
-| Command | Action |
-| --- | --- |
-| `taskspaces-switch-project` | Open or create the active task's worktree for a project. |
-| `taskspaces-terminal` | Summon or dismiss a task terminal; a prefix creates another. |
-
-`C-c p p` (`project-switch-project`) is remapped to
-`taskspaces-switch-project`.
-
-## Perspective integration
-
-`perspective.el` and `persp-mode.el` were evaluated as possible integrations.
-They do not provide enough benefit here to justify replacing taskspaces' existing
-window configuration table or adopting their keymaps and buffer-membership models.
-
-Taskspaces retains its small, direct live-layout implementation:
-
-- task ownership and blocker/state transitions remain in taskspaces;
-- window configurations remain keyed by stable issue identifier;
-- task and shared buffer filtering remains taskspaces' source of truth;
-- archive is the only operation that deliberately destroys layout state;
-- Org clocks and task files remain independent of window state.
+Org IDs and hierarchy replace custom PARENT properties and generated Children
+sections.
 
 ## Worktrees
 
-Each task gets `~/Work/taskspaces/<ISSUE>/`. The task directory contains a
-`task.org` symlink to `~/Work/org/<ISSUE>.org` and worktrees mirroring paths
-under `~/Work`. For example:
+Each task has a live workspace under
+`~/Work/taskspaces/<stable-org-id>/`. Worktree paths mirror paths below
+`~/Work`.
 
-- `~/Work/taskspaces/EKS-6171/task.org`
-- `~/Work/taskspaces/EKS-6171/bb/FLUX/base-governance`
+For example:
 
-This mirrors `~/Work/bb/FLUX/base-governance` and keeps the task record and all
-of its repositories together. The task terminal opens at the task directory,
-while project switching opens the corresponding repository worktree.
+```text
+~/Work/taskspaces/11111111-1111-1111-1111-111111111111/
+  bb/FLUX/base-governance
+```
 
-A missing worktree is created after prompting for a branch, defaulting to
-`<ISSUE>-<title-slug>`. A new branch starts from the remote's default branch,
-fetched first, without tracking it. An existing local branch is reused after
-confirmation.
+When `taskspaces-switch-project` is used:
 
-The worktree path and branch are appended to the task's Resources. Worktrees
-are not removed by ordinary switching or close actions.
+1. the active task's worktree is selected or created;
+2. a missing worktree prompts for a branch;
+3. new branches start from the remote's default branch;
+4. the worktree path and branch are appended to the task heading's Resources.
+
+Taskspaces do not switch branches, merge changes, deploy anything, or change
+shared cluster context. Switching away preserves worktrees and layouts.
 
 ## Layouts and buffers
 
@@ -298,23 +126,39 @@ A buffer belongs to a task when:
 - its file or directory is under that task's worktree directory; or
 - it is a task application buffer started while the task was active.
 
-Application buffers started with no task are shared. Org task records and other
+Application buffers started without a task are shared. `tasks.org` and unrelated
 buffers are shared.
 
-Buffer switching should normally offer shared buffers and buffers belonging to
-the active task. Consult integration may offer a way to override this
-restriction.
+The taskspace package preserves window configurations per stable task ID while
+Emacs remains alive. Layouts are not required to survive an Emacs restart.
 
-Layouts are not required to survive Emacs restarts. No task should remain active
-after a restart unless the user explicitly resumes it.
+## Terminals
 
-## Boundaries
+`taskspaces-terminal` summons or dismisses the active task's terminal. A prefix
+argument creates another terminal. With no active task, it uses the shared
+terminal.
 
-Switching tasks must not automatically check out branches, merge changes,
-deploy anything, or change a shared Kubernetes context. Cluster access should
-be scoped to task-specific commands or shells if that integration is later
-implemented.
+## Blocking and finishing
 
-Browser automation and external status polling are out of scope. Issue links
-remain in Org, and external blockers are confirmed manually rather than
-inferred from GitHub or Kubernetes.
+`taskspaces-block-task` clocks out and marks the current task `WAIT`, optionally
+recording `BLOCKER`.
+
+`taskspaces-unblock-task` clears `BLOCKER` and returns the task to `TODO`.
+
+`taskspaces-finish-task` clocks out and marks the task `DONE`.
+
+## Archiving
+
+`taskspaces-archive-task` requires `DONE`, confirms the action, and calls
+Org's standard `org-archive-subtree`. Subtrees may be archived normally and
+may contain nested task headings. Archived entries go to
+`tasks.org_archive`, with no custom collision protection.
+
+Direct Org archiving is also supported. Org's archive hook schedules
+`taskspaces--cleanup-taskspaces`, which:
+
+1. scans stable IDs in the active task file;
+2. leaves live taskspaces for IDs still present;
+3. clocks out archived active tasks;
+4. removes worktrees and owned live buffers;
+5. deletes the taskspace layout and directory.
